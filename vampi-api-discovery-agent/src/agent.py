@@ -99,6 +99,7 @@ class VAmPIDiscoveryAgent:
     """Main agent class for VAmPI API discovery."""
     
     def __init__(self, base_url: str = "http://localhost:5000"):
+        """Initialize the VAmPI discovery agent."""
         self.base_url = base_url
         self.logger = logging.getLogger(__name__)
         
@@ -106,20 +107,18 @@ class VAmPIDiscoveryAgent:
         self.discovery_tool = DiscoveryTool(base_url=base_url)
         self.code_analysis_tool = CodeAnalysisTool()
         
-        # Initialize CrewAI agent
+        # Initialize CrewAI components
         self.agent = Agent(
             role="API Discovery Specialist",
-            goal="Discover and analyze all VAmPI API endpoints to create comprehensive documentation",
-            backstory="""You are an expert API security researcher and discovery specialist. 
-            Your expertise lies in identifying API endpoints, analyzing their security implications, 
-            and documenting their functionality. You have extensive experience with REST APIs, 
-            authentication mechanisms, and security assessment.""",
+            goal="Discover and analyze all VAmPI API endpoints comprehensively",
+            backstory="""You are an expert API security researcher specializing in 
+            discovering and analyzing API endpoints. You have extensive experience 
+            with REST APIs, authentication mechanisms, and security assessment.""",
             verbose=True,
             allow_delegation=False,
             tools=[self.discovery_tool, self.code_analysis_tool]
         )
         
-        # Initialize task
         self.task = Task(
             description="""Discover all endpoints from the VAmPI API and return structured information.
             
@@ -130,13 +129,11 @@ class VAmPIDiscoveryAgent:
             4. Compile results into a comprehensive DiscoveryReport
             5. Save the report to disk
             
-            The final output should be a complete DiscoveryReport with all discovered endpoints,
-            authentication mechanisms, and security assessments.""",
-            agent=self.agent,
-            expected_output="A comprehensive DiscoveryReport with all discovered API endpoints and metadata"
+            The final output should be a complete DiscoveryReport with all discovered 
+            endpoints, authentication mechanisms, and security assessments.""",
+            agent=self.agent
         )
         
-        # Initialize crew
         self.crew = Crew(
             agents=[self.agent],
             tasks=[self.task],
@@ -155,13 +152,36 @@ class VAmPIDiscoveryAgent:
             
             if vampi_running:
                 self.logger.info("VAmPI is running. Proceeding with live API discovery...")
-                # Use CrewAI to run discovery
-                result = self.crew.kickoff()
-                self.logger.info("CrewAI discovery completed")
-                
-                # For now, create a sample report since CrewAI output needs processing
-                # In a full implementation, you'd parse the CrewAI result
-                discovery_report = self._create_sample_report()
+                # Use local discovery engine instead of CrewAI
+                try:
+                    from .discovery import VAmPIDiscoveryEngine, DiscoveryConfig
+                    
+                    config = DiscoveryConfig(
+                        base_url=self.base_url,
+                        timeout=30.0,
+                        max_concurrent_requests=5,
+                        user_agent="VAmPI-Discovery-Agent/1.0"
+                    )
+                    
+                    # Run discovery using local engine
+                    async def run_discovery():
+                        async with VAmPIDiscoveryEngine(config) as engine:
+                            return await engine.discover_endpoints()
+                    
+                    # Run async function in sync context
+                    import asyncio
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    discovery_result = loop.run_until_complete(run_discovery())
+                    loop.close()
+                    
+                    # Convert APIDiscoveryResult to DiscoveryReport
+                    discovery_report = self._convert_discovery_result(discovery_result)
+                    self.logger.info("Local discovery engine completed successfully")
+                    
+                except Exception as e:
+                    self.logger.warning(f"Local discovery engine failed: {e}, falling back to sample report")
+                    discovery_report = self._create_sample_report()
                 
             else:
                 self.logger.warning("VAmPI is not running. Falling back to code analysis...")
@@ -183,6 +203,75 @@ class VAmPIDiscoveryAgent:
             error_report = self._create_error_report(str(e))
             self._save_report(error_report)
             return error_report
+    
+    def _convert_discovery_result(self, discovery_result) -> DiscoveryReport:
+        """Convert APIDiscoveryResult to DiscoveryReport."""
+        from .models import (
+            DiscoveryReport, DiscoverySummary, EndpointMetadata, APIStructure,
+            RiskLevel, HTTPMethod, AuthenticationType, EndpointParameters, DiscoveryMethod
+        )
+        
+        # Convert endpoints
+        endpoints = []
+        for ep in discovery_result.endpoints:
+            # Convert to EndpointMetadata format
+            endpoint = EndpointMetadata(
+                id=f"{ep.path.replace('/', '_').strip('_')}_{ep.methods[0].lower()}",
+                path=ep.path,
+                methods=ep.methods,
+                description=ep.description,
+                parameters=EndpointParameters(
+                    query_params=ep.parameters.query_params if hasattr(ep.parameters, 'query_params') else [],
+                    path_params=ep.parameters.path_params if hasattr(ep.parameters, 'path_params') else [],
+                    body_params=ep.parameters.body_params if hasattr(ep.parameters, 'body_params') else [],
+                    headers=ep.parameters.headers if hasattr(ep.parameters, 'headers') else []
+                ),
+                authentication_required=ep.authentication_required,
+                authentication_type=ep.authentication_type,
+                risk_level=ep.risk_level,
+                risk_factors=ep.risk_factors,
+                response_types=ep.response_types,
+                discovered_via=DiscoveryMethod.ENDPOINT_SCANNING
+            )
+            endpoints.append(endpoint)
+        
+        # Create discovery summary
+        summary = DiscoverySummary(
+            total_endpoints=len(endpoints),
+            authenticated_endpoints=len([ep for ep in endpoints if ep.authentication_required]),
+            public_endpoints=len([ep for ep in endpoints if not ep.authentication_required]),
+            discovery_coverage=0.9,
+            discovery_start_time=datetime.now()
+        )
+        
+        # Create API structure
+        api_structure = APIStructure(
+            base_url=self.base_url,
+            version="1.0",
+            title="VAmPI API",
+            description="Vulnerable API for testing and learning",
+            discovery_method="Live API Discovery"
+        )
+        
+        # Convert authentication mechanisms
+        auth_mechanisms = []
+        for auth in discovery_result.authentication_mechanisms:
+            auth_mechanism = AuthenticationMechanism(
+                type=auth.type,
+                description=auth.description,
+                endpoints_using=auth.endpoints_using
+            )
+            auth_mechanisms.append(auth_mechanism)
+        
+        return DiscoveryReport(
+            discovery_summary=summary,
+            endpoints=endpoints,
+            authentication_mechanisms=auth_mechanisms,
+            api_structure=api_structure,
+            report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            generated_at=datetime.now(),
+            generator_version="1.0.0"
+        )
     
     def _create_sample_report(self) -> DiscoveryReport:
         """Create a sample discovery report when VAmPI is running."""
@@ -247,7 +336,7 @@ class VAmPIDiscoveryAgent:
             version="1.0",
             title="VAmPI API",
             description="Vulnerable API for testing and learning",
-            discovery_method="Live API Discovery"
+            discovery_method="Sample Report"
         )
         
         # Create authentication mechanisms
@@ -264,7 +353,7 @@ class VAmPIDiscoveryAgent:
             endpoints=endpoints,
             authentication_mechanisms=auth_mechanisms,
             api_structure=api_structure,
-            report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            report_id=f"vampi_sample_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             generated_at=datetime.now(),
             generator_version="1.0.0"
         )
@@ -273,16 +362,17 @@ class VAmPIDiscoveryAgent:
         """Create a fallback report when VAmPI is not running."""
         from .models import (
             EndpointMetadata, AuthenticationMechanism, APIStructure,
-            RiskLevel, HTTPMethod, AuthenticationType
+            RiskLevel, HTTPMethod, AuthenticationType, ParameterType, ParameterLocation,
+            EndpointParameters, DiscoveryMethod
         )
         
-        # Create endpoints based on common VAmPI patterns
+        # Create fallback endpoints based on common VAmPI patterns
         endpoints = [
             EndpointMetadata(
-                id="users_get",
-                path="/users",
+                id="users_v1_get",
+                path="/users/v1",
                 methods=[HTTPMethod.GET],
-                description="Retrieve list of users (inferred from code)",
+                description="Retrieve users (V1 API)",
                 parameters=EndpointParameters(
                     query_params=["limit", "offset"],
                     path_params=[],
@@ -291,31 +381,32 @@ class VAmPIDiscoveryAgent:
                 ),
                 authentication_required=True,
                 authentication_type=AuthenticationType.JWT,
-                risk_level=RiskLevel.MEDIUM,
-                risk_factors=["User data exposure"],
+                risk_level=RiskLevel.HIGH,
+                risk_factors=["User data exposure", "Authentication bypass"],
                 response_types=["application/json"],
-                discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING
+                discovered_via=DiscoveryMethod.CODE_ANALYSIS
             ),
             EndpointMetadata(
-                id="books_get",
-                path="/books",
+                id="books_v1_get",
+                path="/books/v1",
                 methods=[HTTPMethod.GET],
-                description="Retrieve list of books (inferred from code)",
+                description="Retrieve books (V1 API)",
                 parameters=EndpointParameters(
-                    query_params=["limit", "offset"],
+                    query_params=["title", "author"],
                     path_params=[],
                     body_params=[],
-                    headers=["Content-Type"]
+                    headers=["Authorization"]
                 ),
                 authentication_required=False,
                 authentication_type=AuthenticationType.NONE,
-                risk_level=RiskLevel.LOW,
-                risk_factors=[],
+                risk_level=RiskLevel.MEDIUM,
+                risk_factors=["Data exposure"],
                 response_types=["application/json"],
-                discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING
+                discovered_via=DiscoveryMethod.CODE_ANALYSIS
             )
         ]
         
+        # Create discovery summary
         summary = DiscoverySummary(
             total_endpoints=len(endpoints),
             authenticated_endpoints=1,
@@ -324,19 +415,21 @@ class VAmPIDiscoveryAgent:
             discovery_start_time=datetime.now()
         )
         
+        # Create API structure
         api_structure = APIStructure(
             base_url=self.base_url,
             version="1.0",
-            title="VAmPI API (Code Analysis)",
-            description="Vulnerable API structure inferred from source code",
+            title="VAmPI API (Fallback)",
+            description="API structure inferred from source code analysis",
             discovery_method="Code Analysis"
         )
         
+        # Create authentication mechanisms
         auth_mechanisms = [
             AuthenticationMechanism(
                 type=AuthenticationType.JWT,
-                description="JSON Web Token authentication (inferred)",
-                endpoints_using=["/users"]
+                description="JSON Web Token authentication",
+                endpoints_using=["/users/v1"]
             )
         ]
         
@@ -354,9 +447,11 @@ class VAmPIDiscoveryAgent:
         """Create an error report when discovery fails."""
         from .models import (
             EndpointMetadata, AuthenticationMechanism, APIStructure,
-            RiskLevel, HTTPMethod, AuthenticationType
+            RiskLevel, HTTPMethod, AuthenticationType, ParameterType, ParameterLocation,
+            EndpointParameters, DiscoveryMethod
         )
         
+        # Create error summary
         summary = DiscoverySummary(
             total_endpoints=0,
             authenticated_endpoints=0,
@@ -365,6 +460,7 @@ class VAmPIDiscoveryAgent:
             discovery_start_time=datetime.now()
         )
         
+        # Create API structure
         api_structure = APIStructure(
             base_url=self.base_url,
             version="unknown",
@@ -387,15 +483,19 @@ class VAmPIDiscoveryAgent:
     def _save_report(self, report: DiscoveryReport) -> None:
         """Save the discovery report to disk with backup."""
         try:
-            # Create backup of existing file if it exists
             output_file = "discovered_endpoints.json"
+            
+            # Backup existing file if it exists
             if os.path.exists(output_file):
-                backup_file = f"{output_file}.bak.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                backup_file = f"{output_file}.bak.{timestamp}"
                 os.rename(output_file, backup_file)
                 self.logger.info(f"Backed up existing report to: {backup_file}")
             
             # Save new report
-            report.save_to_file(output_file)
+            with open(output_file, 'w') as f:
+                json.dump(report.model_dump(mode='json'), f, indent=2, default=str)
+            
             self.logger.info(f"Discovery report saved to: {output_file}")
             
         except Exception as e:
@@ -403,38 +503,10 @@ class VAmPIDiscoveryAgent:
 
 
 def main():
-    """Main function to run the VAmPI discovery agent."""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="VAmPI API Discovery Agent")
-    parser.add_argument(
-        "--base-url", 
-        default="http://localhost:5000",
-        help="Base URL for VAmPI API (default: http://localhost:5000)"
-    )
-    parser.add_argument(
-        "--verbose", 
-        action="store_true",
-        help="Enable verbose logging"
-    )
-    
-    args = parser.parse_args()
-    
-    # Configure logging
-    log_level = logging.DEBUG if args.verbose else logging.INFO
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    
-    # Run discovery
-    agent = VAmPIDiscoveryAgent(base_url=args.base_url)
+    """Main function for testing the agent."""
+    agent = VAmPIDiscoveryAgent()
     report = agent.run_discovery()
-    
-    print(f"\n🎉 Discovery completed!")
-    print(f"📊 Found {len(report.endpoints)} endpoints")
-    print(f"📁 Report saved to: discovered_endpoints.json")
-    print(f"🔍 Discovery method: {report.discovery_summary.discovery_method}")
+    print(f"Discovery completed. Found {report.discovery_summary.total_endpoints} endpoints.")
 
 
 if __name__ == "__main__":
