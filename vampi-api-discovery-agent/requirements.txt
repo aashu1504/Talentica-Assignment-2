@@ -1,9 +1,8 @@
 crewai
-crewai-tools
 httpx
-beautifulsoup4
-python-dotenv
 pydantic
 rich
 pytest
-langchain-google-genai 
+google-generativeai
+requests
+python-dotenv 

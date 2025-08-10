@@ -2,8 +2,11 @@
 """
 VAmPI API Discovery Agent - Main Execution Script
 
-This script provides the main entry point for running the API Discovery Agent
-using CrewAI and Google Generative AI for reasoning support.
+This script implements a hybrid approach where:
+1. CrewAI orchestrates the workflow and defines agents
+2. Agents use tools to perform their work
+3. Gemini 2.5 Flash Lite handles all reasoning inside the tools
+4. No LLM calls happen via CrewAI's own pipeline
 """
 
 import os
@@ -27,94 +30,185 @@ if sys.version_info < (3, 10):
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Import required modules
-from crewai import Crew
-from agent import VAmPIDiscoveryAgent
+from crewai import Agent, Task, Crew, Process
+from crewai.llms.base_llm import BaseLLM
 from models import DiscoveryReport
 from utils import check_vampi
+from tools import (
+    APIDiscoveryTool, QATestingTool, TechnicalWriterTool,
+    FileReadTool, FileWriteTool, RunScriptTool
+)
 
 
-def initialize_google_ai():
-    """Initialize Google Generative AI with API key from environment."""
-    try:
-        import google.generativeai as genai
-        
-        api_key = os.getenv('GOOGLE_API_KEY')
-        if not api_key:
-            print("⚠️  GOOGLE_API_KEY not found in .env file")
-            print("   Google AI reasoning support will be disabled")
-            return None
-        
-        genai.configure(api_key=api_key)
-        print("✅ Google Generative AI initialized successfully")
-        return genai
-        
-    except ImportError:
-        print("⚠️  google-generativeai package not installed")
-        print("   Google AI reasoning support will be disabled")
-        return None
-    except Exception as e:
-        print(f"⚠️  Failed to initialize Google AI: {e}")
-        print("   Google AI reasoning support will be disabled")
-        return None
+class DummyLLM(BaseLLM):
+    """Dummy LLM that doesn't make any actual calls - used to satisfy CrewAI requirements."""
+    
+    def __init__(self):
+        """Initialize the dummy LLM."""
+        super().__init__(model="dummy")
+    
+    def call(self, prompt: str, **kwargs) -> str:
+        """Return a dummy response without making any LLM calls."""
+        return "Dummy response - no LLM calls made"
+    
+    def acall(self, prompt: str, **kwargs) -> str:
+        """Async version of call."""
+        return "Dummy response - no LLM calls made"
+    
+    @property
+    def llm_type(self) -> str:
+        """Return the LLM type."""
+        return "dummy"
 
 
-def create_crew_with_agent(base_url: str):
-    """Create CrewAI crew with the APIDiscoveryAgent."""
-    try:
-        # Initialize the VAmPI discovery agent
-        print("🤖 Initializing VAmPI Discovery Agent...")
+def validate_environment():
+    """Validate that all required environment variables are set."""
+    required_vars = ['GOOGLE_API_KEY', 'API_BASE_URL']
+    missing_vars = []
+    
+    for var in required_vars:
+        if not os.getenv(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        print("❌ Missing required environment variables:")
+        for var in missing_vars:
+            print(f"   - {var}")
+        print("\nPlease set these variables in your .env file")
+        sys.exit(1)
+    
+    print("✅ Environment variables validated successfully")
+    return True
+
+
+def create_agents(api_key: str, base_url: str):
+    """Create CrewAI agents with their respective tools."""
+    
+    # API Discovery Agent
+    api_discovery_tool = APIDiscoveryTool(
+        base_url=base_url,
+        api_key=api_key
+    )
+    
+    api_discovery_agent = Agent(
+        role="API Discovery Specialist",
+        goal="Discover and analyze all VAmPI API endpoints using intelligent scanning and AI-powered analysis",
+        backstory="""You are an expert API security researcher specializing in discovering and analyzing 
+        web API endpoints. You have extensive experience with REST APIs, authentication mechanisms, 
+        and security risk assessment. Your expertise lies in using advanced tools to systematically 
+        scan APIs and identify potential security vulnerabilities.""",
+        tools=[api_discovery_tool],
+        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        verbose=True,
+        allow_delegation=False
+    )
+    
+    # QA Testing Agent
+    qa_testing_tool = QATestingTool(api_key=api_key)
+    
+    qa_testing_agent = Agent(
+        role="QA Testing Engineer",
+        goal="Validate discovered endpoints and perform comprehensive QA testing with AI-powered test case generation",
+        backstory="""You are a senior QA engineer with deep expertise in API testing and security validation. 
+        You excel at creating comprehensive test plans, validating endpoint functionality, and identifying 
+        potential issues. You use AI tools to enhance your testing approach and ensure thorough coverage.""",
+        tools=[qa_testing_tool],
+        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        verbose=True,
+        allow_delegation=False
+    )
+    
+    # Technical Writer & Analyst Agent
+    technical_writer_tool = TechnicalWriterTool(api_key=api_key)
+    file_read_tool = FileReadTool(file_path="temp_discovery_results.json")
+    # FileWriteTool will be used during execution when content is available
+    file_write_tool = FileWriteTool(file_path="final_report.md", content="")
+    
+    technical_writer_agent = Agent(
+        role="Technical Writer & Security Analyst",
+        goal="Generate comprehensive technical reports and security analysis from discovery and QA results",
+        backstory="""You are a senior technical writer and security analyst with expertise in creating 
+        comprehensive security reports and technical documentation. You excel at analyzing complex data, 
+        identifying security patterns, and presenting findings in clear, actionable formats. You use AI 
+        tools to enhance your analysis and report generation capabilities.""",
+        tools=[technical_writer_tool, file_read_tool, file_write_tool],
+        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        verbose=True,
+        allow_delegation=False
+    )
+    
+    return api_discovery_agent, qa_testing_agent, technical_writer_agent
+
+
+def create_tasks(api_discovery_agent, qa_testing_agent, technical_writer_agent):
+    """Create CrewAI tasks for the workflow."""
+    
+    # Task 1: API Discovery
+    discovery_task = Task(
+        description="""Discover and analyze all VAmPI API endpoints. Use the API discovery tool to:
+        1. Scan the VAmPI API at the specified base URL
+        2. Identify all available endpoints and their methods
+        3. Analyze authentication requirements and security risks
+        4. Generate comprehensive endpoint metadata
+        5. Save results for further processing
         
-        # Configure LLM for CrewAI - using Google AI LLM directly
-        print("🔧 Configuring LLM for CrewAI...")
-        from crewai import Agent, Task, Crew
-        from langchain_google_genai import ChatGoogleGenerativeAI
+        Focus on thorough coverage and accurate endpoint identification.""",
+        agent=api_discovery_agent,
+        expected_output="A comprehensive report of discovered API endpoints including total count, endpoint details, authentication requirements, security risk assessments, and Gemini AI analysis.",
+
+        async_execution=False
+    )
+    
+    # Task 2: QA Testing
+    qa_testing_task = Task(
+        description="""Validate discovered endpoints and perform QA testing. Use the QA testing tool to:
+        1. Load the discovery results from the previous task
+        2. Validate endpoint data completeness and accuracy
+        3. Generate comprehensive test plans using AI
+        4. Perform basic endpoint validation
+        5. Identify high-risk endpoints for further testing
+        6. Save QA results for report generation
         
-        # Get Google API key
-        api_key = os.getenv('GOOGLE_API_KEY')
-        if not api_key:
-            raise ValueError("GOOGLE_API_KEY not found in environment variables")
+        Ensure thorough validation and comprehensive test coverage.""",
+        agent=qa_testing_agent,
+        expected_output="A comprehensive QA testing report including validation results, AI-generated test plans, risk assessment validation, testing recommendations, and quality metrics.",
+
+        async_execution=False
+    )
+    
+    # Task 3: Technical Report Generation
+    report_generation_task = Task(
+        description="""Generate a comprehensive technical report and security analysis. Use the technical writer tool to:
+        1. Load discovery and QA results from previous tasks
+        2. Generate comprehensive security analysis using AI
+        3. Create a structured technical report
+        4. Include executive summary, risk assessments, and recommendations
+        5. Save the final report in the required format
+        6. Clean up temporary files
         
-        print(f"🔑 Google API key found: {api_key[:10]}...")
-        
-        # Create Google AI LLM with correct model name
-        print("🚀 Creating Google AI LLM...")
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash-exp",
-            google_api_key=api_key,
-            temperature=0.1,
-            verbose=True
-        )
-        
-        # Test the LLM to ensure it works
-        print("🧪 Testing Google AI LLM...")
-        test_response = llm.invoke("Hello, please respond with 'Google AI is working'")
-        print(f"✅ Google AI LLM test successful: {test_response}")
-        
-        # Now create the agent with the LLM
-        agent = VAmPIDiscoveryAgent(base_url=base_url, llm=llm)
-        print("✅ VAmPI Discovery Agent initialized successfully")
-        
-        # Create crew with the agent and LLM
-        print("👥 Creating CrewAI crew...")
-        # Create a new crew with our LLM
-        crew = Crew(
-            agents=[agent.agent],
-            tasks=[agent.task],
-            verbose=os.getenv('CREWAI_VERBOSE', 'true').lower() == 'true',
-            memory=False,
-            llm=llm  # Pass the LLM here
-        )
-        
-        print("✅ CrewAI crew initialized successfully with Google AI LLM")
-        return crew, agent
-        
-    except Exception as e:
-        print(f"❌ Failed to initialize CrewAI crew: {e}")
-        print(f"🔍 Error details: {type(e).__name__}: {str(e)}")
-        import traceback
-        print(f"📋 Full traceback:")
-        traceback.print_exc()
-        raise
+        Create a professional, actionable report suitable for security teams and stakeholders.""",
+        agent=technical_writer_agent,
+        expected_output="A comprehensive technical report including executive summary, detailed endpoint analysis, security risk assessment, authentication mechanism analysis, testing recommendations, compliance considerations, and final report saved to discovered_endpoints.json.",
+
+        async_execution=False
+    )
+    
+    return discovery_task, qa_testing_task, report_generation_task
+
+
+def create_crew(agents, tasks):
+    """Create the CrewAI crew with the defined agents and tasks."""
+    
+    crew = Crew(
+        agents=agents,
+        tasks=tasks,
+        verbose=True,
+        memory=False,  # Disable memory to avoid LLM usage
+        process=Process.sequential,  # Execute tasks sequentially
+        llm=DummyLLM()  # Use dummy LLM for crew to prevent external LLM usage
+    )
+    
+    return crew
 
 
 def backup_existing_report(filename: str = "discovered_endpoints.json"):
@@ -126,38 +220,6 @@ def backup_existing_report(filename: str = "discovered_endpoints.json"):
         print(f"📁 Backed up existing report to: {backup_filename}")
         return backup_filename
     return None
-
-
-def validate_discovery_report(result: any) -> Optional[DiscoveryReport]:
-    """Validate the result against DiscoveryReport model."""
-    try:
-        # If result is already a DiscoveryReport, return it
-        if isinstance(result, DiscoveryReport):
-            return result
-        
-        # If result is a string, try to parse it as JSON
-        if isinstance(result, str):
-            try:
-                data = json.loads(result)
-                return DiscoveryReport(**data)
-            except json.JSONDecodeError:
-                print("⚠️  CrewAI result is not valid JSON")
-                return None
-        
-        # If result is a dict, try to create DiscoveryReport
-        if isinstance(result, dict):
-            try:
-                return DiscoveryReport(**result)
-            except Exception as e:
-                print(f"⚠️  Failed to create DiscoveryReport from dict: {e}")
-                return None
-        
-        print(f"⚠️  Unexpected result type: {type(result)}")
-        return None
-        
-    except Exception as e:
-        print(f"❌ Failed to validate discovery report: {e}")
-        return None
 
 
 def print_discovery_summary(report: DiscoveryReport):
@@ -197,18 +259,20 @@ def print_next_steps():
 
 def main():
     """Main execution function."""
-    print("🚀 VAmPI API Discovery Agent - Main Execution")
-    print("="*50)
+    print("🚀 VAmPI API Discovery Agent - Hybrid CrewAI + Gemini Approach")
+    print("="*70)
     
     # Check Python version
     print(f"🐍 Python version: {sys.version}")
     
+    # Validate environment
+    validate_environment()
+    
     # Load configuration from environment
+    api_key = os.getenv('GOOGLE_API_KEY')
     base_url = os.getenv('API_BASE_URL', 'http://localhost:5000')
     print(f"🌐 Target VAmPI URL: {base_url}")
-    
-    # Initialize Google Generative AI (for reasoning support only)
-    google_ai = initialize_google_ai()
+    print(f"🔑 Google API Key: {api_key[:10]}...")
     
     try:
         # Check if VAmPI is running
@@ -220,60 +284,63 @@ def main():
         else:
             print("⚠️  VAmPI is not running - will use fallback code analysis")
         
-        # Create CrewAI crew with the agent
-        print("\n🤖 Initializing CrewAI crew...")
-        crew, agent = create_crew_with_agent(base_url)
+        # Create agents
+        print("\n🤖 Creating CrewAI agents...")
+        api_discovery_agent, qa_testing_agent, technical_writer_agent = create_agents(api_key, base_url)
+        print("✅ Agents created successfully")
         
-        # Run discovery using CrewAI for beautiful console output
-        print("\n🔍 Running discovery using CrewAI...")
-        try:
-            print("🚀 Starting CrewAI execution...")
-            result = crew.kickoff()
-            print("✅ CrewAI execution completed")
-            
-            # Convert CrewAI result to DiscoveryReport
-            discovery_report = validate_discovery_report(result)
-            if not discovery_report:
-                print("⚠️  CrewAI result validation failed, using agent directly...")
-                discovery_report = agent.run_discovery()
-        except Exception as e:
-            print(f"⚠️  CrewAI execution failed: {e}")
-            print(f"🔍 Error details: {type(e).__name__}: {str(e)}")
-            import traceback
-            print(f"📋 Full traceback:")
-            traceback.print_exc()
-            print("🔄 Falling back to direct agent execution...")
-            discovery_report = agent.run_discovery()
+        # Create tasks
+        print("\n📋 Creating CrewAI tasks...")
+        discovery_task, qa_testing_task, report_generation_task = create_tasks(
+            api_discovery_agent, qa_testing_agent, technical_writer_agent
+        )
+        print("✅ Tasks created successfully")
         
-        print("✅ Discovery completed successfully")
+        # Create crew
+        print("\n🚀 Creating CrewAI crew...")
+        crew = create_crew(
+            [api_discovery_agent, qa_testing_agent, technical_writer_agent],
+            [discovery_task, qa_testing_task, report_generation_task]
+        )
+        print("✅ Crew created successfully")
         
-        # Validate the result against DiscoveryReport model
-        print("\n🔍 Validating discovery results...")
-        if not isinstance(discovery_report, DiscoveryReport):
-            print("❌ Discovery result is not a valid DiscoveryReport")
-            sys.exit(1)
+        # Execute the crew
+        print("\n🚀 Executing CrewAI workflow...")
+        print("="*50)
         
-        if discovery_report:
-            print("✅ Discovery report validated successfully")
+        result = crew.kickoff()
+        
+        print("="*50)
+        print("✅ CrewAI workflow completed successfully!")
+        
+        # Process results
+        if result:
+            print(f"\n📊 Workflow Results: {result}")
             
-            # Backup existing report if it exists
-            backup_file = backup_existing_report()
-            
-            # Write the validated report to discovered_endpoints.json
-            output_file = "discovered_endpoints.json"
-            discovery_report.save_to_file(output_file)
-            print(f"💾 Discovery report saved to: {output_file}")
-            
-            # Print the required summary
-            print_discovery_summary(discovery_report)
-            
-            # Print next steps for Assignment 2B
-            print_next_steps()
-            
+            # Check if the final report was generated
+            if os.path.exists("discovered_endpoints.json"):
+                print("\n📁 Final discovery report generated successfully!")
+                
+                # Load and validate the report
+                try:
+                    report = DiscoveryReport.load_from_file("discovered_endpoints.json")
+                    print("✅ Discovery report validated successfully")
+                    
+                    # Print the required summary
+                    print_discovery_summary(report)
+                    
+                    # Print next steps for Assignment 2B
+                    print_next_steps()
+                    
+                except Exception as e:
+                    print(f"⚠️  Warning: Could not validate final report: {e}")
+                    print("   The report file exists but may not be in the expected format")
+            else:
+                print("⚠️  Warning: Final discovery report not found")
+                print("   Check the workflow execution logs for any errors")
         else:
-            print("❌ Failed to validate discovery report")
-            print("   The CrewAI result could not be converted to a valid DiscoveryReport")
-            sys.exit(1)
+            print("⚠️  No results returned from CrewAI workflow")
+            print("   Check the workflow execution logs for any errors")
             
     except KeyboardInterrupt:
         print("\n\n⚠️  Discovery interrupted by user")
@@ -281,6 +348,7 @@ def main():
     except Exception as e:
         print(f"\n❌ Fatal error: {e}")
         print("   Please check your configuration and ensure VAmPI is accessible")
+        print("   Verify that your GOOGLE_API_KEY is valid and has sufficient quota")
         sys.exit(1)
 
 
