@@ -14,8 +14,12 @@ from urllib.parse import urljoin, urlparse
 import re
 
 import httpx
-import requests
-from bs4 import BeautifulSoup
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Handle both direct execution and module import
 try:
@@ -64,18 +68,18 @@ class VAmPIDiscoveryEngine:
         self.discovered_endpoints: Set[str] = set()
         self.auth_mechanisms: List[AuthenticationMechanism] = []
         
-        # Common API paths to scan
+        # VAmPI-specific API paths to scan
         self.common_paths = [
-            "/users", "/users/v1", "/users/v1/", "/users/v1/register", "/users/v1/login",
-            "/books", "/books/v1", "/books/v1/",
-            "/api", "/api/v1", "/api/v1/", "/api/v1/users", "/api/v1/books",
-            "/auth", "/auth/login", "/auth/register",
-            "/admin", "/admin/users", "/admin/books",
-            "/health", "/status", "/info", "/docs", "/swagger", "/openapi"
+            "/users/v1",
+            "/users/v1/register", 
+            "/users/v1/login",
+            "/books/v1",
+            "/",
+            "/createdb"
         ]
         
-        # HTTP methods to test
-        self.http_methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+        # HTTP methods to test (focused on VAmPI supported methods)
+        self.http_methods = ["GET", "POST", "PUT", "DELETE"]
         
         # Risk assessment patterns
         self.risk_patterns = {
@@ -216,8 +220,8 @@ class VAmPIDiscoveryEngine:
         
         # Extract query parameters from URL
         query_params = []
-        if "?" in response.url:
-            query_string = response.url.split("?")[1]
+        if "?" in str(response.url):
+            query_string = str(response.url).split("?")[1]
             query_params = [param.split("=")[0] for param in query_string.split("&")]
         
         # Extract headers from response
@@ -311,6 +315,9 @@ class VAmPIDiscoveryEngine:
             
         except Exception as e:
             self.logger.warning(f"Failed to test {method} {url}: {e}")
+            # Log more details for debugging
+            if hasattr(e, '__class__'):
+                self.logger.debug(f"Error type: {e.__class__.__name__}")
             return None
     
     def _generate_description(self, path: str, method: str, response: httpx.Response) -> str:
@@ -327,57 +334,72 @@ class VAmPIDiscoveryEngine:
         """
         path_lower = path.lower()
         
-        # User management endpoints
-        if "/users" in path_lower:
+        # VAmPI User management endpoints
+        if "/users/v1" in path_lower:
             if "login" in path_lower:
-                return "User authentication endpoint"
+                return "VAmPI user authentication endpoint"
             elif "register" in path_lower:
-                return "User registration endpoint"
-            elif path_lower.endswith("/users") or path_lower.endswith("/users/"):
-                return "User management endpoint"
+                return "VAmPI user registration endpoint"
+            elif path_lower.endswith("/users/v1") or path_lower.endswith("/users/v1/"):
+                return "VAmPI user management endpoint - list all users"
+            elif "{username}" in path_lower:
+                if "email" in path_lower:
+                    return "VAmPI update user email endpoint"
+                elif "password" in path_lower:
+                    return "VAmPI update user password endpoint"
+                else:
+                    return "VAmPI individual user operation endpoint"
             else:
-                return "Individual user operation endpoint"
+                return "VAmPI user operation endpoint"
         
-        # Book management endpoints
-        elif "/books" in path_lower:
-            if path_lower.endswith("/books") or path_lower.endswith("/books/"):
-                return "Book management endpoint"
+        # VAmPI Book management endpoints
+        elif "/books/v1" in path_lower:
+            if path_lower.endswith("/books/v1") or path_lower.endswith("/books/v1/"):
+                return "VAmPI book management endpoint - list all books or add new book"
+            elif "{book_title}" in path_lower:
+                return "VAmPI get book by title endpoint"
             else:
-                return "Individual book operation endpoint"
+                return "VAmPI book operation endpoint"
         
-        # Authentication endpoints
+        # VAmPI root and database endpoints
+        elif path_lower == "/":
+            return "VAmPI home endpoint - API information and help"
+        elif path_lower == "/createdb":
+            return "VAmPI database initialization endpoint"
+        
+        # VAmPI other endpoints
         elif "/auth" in path_lower:
             if "login" in path_lower:
-                return "Authentication login endpoint"
+                return "VAmPI authentication endpoint"
             elif "register" in path_lower:
-                return "Authentication registration endpoint"
+                return "VAmPI user registration endpoint"
             else:
-                return "Authentication endpoint"
+                return "VAmPI authentication endpoint"
         
         # Admin endpoints
         elif "/admin" in path_lower:
-            return "Administrative endpoint"
+            return "VAmPI administrative endpoint"
         
         # Health and status endpoints
         elif path in ["/health", "/status", "/info"]:
-            return "Application health and status endpoint"
+            return "VAmPI health and status endpoint"
         
         # Documentation endpoints
         elif path in ["/docs", "/swagger", "/openapi"]:
-            return "API documentation endpoint"
+            return "VAmPI documentation endpoint"
         
         # Generic description based on method
         else:
             method_descriptions = {
-                "GET": "Retrieve data endpoint",
-                "POST": "Create data endpoint",
-                "PUT": "Update data endpoint",
-                "DELETE": "Delete data endpoint",
-                "PATCH": "Partial update endpoint",
-                "HEAD": "Header information endpoint",
-                "OPTIONS": "Options endpoint"
+                "GET": "VAmPI retrieve data endpoint",
+                "POST": "VAmPI create data endpoint",
+                "PUT": "VAmPI update data endpoint",
+                "DELETE": "VAmPI delete data endpoint",
+                "PATCH": "VAmPI partial update endpoint",
+                "HEAD": "VAmPI header information endpoint",
+                "OPTIONS": "VAmPI options endpoint"
             }
-            return method_descriptions.get(method, "API endpoint")
+            return method_descriptions.get(method, "VAmPI API endpoint")
     
     async def discover_endpoints(self) -> APIDiscoveryResult:
         """
@@ -387,16 +409,24 @@ class VAmPIDiscoveryEngine:
             APIDiscoveryResult with discovered endpoints
         """
         self.logger.info("Starting VAmPI endpoint discovery...")
+        self.logger.info(f"Target VAmPI endpoints to discover:")
+        self.logger.info("User Management: GET /users/v1, POST /users/v1/register, POST /users/v1/login, GET /users/v1/{username}, DELETE /users/v1/{username}, PUT /users/v1/{username}/email, PUT /users/v1/{username}/password")
+        self.logger.info("Book Management: GET /books/v1, POST /books/v1, GET /books/v1/{book_title}")
+        self.logger.info("Other: GET /, GET /createdb")
         start_time = time.time()
         
         # Reset state
         self.discovered_endpoints.clear()
         self.auth_mechanisms.clear()
         
-        # Discover endpoints using common paths
-        endpoints = await self._scan_common_paths()
+        # Discover endpoints using VAmPI-specific endpoint testing
+        endpoints = await self._test_vampi_specific_endpoints()
         
-        # Discover endpoints using pattern-based scanning
+        # Also try common paths as fallback
+        common_endpoints = await self._scan_common_paths()
+        endpoints.extend(common_endpoints)
+        
+        # Discover endpoints using pattern-based scanning as additional fallback
         pattern_endpoints = await self._pattern_based_discovery()
         endpoints.extend(pattern_endpoints)
         
@@ -412,14 +442,30 @@ class VAmPIDiscoveryEngine:
         # Calculate scan duration
         scan_duration = time.time() - start_time
         
+        # Calculate authentication counts
+        authenticated_count = len([ep for ep in unique_endpoints if ep.authentication_required])
+        public_count = len([ep for ep in unique_endpoints if not ep.authentication_required])
+        
+        # Calculate risk distribution
+        high_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.HIGH])
+        medium_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.MEDIUM])
+        low_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.LOW])
+        
+        # Calculate coverage (simple percentage of discovered vs expected endpoints)
+        expected_endpoints = 10  # VAmPI has about 10 main endpoints
+        discovery_coverage = min(100.0, (len(unique_endpoints) / expected_endpoints) * 100)
+        
         # Create discovery summary
         summary = DiscoverySummary(
             total_endpoints=len(unique_endpoints),
-            discovery_timestamp=datetime.utcnow(),
-            target_application="VAmPI",
-            base_url=self.config.base_url,
-            scan_duration=scan_duration,
-            success_rate=calculate_success_rate(len(endpoints), len(unique_endpoints))
+            authenticated_endpoints=authenticated_count,
+            public_endpoints=public_count,
+            high_risk_endpoints=high_risk_count,
+            medium_risk_endpoints=medium_risk_count,
+            low_risk_endpoints=low_risk_count,
+            discovery_coverage=discovery_coverage,
+            discovery_start_time=datetime.now(),
+            discovery_duration=scan_duration
         )
         
         # Create result
@@ -431,6 +477,15 @@ class VAmPIDiscoveryEngine:
         )
         
         self.logger.info(f"Discovery completed. Found {len(unique_endpoints)} endpoints in {scan_duration:.2f}s")
+        
+        # Log discovered endpoints summary
+        if unique_endpoints:
+            self.logger.info("Discovered endpoints:")
+            for endpoint in unique_endpoints:
+                self.logger.info(f"  {', '.join(endpoint.methods)} {endpoint.path} - {endpoint.description}")
+        else:
+            self.logger.warning("No endpoints discovered!")
+        
         return result
     
     async def _scan_common_paths(self) -> List[EndpointMetadata]:
@@ -456,6 +511,63 @@ class VAmPIDiscoveryEngine:
         
         return endpoints
     
+    async def _test_vampi_specific_endpoints(self) -> List[EndpointMetadata]:
+        """
+        Test the specific VAmPI endpoints that should be discovered.
+        
+        Returns:
+            List of discovered VAmPI endpoints
+        """
+        endpoints = []
+        
+        # Define the exact VAmPI endpoints to test
+        vampi_endpoints = [
+            # User Management APIs
+            {"path": "/users/v1", "methods": ["GET"], "description": "List all users"},
+            {"path": "/users/v1/register", "methods": ["POST"], "description": "User registration"},
+            {"path": "/users/v1/login", "methods": ["POST"], "description": "User authentication"},
+            {"path": "/users/v1/{username}", "methods": ["GET", "DELETE"], "description": "Get/Delete specific user"},
+            {"path": "/users/v1/{username}/email", "methods": ["PUT"], "description": "Update user email"},
+            {"path": "/users/v1/{username}/password", "methods": ["PUT"], "description": "Update user password"},
+            
+            # Book Management APIs
+            {"path": "/books/v1", "methods": ["GET", "POST"], "description": "List all books or add new book"},
+            {"path": "/books/v1/{book_title}", "methods": ["GET"], "description": "Get book by title"},
+            
+            # Other VAmPI endpoints
+            {"path": "/", "methods": ["GET"], "description": "VAmPI home and help"},
+            {"path": "/createdb", "methods": ["GET"], "description": "Database initialization"}
+        ]
+        
+        for endpoint_info in vampi_endpoints:
+            path = endpoint_info["path"]
+            methods = endpoint_info["methods"]
+            description = endpoint_info["description"]
+            
+            # Test with sample values for parameterized paths
+            test_path = path
+            if "{username}" in path:
+                test_path = path.replace("{username}", "name1")
+            elif "{book_title}" in path:
+                test_path = path.replace("{book_title}", "bookTitle77")
+            
+            full_url = normalize_url(self.config.base_url, test_path)
+            
+            for method in methods:
+                if self.config.respect_rate_limits:
+                    rate_limit_delay()
+                
+                endpoint = await self._test_endpoint(full_url, method)
+                if endpoint:
+                    # Update path to show parameterized version if it was parameterized
+                    if "{username}" in path or "{book_title}" in path:
+                        endpoint.path = path
+                    endpoint.description = description
+                    endpoints.append(endpoint)
+                    self.logger.debug(f"Discovered VAmPI endpoint {method} {path}")
+        
+        return endpoints
+    
     async def _pattern_based_discovery(self) -> List[EndpointMetadata]:
         """
         Discover endpoints using pattern-based scanning.
@@ -465,19 +577,19 @@ class VAmPIDiscoveryEngine:
         """
         endpoints = []
         
-        # VAmPI-specific patterns
+        # VAmPI-specific patterns with correct parameter names
         vampi_patterns = [
-            "/users/v1/{user_id}",
-            "/users/v1/{user_id}/email",
-            "/users/v1/{user_id}/password",
+            "/users/v1/{username}",
+            "/users/v1/{username}/email",
+            "/users/v1/{username}/password",
             "/books/v1/{book_title}"
         ]
         
         for pattern in vampi_patterns:
-            # Test with sample values
+            # Test with sample values based on VAmPI examples
             sample_values = {
-                "user_id": "123",
-                "book_title": "sample_book"
+                "username": "name1",
+                "book_title": "bookTitle77"
             }
             
             # Replace placeholders with sample values
@@ -488,7 +600,13 @@ class VAmPIDiscoveryEngine:
             
             full_url = normalize_url(self.config.base_url, test_path)
             
-            for method in ["GET", "PUT", "DELETE"]:
+            # Test appropriate methods for each pattern
+            if "users" in pattern:
+                methods = ["GET", "DELETE", "PUT"]
+            else:  # books
+                methods = ["GET"]
+                
+            for method in methods:
                 if self.config.respect_rate_limits:
                     rate_limit_delay()
                 
@@ -567,9 +685,10 @@ class VAmPIDiscoveryEngine:
                 patterns.add("JSON_responses")
         
         return APIStructure(
-            base_paths=list(base_paths),
-            versions=list(versions),
-            common_patterns=list(patterns)
+            base_url=self.config.base_url,
+            discovery_method="endpoint_scanning",
+            title="VAmPI API",
+            description="VAmPI API discovered through endpoint scanning"
         )
     
     def _detect_auth_mechanisms(self, endpoints: List[EndpointMetadata]) -> List[AuthenticationMechanism]:
@@ -591,12 +710,12 @@ class VAmPIDiscoveryEngine:
                 if auth_type not in auth_map:
                     auth_map[auth_type] = AuthenticationMechanism(
                         type=auth_type,
-                        endpoints=[],
-                        token_location="header",
-                        header_name="Authorization"
+                        name=f"{auth_type.value}_auth",
+                        description=f"{auth_type.value} authentication mechanism",
+                        endpoints_using=[]
                     )
                 
-                auth_map[auth_type].endpoints.append(endpoint.path)
+                auth_map[auth_type].endpoints_using.append(endpoint.path)
         
         return list(auth_map.values())
     

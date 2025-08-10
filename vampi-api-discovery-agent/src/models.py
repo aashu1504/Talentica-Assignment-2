@@ -38,6 +38,7 @@ class AuthenticationType(str, Enum):
     API_KEY = "API_Key"
     OAUTH2 = "OAuth2"
     JWT = "JWT"
+    SESSION = "Session"
     CUSTOM = "Custom"
 
 

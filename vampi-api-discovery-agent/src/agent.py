@@ -131,7 +131,8 @@ class VAmPIDiscoveryAgent:
             
             The final output should be a complete DiscoveryReport with all discovered 
             endpoints, authentication mechanisms, and security assessments.""",
-            agent=self.agent
+            agent=self.agent,
+            expected_output="A comprehensive DiscoveryReport with all discovered API endpoints and metadata"
         )
         
         self.crew = Crew(
@@ -258,8 +259,9 @@ class VAmPIDiscoveryAgent:
         for auth in discovery_result.authentication_mechanisms:
             auth_mechanism = AuthenticationMechanism(
                 type=auth.type,
-                description=auth.description,
-                endpoints_using=auth.endpoints_using
+                name=f"{auth.type.value}_auth",
+                description=auth.description if hasattr(auth, 'description') else f"{auth.type.value} authentication mechanism",
+                endpoints_using=auth.endpoints_using if hasattr(auth, 'endpoints_using') else []
             )
             auth_mechanisms.append(auth_mechanism)
         
