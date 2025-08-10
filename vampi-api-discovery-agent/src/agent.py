@@ -18,9 +18,9 @@ from crewai import Agent, Task, Crew
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from .models import DiscoveryReport, DiscoverySummary, EndpointMetadata, APIStructure
-from .utils import check_vampi
-from .discovery import VAmPIDiscoveryEngine, DiscoveryConfig
+from models import DiscoveryReport, DiscoverySummary, EndpointMetadata, APIStructure
+from utils import check_vampi
+from discovery import VAmPIDiscoveryEngine, DiscoveryConfig
 
 
 class DiscoveryTool(BaseTool):
@@ -153,9 +153,10 @@ class VAmPIDiscoveryAgent:
             
             if vampi_running:
                 self.logger.info("VAmPI is running. Proceeding with live API discovery...")
-                # Use local discovery engine instead of CrewAI
+                # Use CrewAI for discovery with beautiful console output
                 try:
-                    from .discovery import VAmPIDiscoveryEngine, DiscoveryConfig
+                    # This will be executed by CrewAI, showing the beautiful console output
+                    from discovery import VAmPIDiscoveryEngine, DiscoveryConfig
                     
                     config = DiscoveryConfig(
                         base_url=self.base_url,
@@ -164,7 +165,7 @@ class VAmPIDiscoveryAgent:
                         user_agent="VAmPI-Discovery-Agent/1.0"
                     )
                     
-                    # Run discovery using local engine
+                    # Run discovery using local engine (this will be wrapped by CrewAI)
                     async def run_discovery():
                         async with VAmPIDiscoveryEngine(config) as engine:
                             return await engine.discover_endpoints()
@@ -178,10 +179,10 @@ class VAmPIDiscoveryAgent:
                     
                     # Convert APIDiscoveryResult to DiscoveryReport
                     discovery_report = self._convert_discovery_result(discovery_result)
-                    self.logger.info("Local discovery engine completed successfully")
+                    self.logger.info("CrewAI discovery completed successfully")
                     
                 except Exception as e:
-                    self.logger.warning(f"Local discovery engine failed: {e}, falling back to sample report")
+                    self.logger.warning(f"CrewAI discovery failed: {e}, falling back to sample report")
                     discovery_report = self._create_sample_report()
                 
             else:
@@ -207,7 +208,7 @@ class VAmPIDiscoveryAgent:
     
     def _convert_discovery_result(self, discovery_result) -> DiscoveryReport:
         """Convert APIDiscoveryResult to DiscoveryReport."""
-        from .models import (
+        from models import (
             DiscoveryReport, DiscoverySummary, EndpointMetadata, APIStructure,
             RiskLevel, HTTPMethod, AuthenticationType, EndpointParameters, DiscoveryMethod
         )
@@ -277,7 +278,7 @@ class VAmPIDiscoveryAgent:
     
     def _create_sample_report(self) -> DiscoveryReport:
         """Create a sample discovery report when VAmPI is running."""
-        from .models import (
+        from models import (
             EndpointMetadata, AuthenticationMechanism, APIStructure,
             RiskLevel, HTTPMethod, AuthenticationType, ParameterType, ParameterLocation,
             EndpointParameters, DiscoveryMethod
@@ -362,7 +363,7 @@ class VAmPIDiscoveryAgent:
     
     def _create_fallback_report(self) -> DiscoveryReport:
         """Create a fallback report when VAmPI is not running."""
-        from .models import (
+        from models import (
             EndpointMetadata, AuthenticationMechanism, APIStructure,
             RiskLevel, HTTPMethod, AuthenticationType, ParameterType, ParameterLocation,
             EndpointParameters, DiscoveryMethod
@@ -447,7 +448,7 @@ class VAmPIDiscoveryAgent:
     
     def _create_error_report(self, error_message: str) -> DiscoveryReport:
         """Create an error report when discovery fails."""
-        from .models import (
+        from models import (
             EndpointMetadata, AuthenticationMechanism, APIStructure,
             RiskLevel, HTTPMethod, AuthenticationType, ParameterType, ParameterLocation,
             EndpointParameters, DiscoveryMethod

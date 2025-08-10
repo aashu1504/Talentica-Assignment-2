@@ -28,9 +28,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Import required modules
 from crewai import Crew
-from .agent import VAmPIDiscoveryAgent
-from .models import DiscoveryReport
-from .utils import check_vampi
+from agent import VAmPIDiscoveryAgent
+from models import DiscoveryReport
+from utils import check_vampi
 
 
 def initialize_google_ai():
@@ -187,9 +187,20 @@ def main():
         print("\n🤖 Initializing CrewAI crew...")
         crew, agent = create_crew_with_agent(base_url)
         
-        # Run discovery directly using the agent (bypassing CrewAI LLM)
-        print("\n🔍 Running discovery using local functions...")
-        discovery_report = agent.run_discovery()
+        # Run discovery using CrewAI for beautiful console output
+        print("\n🔍 Running discovery using CrewAI...")
+        try:
+            result = crew.kickoff()
+            print("✅ CrewAI execution completed")
+            
+            # Convert CrewAI result to DiscoveryReport
+            discovery_report = validate_discovery_report(result)
+            if not discovery_report:
+                print("⚠️  CrewAI result validation failed, using agent directly...")
+                discovery_report = agent.run_discovery()
+        except Exception as e:
+            print(f"⚠️  CrewAI execution failed: {e}, using agent directly...")
+            discovery_report = agent.run_discovery()
         
         print("✅ Discovery completed successfully")
         

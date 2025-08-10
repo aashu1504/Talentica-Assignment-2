@@ -21,27 +21,16 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Handle both direct execution and module import
-try:
-    from .models import (
-        APIDiscoveryResult, DiscoverySummary, EndpointMetadata, EndpointParameters,
-        AuthenticationMechanism, APIStructure, RiskLevel, AuthenticationType,
-        DiscoveryMethod, DiscoveryConfig
-    )
-    from .utils import (
-        normalize_url, extract_path_parameters, rate_limit_delay, 
-        calculate_success_rate, is_valid_url
-    )
-except ImportError:
-    from models import (
-        APIDiscoveryResult, DiscoverySummary, EndpointMetadata, EndpointParameters,
-        AuthenticationMechanism, APIStructure, RiskLevel, AuthenticationType,
-        DiscoveryMethod, DiscoveryConfig
-    )
-    from utils import (
-        normalize_url, extract_path_parameters, rate_limit_delay, 
-        calculate_success_rate, is_valid_url
-    )
+# Import models and utils
+from models import (
+    APIDiscoveryResult, DiscoverySummary, EndpointMetadata, EndpointParameters,
+    AuthenticationMechanism, APIStructure, RiskLevel, AuthenticationType,
+    DiscoveryMethod, DiscoveryConfig
+)
+from utils import (
+    normalize_url, extract_path_parameters, rate_limit_delay, 
+    calculate_success_rate, is_valid_url
+)
 
 
 class VAmPIDiscoveryEngine:
@@ -269,7 +258,7 @@ class VAmPIDiscoveryEngine:
             response_time = time.time() - start_time
             
             # Extract path from URL
-            path = urlparse(url).path
+            path = urlparse(str(url)).path
             
             # Detect authentication
             auth_type, auth_required = self._detect_authentication_type(response, path)
