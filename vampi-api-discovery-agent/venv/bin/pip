@@ -1,4 +1,4 @@
-#!/Users/ashish/vampi-api-discovery-agent/venv/bin/python3.10
+#!/Users/ashish/Documents/GitHub/Talentica-Assignment-2/vampi-api-discovery-agent/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

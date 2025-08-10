@@ -117,29 +117,75 @@ python src/main.py --output-dir ./results
 
 ## VAmPI Setup
 
-Before running the discovery agent, ensure VAmPI is running:
+Before running the discovery agent, ensure VAmPI is running. We provide automated setup scripts for convenience:
 
-1. **Install VAmPI**
+### Automated Setup (Recommended)
+
+**On macOS/Linux:**
+```bash
+./setup-vampi.sh
+```
+
+**On Windows:**
+```cmd
+setup-vampi.bat
+```
+
+### Manual Setup
+
+1. **Clone VAmPI repository**
    ```bash
-   git clone https://github.com/erev0s/VAmPI.git
-   cd VAmPI
+   git clone https://github.com/erev0s/VAmPI.git vampi-local
+   cd vampi-local
+   ```
+
+2. **Install dependencies**
+   ```bash
    npm install
    ```
 
-2. **Start MongoDB**
+3. **Create environment configuration**
+   ```bash
+   cat > .env <<'ENV'
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/vampi
+   JWT_SECRET=supersecret
+   ENV
+   ```
+
+4. **Start MongoDB**
    ```bash
    mongod --dbpath /path/to/data/db
    ```
 
-3. **Start VAmPI**
+5. **Start VAmPI**
    ```bash
    npm start
    ```
 
-4. **Verify VAmPI is running**
-   ```bash
-   curl http://localhost:5000/health
-   ```
+### Validation
+
+After setting up VAmPI, validate that it's running correctly:
+
+```bash
+# Basic validation
+python src/validate_vampi.py
+
+# Custom URL validation
+python src/validate_vampi.py --url http://localhost:5000
+
+# Verbose validation
+python src/validate_vampi.py --verbose
+
+# Custom timeout
+python src/validate_vampi.py --timeout 15
+```
+
+The validation script checks:
+- Health endpoint accessibility
+- Root endpoint accessibility  
+- Common API endpoints
+- Overall service status
 
 ## Output
 
