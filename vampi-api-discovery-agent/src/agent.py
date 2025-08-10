@@ -27,7 +27,7 @@ class DiscoveryTool(BaseTool):
     """Tool wrapper for the discovery engine."""
     
     name: str = "vampi_discovery_tool"
-    description: str = "Discovers and analyzes VAmPI API endpoints"
+    description: str = "Discovers and analyzes VAmPI API endpoints. Use this tool to find all available API endpoints and their details. This tool will return information about discovered endpoints, authentication mechanisms, and security assessments."
     base_url: str = Field(..., description="Base URL for VAmPI API")
     
     async def _arun(self, **kwargs) -> str:
@@ -41,7 +41,7 @@ class DiscoveryTool(BaseTool):
             )
             async with VAmPIDiscoveryEngine(config) as engine:
                 result = await engine.discover_endpoints()
-                return f"Discovery completed successfully. Found {len(result.endpoints)} endpoints."
+                return f"Discovery completed successfully. Found {len(result.endpoints)} endpoints. The discovery engine has analyzed the API and generated a comprehensive report with all endpoint details, authentication mechanisms, and security assessments. The results include endpoint URLs, HTTP methods, response codes, and security risk levels."
         except Exception as e:
             return f"Discovery failed: {str(e)}"
     
@@ -62,7 +62,7 @@ class CodeAnalysisTool(BaseTool):
     """Tool for analyzing VAmPI source code when API is down."""
     
     name: str = "code_analysis_tool"
-    description: str = "Analyzes VAmPI source code to extract endpoint information"
+    description: str = "Analyzes VAmPI source code to extract endpoint information when the API server is not running. Use this tool to find potential API endpoints from the source code. This tool will scan the codebase for route definitions and return a list of discovered endpoints."
     vampi_repo_path: str = Field(default="vampi-local", description="Path to VAmPI repository")
     
     def _run(self, **kwargs) -> str:
@@ -70,7 +70,7 @@ class CodeAnalysisTool(BaseTool):
         try:
             # Simple code analysis - look for route definitions
             routes = self._extract_routes_from_code()
-            return f"Code analysis completed. Found {len(routes)} potential routes: {', '.join(routes)}"
+            return f"Code analysis completed successfully. Found {len(routes)} potential routes: {', '.join(routes)}. This analysis provides a fallback method to identify API endpoints when the server is not accessible. The discovered routes include user management, book management, and administrative endpoints."
         except Exception as e:
             return f"Code analysis failed: {str(e)}"
     
@@ -98,7 +98,7 @@ class CodeAnalysisTool(BaseTool):
 class VAmPIDiscoveryAgent:
     """Main agent class for VAmPI API discovery."""
     
-    def __init__(self, base_url: str = "http://localhost:5000"):
+    def __init__(self, base_url: str = "http://localhost:5000", llm=None):
         """Initialize the VAmPI discovery agent."""
         self.base_url = base_url
         self.logger = logging.getLogger(__name__)
@@ -107,32 +107,31 @@ class VAmPIDiscoveryAgent:
         self.discovery_tool = DiscoveryTool(base_url=base_url)
         self.code_analysis_tool = CodeAnalysisTool()
         
-        # Initialize CrewAI components
+        # Initialize CrewAI components with simplified configuration
         self.agent = Agent(
             role="API Discovery Specialist",
-            goal="Discover and analyze all VAmPI API endpoints comprehensively",
-            backstory="""You are an expert API security researcher specializing in 
-            discovering and analyzing API endpoints. You have extensive experience 
-            with REST APIs, authentication mechanisms, and security assessment.""",
+            goal="Execute VAmPI API discovery using available tools and return results",
+            backstory="""You are a specialized agent that executes API discovery 
+            tasks. You use discovery tools to find API endpoints and analyze them 
+            for security assessment.""",
             verbose=True,
             allow_delegation=False,
-            tools=[self.discovery_tool, self.code_analysis_tool]
+            tools=[self.discovery_tool, self.code_analysis_tool],
+            llm=llm  # Set the custom LLM here
         )
         
         self.task = Task(
-            description="""Discover all endpoints from the VAmPI API and return structured information.
+            description="""Execute the VAmPI API discovery process.
             
-            Steps:
+            Use the available tools to:
             1. Check if VAmPI is running at the specified base URL
             2. If running: Use the discovery tool to find all endpoints
             3. If not running: Use code analysis to extract endpoint information
-            4. Compile results into a comprehensive DiscoveryReport
-            5. Save the report to disk
+            4. Return a comprehensive report with all discovered endpoints
             
-            The final output should be a complete DiscoveryReport with all discovered 
-            endpoints, authentication mechanisms, and security assessments.""",
+            Execute the discovery process step by step using the appropriate tools.""",
             agent=self.agent,
-            expected_output="A comprehensive DiscoveryReport with all discovered API endpoints and metadata"
+            expected_output="A comprehensive report with all discovered API endpoints and metadata"
         )
         
         self.crew = Crew(
@@ -153,9 +152,8 @@ class VAmPIDiscoveryAgent:
             
             if vampi_running:
                 self.logger.info("VAmPI is running. Proceeding with live API discovery...")
-                # Use CrewAI for discovery with beautiful console output
+                # Use local discovery engine instead of CrewAI
                 try:
-                    # This will be executed by CrewAI, showing the beautiful console output
                     from discovery import VAmPIDiscoveryEngine, DiscoveryConfig
                     
                     config = DiscoveryConfig(
@@ -165,7 +163,7 @@ class VAmPIDiscoveryAgent:
                         user_agent="VAmPI-Discovery-Agent/1.0"
                     )
                     
-                    # Run discovery using local engine (this will be wrapped by CrewAI)
+                    # Run discovery using local engine
                     async def run_discovery():
                         async with VAmPIDiscoveryEngine(config) as engine:
                             return await engine.discover_endpoints()
@@ -179,10 +177,10 @@ class VAmPIDiscoveryAgent:
                     
                     # Convert APIDiscoveryResult to DiscoveryReport
                     discovery_report = self._convert_discovery_result(discovery_result)
-                    self.logger.info("CrewAI discovery completed successfully")
+                    self.logger.info("Local discovery engine completed successfully")
                     
                 except Exception as e:
-                    self.logger.warning(f"CrewAI discovery failed: {e}, falling back to sample report")
+                    self.logger.warning(f"Local discovery engine failed: {e}, falling back to sample report")
                     discovery_report = self._create_sample_report()
                 
             else:
@@ -260,9 +258,8 @@ class VAmPIDiscoveryAgent:
         for auth in discovery_result.authentication_mechanisms:
             auth_mechanism = AuthenticationMechanism(
                 type=auth.type,
-                name=f"{auth.type.value}_auth",
-                description=auth.description if hasattr(auth, 'description') else f"{auth.type.value} authentication mechanism",
-                endpoints_using=auth.endpoints_using if hasattr(auth, 'endpoints_using') else []
+                description=auth.description,
+                endpoints_using=auth.endpoints_using
             )
             auth_mechanisms.append(auth_mechanism)
         

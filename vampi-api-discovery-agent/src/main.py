@@ -62,21 +62,58 @@ def create_crew_with_agent(base_url: str):
     """Create CrewAI crew with the APIDiscoveryAgent."""
     try:
         # Initialize the VAmPI discovery agent
-        agent = VAmPIDiscoveryAgent(base_url=base_url)
+        print("🤖 Initializing VAmPI Discovery Agent...")
         
-        # Create crew with the agent
+        # Configure LLM for CrewAI - using Google AI LLM directly
+        print("🔧 Configuring LLM for CrewAI...")
+        from crewai import Agent, Task, Crew
+        from langchain_google_genai import ChatGoogleGenerativeAI
+        
+        # Get Google API key
+        api_key = os.getenv('GOOGLE_API_KEY')
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY not found in environment variables")
+        
+        print(f"🔑 Google API key found: {api_key[:10]}...")
+        
+        # Create Google AI LLM with correct model name
+        print("🚀 Creating Google AI LLM...")
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash-exp",
+            google_api_key=api_key,
+            temperature=0.1,
+            verbose=True
+        )
+        
+        # Test the LLM to ensure it works
+        print("🧪 Testing Google AI LLM...")
+        test_response = llm.invoke("Hello, please respond with 'Google AI is working'")
+        print(f"✅ Google AI LLM test successful: {test_response}")
+        
+        # Now create the agent with the LLM
+        agent = VAmPIDiscoveryAgent(base_url=base_url, llm=llm)
+        print("✅ VAmPI Discovery Agent initialized successfully")
+        
+        # Create crew with the agent and LLM
+        print("👥 Creating CrewAI crew...")
+        # Create a new crew with our LLM
         crew = Crew(
             agents=[agent.agent],
             tasks=[agent.task],
             verbose=os.getenv('CREWAI_VERBOSE', 'true').lower() == 'true',
-            memory=False
+            memory=False,
+            llm=llm  # Pass the LLM here
         )
         
-        print("✅ CrewAI crew initialized successfully")
+        print("✅ CrewAI crew initialized successfully with Google AI LLM")
         return crew, agent
         
     except Exception as e:
         print(f"❌ Failed to initialize CrewAI crew: {e}")
+        print(f"🔍 Error details: {type(e).__name__}: {str(e)}")
+        import traceback
+        print(f"📋 Full traceback:")
+        traceback.print_exc()
         raise
 
 
@@ -190,6 +227,7 @@ def main():
         # Run discovery using CrewAI for beautiful console output
         print("\n🔍 Running discovery using CrewAI...")
         try:
+            print("🚀 Starting CrewAI execution...")
             result = crew.kickoff()
             print("✅ CrewAI execution completed")
             
@@ -199,7 +237,12 @@ def main():
                 print("⚠️  CrewAI result validation failed, using agent directly...")
                 discovery_report = agent.run_discovery()
         except Exception as e:
-            print(f"⚠️  CrewAI execution failed: {e}, using agent directly...")
+            print(f"⚠️  CrewAI execution failed: {e}")
+            print(f"🔍 Error details: {type(e).__name__}: {str(e)}")
+            import traceback
+            print(f"📋 Full traceback:")
+            traceback.print_exc()
+            print("🔄 Falling back to direct agent execution...")
             discovery_report = agent.run_discovery()
         
         print("✅ Discovery completed successfully")

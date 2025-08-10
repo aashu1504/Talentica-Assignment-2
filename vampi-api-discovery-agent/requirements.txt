@@ -6,4 +6,4 @@ python-dotenv
 pydantic
 rich
 pytest
-google-generativeai 
+langchain-google-genai 
