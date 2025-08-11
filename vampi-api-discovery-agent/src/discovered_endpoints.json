@@ -3,21 +3,21 @@
     "total_endpoints": 10,
     "authenticated_endpoints": 3,
     "public_endpoints": 7,
-    "high_risk_endpoints": 0,
+    "high_risk_endpoints": 3,
     "medium_risk_endpoints": 0,
-    "low_risk_endpoints": 0,
+    "low_risk_endpoints": 2,
     "authentication_types": [],
-    "discovery_coverage": 0.9,
+    "discovery_coverage": 100.0,
     "parameter_coverage": 0.0,
-    "discovery_start_time": "2025-08-10T18:11:33.784205",
+    "discovery_start_time": "2025-08-11T14:10:35.399585",
     "discovery_end_time": null,
-    "discovery_duration": null,
+    "discovery_duration": 50.47006702423096,
     "total_parameters": 0,
     "unique_parameters": 0
   },
   "endpoints": [
     {
-      "id": "users_v1_get",
+      "id": "EP000",
       "path": "/users/v1",
       "methods": [
         "GET",
@@ -48,12 +48,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 200,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "users_v1_register_post",
+      "id": "EP001",
       "path": "/users/v1/register",
       "methods": [
         "POST",
@@ -86,12 +86,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 400,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "users_v1_login_post",
+      "id": "EP002",
       "path": "/users/v1/login",
       "methods": [
         "POST",
@@ -124,12 +124,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 400,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "users_v1_{username}_get",
+      "id": "EP003",
       "path": "/users/v1/{username}",
       "methods": [
         "GET",
@@ -160,12 +160,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 200,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "users_v1_{username}_email_put",
+      "id": "EP004",
       "path": "/users/v1/{username}/email",
       "methods": [
         "PUT",
@@ -191,12 +191,12 @@
       ],
       "response_types": [],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 401,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "users_v1_{username}_password_put",
+      "id": "EP005",
       "path": "/users/v1/{username}/password",
       "methods": [
         "PUT",
@@ -222,12 +222,12 @@
       ],
       "response_types": [],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 401,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "books_v1_get",
+      "id": "EP006",
       "path": "/books/v1",
       "methods": [
         "GET",
@@ -257,12 +257,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 200,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "books_v1_{book_title}_get",
+      "id": "EP007",
       "path": "/books/v1/{book_title}",
       "methods": [
         "GET"
@@ -284,12 +284,12 @@
       ],
       "response_types": [],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 401,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "_get",
+      "id": "EP008",
       "path": "/",
       "methods": [
         "GET",
@@ -318,12 +318,12 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 200,
       "response_time": null,
       "error_messages": []
     },
     {
-      "id": "createdb_get",
+      "id": "EP009",
       "path": "/createdb",
       "methods": [
         "GET",
@@ -350,7 +350,7 @@
         "application/json"
       ],
       "discovered_via": "endpoint_scanning",
-      "status_code": null,
+      "status_code": 200,
       "response_time": null,
       "error_messages": []
     }
@@ -358,9 +358,9 @@
   "authentication_mechanisms": [],
   "api_structure": {
     "base_url": "http://localhost:5000",
-    "version": "1.0",
+    "version": null,
     "title": "VAmPI API",
-    "description": "Vulnerable API for testing and learning",
+    "description": "VAmPI API discovered through endpoint scanning",
     "base_path": null,
     "schemes": [],
     "host": null,
@@ -369,13 +369,13 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-10T18:11:33.784232",
-    "discovery_method": "Live API Discovery"
+    "discovered_at": "2025-08-11T14:10:35.399386",
+    "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250810_181133",
-  "generated_at": "2025-08-10T18:11:33.784272",
+  "report_id": "vampi_discovery_20250811_141048",
+  "generated_at": "2025-08-11T14:10:48.307902",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
-  "notes": null
+  "notes": "Technical Analysis: Generated from discovery data"
 }

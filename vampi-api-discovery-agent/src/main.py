@@ -3,10 +3,10 @@
 VAmPI API Discovery Agent - Main Execution Script
 
 This script implements a hybrid approach where:
-1. CrewAI orchestrates the workflow and defines agents
-2. Agents use tools to perform their work
-3. Gemini 2.5 Flash Lite handles all reasoning inside the tools
-4. No LLM calls happen via CrewAI's own pipeline
+1. CrewAI orchestrates the workflow and defines agents (NO LLM)
+2. Each agent uses LangChain internally for intelligent tool execution
+3. Gemini 2.5 Flash Lite handles all reasoning inside LangChain tools
+4. CrewAI just coordinates the flow without any LLM calls
 """
 
 import os
@@ -31,7 +31,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Import required modules
 from crewai import Agent, Task, Crew, Process
-from crewai.llms.base_llm import BaseLLM
 from models import DiscoveryReport
 from utils import check_vampi
 from tools import (
@@ -40,25 +39,7 @@ from tools import (
 )
 
 
-class DummyLLM(BaseLLM):
-    """Dummy LLM that doesn't make any actual calls - used to satisfy CrewAI requirements."""
-    
-    def __init__(self):
-        """Initialize the dummy LLM."""
-        super().__init__(model="dummy")
-    
-    def call(self, prompt: str, **kwargs) -> str:
-        """Return a dummy response without making any LLM calls."""
-        return "Dummy response - no LLM calls made"
-    
-    def acall(self, prompt: str, **kwargs) -> str:
-        """Async version of call."""
-        return "Dummy response - no LLM calls made"
-    
-    @property
-    def llm_type(self) -> str:
-        """Return the LLM type."""
-        return "dummy"
+
 
 
 def validate_environment():
@@ -84,7 +65,7 @@ def validate_environment():
 def create_agents(api_key: str, base_url: str):
     """Create CrewAI agents with their respective tools."""
     
-    # API Discovery Agent
+    # API Discovery Agent - This is the key agent that needs to work
     api_discovery_tool = APIDiscoveryTool(
         base_url=base_url,
         api_key=api_key
@@ -96,11 +77,20 @@ def create_agents(api_key: str, base_url: str):
         backstory="""You are an expert API security researcher specializing in discovering and analyzing 
         web API endpoints. You have extensive experience with REST APIs, authentication mechanisms, 
         and security risk assessment. Your expertise lies in using advanced tools to systematically 
-        scan APIs and identify potential security vulnerabilities.""",
+        scan APIs and identify potential security vulnerabilities. 
+        
+        IMPORTANT: You MUST execute the api_discovery_tool to complete your task. 
+        Do not just describe what you would do - actually run the tool.
+        
+        Step 1: Execute the api_discovery_tool to scan the VAmPI API
+        Step 2: Wait for the tool to complete and return results
+        Step 3: Report the discovery findings""",
         tools=[api_discovery_tool],
-        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        llm=None,  # NO LLM - CrewAI just orchestrates
         verbose=True,
-        allow_delegation=False
+        allow_delegation=True,
+        max_iter=3,  # Allow multiple iterations to ensure tool execution
+        max_rpm=10   # Allow reasonable rate of tool calls
     )
     
     # QA Testing Agent
@@ -108,104 +98,126 @@ def create_agents(api_key: str, base_url: str):
     
     qa_testing_agent = Agent(
         role="QA Testing Engineer",
-        goal="Validate discovered endpoints and perform comprehensive QA testing with AI-powered test case generation",
-        backstory="""You are a senior QA engineer with deep expertise in API testing and security validation. 
-        You excel at creating comprehensive test plans, validating endpoint functionality, and identifying 
-        potential issues. You use AI tools to enhance your testing approach and ensure thorough coverage.""",
+        goal="Validate discovered endpoints and perform comprehensive QA testing using AI-powered analysis",
+        backstory="""You are a senior QA engineer specializing in API testing and security validation. 
+        You have extensive experience in testing web APIs, identifying vulnerabilities, and ensuring 
+        quality standards. Your expertise includes automated testing, security testing, and risk assessment.
+        
+        IMPORTANT: You MUST execute the qa_testing_tool to complete your task.
+        Do not just describe what you would do - actually run the tool.
+        
+        Step 1: Load discovery results from previous step
+        Step 2: Execute qa_testing_tool to validate endpoints
+        Step 3: Generate comprehensive QA report""",
         tools=[qa_testing_tool],
-        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        llm=None,  # NO LLM - CrewAI just orchestrates
         verbose=True,
-        allow_delegation=False
+        allow_delegation=True,
+        max_iter=3
     )
     
-    # Technical Writer & Analyst Agent
+    # Technical Writer Agent
     technical_writer_tool = TechnicalWriterTool(api_key=api_key)
-    file_read_tool = FileReadTool(file_path="temp_discovery_results.json")
-    # FileWriteTool will be used during execution when content is available
-    file_write_tool = FileWriteTool(file_path="final_report.md", content="")
     
     technical_writer_agent = Agent(
         role="Technical Writer & Security Analyst",
         goal="Generate comprehensive technical reports and security analysis from discovery and QA results",
-        backstory="""You are a senior technical writer and security analyst with expertise in creating 
-        comprehensive security reports and technical documentation. You excel at analyzing complex data, 
-        identifying security patterns, and presenting findings in clear, actionable formats. You use AI 
-        tools to enhance your analysis and report generation capabilities.""",
-        tools=[technical_writer_tool, file_read_tool, file_write_tool],
-        llm=DummyLLM(),  # Use dummy LLM to prevent CrewAI from trying to use external LLM
+        backstory="""You are a senior technical writer and security analyst with expertise in 
+        creating comprehensive reports, security assessments, and technical documentation. 
+        You have extensive experience in analyzing security data, identifying patterns, 
+        and presenting findings in a clear, actionable format.
+        
+        IMPORTANT: You MUST execute the technical_writer_tool to complete your task.
+        Do not just describe what you would do - actually run the tool.
+        
+        Step 1: Load discovery and QA results
+        Step 2: Execute technical_writer_tool to generate comprehensive report
+        Step 3: Deliver final technical report with security analysis""",
+        tools=[technical_writer_tool],
+        llm=None,  # NO LLM - CrewAI just orchestrates
         verbose=True,
-        allow_delegation=False
+        allow_delegation=True,
+        max_iter=3
     )
     
     return api_discovery_agent, qa_testing_agent, technical_writer_agent
 
 
 def create_tasks(api_discovery_agent, qa_testing_agent, technical_writer_agent):
-    """Create CrewAI tasks for the workflow."""
-    
-    # Task 1: API Discovery
-    discovery_task = Task(
-        description="""Discover and analyze all VAmPI API endpoints. Use the API discovery tool to:
-        1. Scan the VAmPI API at the specified base URL
-        2. Identify all available endpoints and their methods
-        3. Analyze authentication requirements and security risks
-        4. Generate comprehensive endpoint metadata
-        5. Save results for further processing
+    """Create and configure CrewAI tasks."""
+    # Task for API Discovery Specialist
+    discover_api_task = Task(
+        description="""CRITICAL: You MUST execute the api_discovery_tool "discovery.py" to complete this task.
         
-        Focus on thorough coverage and accurate endpoint identification.""",
+        Discover all API endpoints of the VAmPI application at {api_base_url}.
+        Analyze their functionality, authentication requirements, and potential security risks.
+        Generate a detailed discovery report including endpoint metadata, identified vulnerabilities,
+        and a summary of the API structure.
+        
+        REQUIRED ACTIONS:
+        1. Execute the api_discovery_tool with the base_url parameter
+        2. Wait for the tool to complete the API scanning
+        3. Report the number of endpoints discovered and any security findings
+        
+        The output should be a JSON file named 'temp_discovery_results.json'.
+        
+        DO NOT just describe what you would do - ACTUALLY RUN THE TOOL.""",
         agent=api_discovery_agent,
-        expected_output="A comprehensive report of discovered API endpoints including total count, endpoint details, authentication requirements, security risk assessments, and Gemini AI analysis.",
-
-        async_execution=False
+        expected_output="A JSON file named 'temp_discovery_results.json' containing the API discovery report, plus a summary of the discovery results."
     )
     
-    # Task 2: QA Testing
-    qa_testing_task = Task(
-        description="""Validate discovered endpoints and perform QA testing. Use the QA testing tool to:
-        1. Load the discovery results from the previous task
-        2. Validate endpoint data completeness and accuracy
-        3. Generate comprehensive test plans using AI
-        4. Perform basic endpoint validation
-        5. Identify high-risk endpoints for further testing
-        6. Save QA results for report generation
+    # Task for QA Testing Engineer
+    qa_api_task = Task(
+        description="""CRITICAL: You MUST execute the qa_testing_tool to complete this task.
         
-        Ensure thorough validation and comprehensive test coverage.""",
+        Based on the 'temp_discovery_results.json' file, validate the discovered API endpoints.
+        Perform comprehensive QA testing to ensure data integrity, proper functionality, and identify any
+        anomalies or potential security flaws. Generate a QA report summarizing test results,
+        identified issues, and recommendations for remediation.
+        
+        REQUIRED ACTIONS:
+        1. Execute the qa_testing_tool to load and analyze discovery results
+        2. Wait for the tool to complete the QA testing
+        3. Report the QA testing findings and any identified issues
+        
+        DO NOT just describe what you would do - ACTUALLY RUN THE TOOL.""",
         agent=qa_testing_agent,
-        expected_output="A comprehensive QA testing report including validation results, AI-generated test plans, risk assessment validation, testing recommendations, and quality metrics.",
-
-        async_execution=False
+        expected_output="A JSON file named 'temp_qa_results.json' containing the QA testing report, plus a summary of the QA testing results."
     )
     
-    # Task 3: Technical Report Generation
-    report_generation_task = Task(
-        description="""Generate a comprehensive technical report and security analysis. Use the technical writer tool to:
-        1. Load discovery and QA results from previous tasks
-        2. Generate comprehensive security analysis using AI
-        3. Create a structured technical report
-        4. Include executive summary, risk assessments, and recommendations
-        5. Save the final report in the required format
-        6. Clean up temporary files
+    # Task for Technical Writer & Security Analyst
+    report_task = Task(
+        description="""CRITICAL: You MUST execute the technical_writer_tool to complete this task.
         
-        Create a professional, actionable report suitable for security teams and stakeholders.""",
+        Based on 'temp_discovery_results.json' and 'temp_qa_results.json',
+        generate a comprehensive technical report and security analysis.
+        The report should include an executive summary, detailed findings, risk assessments,
+        and actionable recommendations for improving API security.
+        
+        REQUIRED ACTIONS:
+        1. Execute the technical_writer_tool to generate the security report
+        2. Wait for the tool to complete the report generation
+        3. Report the technical writing findings and any recommendations
+        
+        The final report should be saved as a Markdown file named 'api_security_report.md'.
+        
+        DO NOT just describe what you would do - ACTUALLY RUN THE TOOL.""",
         agent=technical_writer_agent,
-        expected_output="A comprehensive technical report including executive summary, detailed endpoint analysis, security risk assessment, authentication mechanism analysis, testing recommendations, compliance considerations, and final report saved to discovered_endpoints.json.",
-
-        async_execution=False
+        expected_output="A Markdown file named 'api_security_report.md' containing the comprehensive security report, plus a summary of the technical writing results."
     )
     
-    return discovery_task, qa_testing_task, report_generation_task
+    return discover_api_task, qa_api_task, report_task
 
 
 def create_crew(agents, tasks):
-    """Create the CrewAI crew with the defined agents and tasks."""
-    
+    """Create CrewAI crew for orchestration."""
     crew = Crew(
         agents=agents,
         tasks=tasks,
         verbose=True,
         memory=False,  # Disable memory to avoid LLM usage
         process=Process.sequential,  # Execute tasks sequentially
-        llm=DummyLLM()  # Use dummy LLM for crew to prevent external LLM usage
+        llm=None  # NO LLM - CrewAI just orchestrates
     )
     
     return crew
@@ -291,7 +303,7 @@ def main():
         
         # Create tasks
         print("\n📋 Creating CrewAI tasks...")
-        discovery_task, qa_testing_task, report_generation_task = create_tasks(
+        discover_api_task, qa_api_task, report_task = create_tasks(
             api_discovery_agent, qa_testing_agent, technical_writer_agent
         )
         print("✅ Tasks created successfully")
@@ -300,7 +312,7 @@ def main():
         print("\n🚀 Creating CrewAI crew...")
         crew = create_crew(
             [api_discovery_agent, qa_testing_agent, technical_writer_agent],
-            [discovery_task, qa_testing_task, report_generation_task]
+            [discover_api_task, qa_api_task, report_task]
         )
         print("✅ Crew created successfully")
         
