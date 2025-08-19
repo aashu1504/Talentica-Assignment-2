@@ -8,9 +8,12 @@ VAmPI API endpoints with comprehensive metadata extraction.
 import asyncio
 import logging
 import time
+import json
+import yaml
 from datetime import datetime
 from typing import List, Dict, Optional, Set, Tuple, Any
 from urllib.parse import urljoin, urlparse
+from pathlib import Path
 import re
 
 import httpx
@@ -503,8 +506,18 @@ class VAmPIDiscoveryEngine:
         self.discovered_endpoints.clear()
         self.auth_mechanisms.clear()
         
+        # Start with documentation-based discovery
+        self.logger.info("🔍 Starting documentation-based discovery...")
+        doc_endpoints = await self._parse_openapi_documentation()
+        postman_endpoints = await self._parse_postman_collection()
+        endpoints = doc_endpoints + postman_endpoints
+        
+        self.logger.info(f"📚 Documentation parsing found {len(endpoints)} endpoints")
+        
         # Discover endpoints using VAmPI-specific endpoint testing
-        endpoints = await self._test_vampi_specific_endpoints()
+        self.logger.info("🎯 Starting active endpoint scanning...")
+        active_endpoints = await self._test_vampi_specific_endpoints()
+        endpoints.extend(active_endpoints)
         
         # Also try common paths as fallback
         common_endpoints = await self._scan_common_paths()
@@ -513,6 +526,8 @@ class VAmPIDiscoveryEngine:
         # Discover endpoints using pattern-based scanning as additional fallback
         pattern_endpoints = await self._pattern_based_discovery()
         endpoints.extend(pattern_endpoints)
+        
+        self.logger.info(f"🚀 Active scanning found {len(active_endpoints + common_endpoints + pattern_endpoints)} additional endpoints")
         
         # Remove duplicates and merge methods
         unique_endpoints = self._merge_endpoint_methods(endpoints)
@@ -837,7 +852,7 @@ class VAmPIDiscoveryEngine:
             "total_versions": len(version_patterns)
         }
     
-    def _group_endpoints_by_functionality(self, endpoints: List[EndpointMetadata]) -> Dict[str, List[EndpointMetadata]]:
+    def _group_endpoints_by_functionality(self, endpoints: List[EndpointMetadata]) -> Dict[str, List[str]]:
         """
         Group endpoints by functionality for better organization.
         
@@ -845,7 +860,7 @@ class VAmPIDiscoveryEngine:
             endpoints: List of discovered endpoints
             
         Returns:
-            Dictionary with grouped endpoints
+            Dictionary with grouped endpoint paths (strings)
         """
         endpoint_groups = {}
         
@@ -856,7 +871,7 @@ class VAmPIDiscoveryEngine:
                 main_resource = path_parts[0]
                 if main_resource not in endpoint_groups:
                     endpoint_groups[main_resource] = []
-                endpoint_groups[main_resource].append(endpoint)
+                endpoint_groups[main_resource].append(endpoint.path)
         
         return endpoint_groups
     
@@ -1145,6 +1160,369 @@ class VAmPIDiscoveryEngine:
         })
         
         return compliance
+    
+    async def _parse_openapi_documentation(self, doc_path: str = None) -> List[EndpointMetadata]:
+        """
+        Parse OpenAPI/Swagger documentation to extract endpoint information.
+        
+        Args:
+            doc_path: Path to OpenAPI specification file
+            
+        Returns:
+            List of endpoints discovered from documentation
+        """
+        endpoints = []
+        
+        try:
+            # Default to VAmPI OpenAPI spec if no path provided
+            if doc_path is None:
+                doc_path = Path(__file__).parent.parent / "vampi-local" / "openapi_specs" / "openapi3.yml"
+            
+            if not Path(doc_path).exists():
+                self.logger.warning(f"OpenAPI spec not found at {doc_path}")
+                return endpoints
+            
+            # Parse YAML OpenAPI specification
+            with open(doc_path, 'r') as f:
+                spec = yaml.safe_load(f)
+            
+            if 'paths' not in spec:
+                self.logger.warning("No paths found in OpenAPI specification")
+                return endpoints
+            
+            self.logger.info(f"Parsing OpenAPI specification with {len(spec['paths'])} paths")
+            
+            # Extract endpoints from paths
+            for path, path_info in spec['paths'].items():
+                for method, method_info in path_info.items():
+                    if method.upper() not in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS']:
+                        continue
+                    
+                    # Extract endpoint metadata from OpenAPI spec
+                    endpoint_id = f"DOC{len(endpoints):03d}"
+                    
+                    # Extract parameters
+                    parameters = self._extract_openapi_parameters(method_info.get('parameters', []))
+                    
+                    # Extract authentication requirements
+                    auth_required = 'security' in method_info or 'security' in spec
+                    auth_type = self._extract_openapi_auth_type(method_info, spec)
+                    
+                    # Assess risk based on path and method
+                    risk_level, risk_factors = self._assess_risk_level(path, method.upper(), auth_required)
+                    
+                    # Extract response types
+                    response_types = []
+                    if 'responses' in method_info:
+                        for response_code, response_info in method_info['responses'].items():
+                            if 'content' in response_info:
+                                response_types.extend(response_info['content'].keys())
+                    
+                    # Create endpoint metadata
+                    endpoint = EndpointMetadata(
+                        id=endpoint_id,
+                        path=path,
+                        methods=[method.upper()],
+                        description=method_info.get('summary', method_info.get('description', f"{method.upper()} {path}")),
+                        parameters=parameters,
+                        authentication_required=auth_required,
+                        authentication_type=auth_type,
+                        risk_level=risk_level,
+                        risk_factors=risk_factors,
+                        response_types=list(set(response_types)),
+                        discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING,
+                        status_code=None,
+                        response_time=None,
+                        deprecated=method_info.get('deprecated', False)
+                    )
+                    
+                    endpoints.append(endpoint)
+                    self.logger.debug(f"Extracted from docs: {method.upper()} {path}")
+            
+            self.logger.info(f"Successfully parsed {len(endpoints)} endpoints from OpenAPI documentation")
+            return endpoints
+            
+        except Exception as e:
+            self.logger.error(f"Failed to parse OpenAPI documentation: {e}")
+            return endpoints
+    
+    def _extract_openapi_parameters(self, param_list: List[Dict]) -> EndpointParameters:
+        """
+        Extract parameters from OpenAPI parameter definitions.
+        
+        Args:
+            param_list: List of parameter definitions from OpenAPI spec
+            
+        Returns:
+            EndpointParameters object
+        """
+        query_params = []
+        path_params = []
+        body_params = []
+        headers = []
+        param_types = {}
+        
+        for param in param_list:
+            param_name = param.get('name', '')
+            param_in = param.get('in', '')
+            param_type = param.get('schema', {}).get('type', 'string')
+            
+            param_types[param_name] = param_type
+            
+            if param_in == 'query':
+                query_params.append(param_name)
+            elif param_in == 'path':
+                path_params.append(param_name)
+            elif param_in == 'header':
+                headers.append(param_name)
+            elif param_in == 'body' or param_in == 'requestBody':
+                body_params.append(param_name)
+        
+        return EndpointParameters(
+            query_params=query_params,
+            path_params=path_params,
+            body_params=body_params,
+            headers=headers,
+            param_types=param_types
+        )
+    
+    def _extract_openapi_auth_type(self, method_info: Dict, spec: Dict) -> str:
+        """
+        Extract authentication type from OpenAPI specification.
+        
+        Args:
+            method_info: Method information from OpenAPI spec
+            spec: Full OpenAPI specification
+            
+        Returns:
+            Authentication type string
+        """
+        # Check method-level security
+        if 'security' in method_info:
+            security = method_info['security']
+        elif 'security' in spec:
+            security = spec['security']
+        else:
+            return "None"
+        
+        # Extract security scheme type
+        if security and len(security) > 0:
+            security_name = list(security[0].keys())[0] if security[0] else None
+            if security_name and 'components' in spec and 'securitySchemes' in spec['components']:
+                scheme = spec['components']['securitySchemes'].get(security_name, {})
+                scheme_type = scheme.get('type', 'http')
+                # Map OpenAPI auth types to our enum
+                if scheme_type == 'http':
+                    return 'Bearer'
+                elif scheme_type == 'apiKey':
+                    return 'API_Key'
+                elif scheme_type == 'oauth2':
+                    return 'OAuth2'
+                else:
+                    return 'Bearer'
+        
+        return "Bearer"  # Default for VAmPI
+    
+    async def _parse_postman_collection(self, collection_path: str = None) -> List[EndpointMetadata]:
+        """
+        Parse Postman collection to extract endpoint information.
+        
+        Args:
+            collection_path: Path to Postman collection file
+            
+        Returns:
+            List of endpoints discovered from Postman collection
+        """
+        endpoints = []
+        
+        try:
+            # Default to VAmPI Postman collection if no path provided
+            if collection_path is None:
+                collection_path = Path(__file__).parent.parent / "vampi-local" / "openapi_specs" / "VAmPI.postman_collection.json"
+            
+            if not Path(collection_path).exists():
+                self.logger.warning(f"Postman collection not found at {collection_path}")
+                return endpoints
+            
+            # Parse JSON Postman collection
+            with open(collection_path, 'r') as f:
+                collection = json.load(f)
+            
+            self.logger.info(f"Parsing Postman collection: {collection.get('info', {}).get('name', 'Unknown')}")
+            
+            # Extract endpoints from collection items
+            endpoints.extend(self._extract_postman_items(collection.get('item', []), []))
+            
+            self.logger.info(f"Successfully parsed {len(endpoints)} endpoints from Postman collection")
+            return endpoints
+            
+        except Exception as e:
+            self.logger.error(f"Failed to parse Postman collection: {e}")
+            return endpoints
+    
+    def _extract_postman_items(self, items: List[Dict], path_prefix: List[str]) -> List[EndpointMetadata]:
+        """
+        Recursively extract endpoints from Postman collection items.
+        
+        Args:
+            items: List of Postman collection items
+            path_prefix: Current path prefix for nested folders
+            
+        Returns:
+            List of extracted endpoints
+        """
+        endpoints = []
+        
+        for item in items:
+            if 'item' in item:
+                # This is a folder, recurse into it
+                folder_name = item.get('name', 'Unknown')
+                new_prefix = path_prefix + [folder_name]
+                endpoints.extend(self._extract_postman_items(item['item'], new_prefix))
+            elif 'request' in item:
+                # This is an actual request
+                request = item['request']
+                
+                # Extract basic info
+                method = request.get('method', 'GET').upper()
+                url_info = request.get('url', {})
+                
+                if isinstance(url_info, str):
+                    path = url_info
+                else:
+                    path = '/'.join(url_info.get('path', []))
+                    if not path.startswith('/'):
+                        path = '/' + path
+                
+                # Generate endpoint ID
+                endpoint_id = f"PMN{len(endpoints):03d}"
+                
+                # Extract parameters from Postman request
+                parameters = self._extract_postman_parameters(request)
+                
+                # Determine authentication
+                auth_required = 'auth' in request or any('authorization' in str(h).lower() for h in request.get('header', []))
+                auth_type = self._extract_postman_auth_type(request)
+                
+                # Assess risk
+                risk_level, risk_factors = self._assess_risk_level(path, method, auth_required)
+                
+                # Create endpoint metadata
+                endpoint = EndpointMetadata(
+                    id=endpoint_id,
+                    path=path,
+                    methods=[method],
+                    description=item.get('name', f"{method} {path}"),
+                    parameters=parameters,
+                    authentication_required=auth_required,
+                    authentication_type=auth_type,
+                    risk_level=risk_level,
+                    risk_factors=risk_factors,
+                    response_types=['application/json'],  # Default for API collections
+                    discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING,
+                    status_code=None,
+                    response_time=None,
+                    deprecated=False
+                )
+                
+                endpoints.append(endpoint)
+                self.logger.debug(f"Extracted from Postman: {method} {path}")
+        
+        return endpoints
+    
+    def _extract_postman_parameters(self, request: Dict) -> EndpointParameters:
+        """
+        Extract parameters from Postman request.
+        
+        Args:
+            request: Postman request object
+            
+        Returns:
+            EndpointParameters object
+        """
+        query_params = []
+        path_params = []
+        body_params = []
+        headers = []
+        param_types = {}
+        
+        # Extract query parameters
+        url_info = request.get('url', {})
+        if isinstance(url_info, dict) and 'query' in url_info:
+            for query in url_info['query']:
+                param_name = query.get('key', '')
+                query_params.append(param_name)
+                param_types[param_name] = 'string'
+        
+        # Extract path parameters (look for {{variable}} patterns)
+        path_str = str(url_info)
+        path_params = re.findall(r'\{\{(\w+)\}\}', path_str)
+        for param in path_params:
+            param_types[param] = 'string'
+        
+        # Extract headers
+        for header in request.get('header', []):
+            if isinstance(header, dict):
+                header_name = header.get('key', '')
+                headers.append(header_name)
+        
+        # Extract body parameters
+        body = request.get('body', {})
+        if body and 'raw' in body:
+            try:
+                body_data = json.loads(body['raw'])
+                if isinstance(body_data, dict):
+                    body_params = list(body_data.keys())
+                    for param in body_params:
+                        param_types[param] = type(body_data[param]).__name__
+            except:
+                pass
+        
+        return EndpointParameters(
+            query_params=query_params,
+            path_params=path_params,
+            body_params=body_params,
+            headers=headers,
+            param_types=param_types
+        )
+    
+    def _extract_postman_auth_type(self, request: Dict) -> str:
+        """
+        Extract authentication type from Postman request.
+        
+        Args:
+            request: Postman request object
+            
+        Returns:
+            Authentication type string
+        """
+        if 'auth' in request:
+            auth = request['auth']
+            auth_type = auth.get('type', 'bearer').lower()
+            # Map Postman auth types to our enum
+            if auth_type == 'bearer':
+                return 'Bearer'
+            elif auth_type == 'basic':
+                return 'Basic'
+            elif auth_type == 'apikey':
+                return 'API_Key'
+            elif auth_type == 'oauth2':
+                return 'OAuth2'
+            else:
+                return 'Bearer'
+        
+        # Check headers for auth indicators
+        for header in request.get('header', []):
+            if isinstance(header, dict):
+                key = header.get('key', '').lower()
+                if key == 'authorization':
+                    value = header.get('value', '').lower()
+                    if 'bearer' in value:
+                        return 'Bearer'
+                    elif 'basic' in value:
+                        return 'Basic'
+        
+        return 'None'
     
     def _detect_auth_mechanisms(self, endpoints: List[EndpointMetadata]) -> List[AuthenticationMechanism]:
         """
