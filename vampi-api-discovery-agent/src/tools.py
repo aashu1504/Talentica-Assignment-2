@@ -93,8 +93,9 @@ class APIDiscoveryTool(BaseTool):
                         "total_endpoints": discovery_result.discovery_summary.total_endpoints
                     }
                     
-                    # Save to temporary file
-                    with open("temp_discovery_results.json", "w") as f:
+                    # Save to temporary file in workspace root
+                    output_file = Path(__file__).parent.parent / "temp_discovery_results.json"
+                    with open(output_file, "w") as f:
                         json.dump(result_data, f, indent=2, default=str)
                     
                     print("✅ Discovery results saved to temp_discovery_results.json")
@@ -110,7 +111,8 @@ class APIDiscoveryTool(BaseTool):
                         "total_endpoints": 0
                     }
                     
-                    with open("temp_discovery_results.json", "w") as f:
+                    output_file = Path(__file__).parent.parent / "temp_discovery_results.json"
+                    with open(output_file, "w") as f:
                         json.dump(result_data, f, indent=2, default=str)
                     
                     print("✅ Discovery results saved to temp_discovery_results.json")
@@ -128,7 +130,7 @@ class APIDiscoveryTool(BaseTool):
     def _save_discovery_results(self, results: Dict[str, Any]):
         """Save discovery results to temporary file."""
         try:
-            output_file = "temp_discovery_results.json"
+            output_file = Path(__file__).parent.parent / "temp_discovery_results.json"
             with open(output_file, 'w') as f:
                 json.dump(results, f, indent=2, default=str)
             logger.info(f"✅ Discovery results saved to {output_file}")
@@ -149,12 +151,13 @@ class QATestingTool(BaseTool):
         try:
             print("🧪 Starting QA testing of discovered endpoints...")
             
-            # Check if discovery results exist
-            if not os.path.exists("temp_discovery_results.json"):
+            # Check if discovery results exist in workspace root
+            discovery_file = Path(__file__).parent.parent / "temp_discovery_results.json"
+            if not os.path.exists(discovery_file):
                 return "❌ No discovery results found. Please run the discovery tool first."
             
             # Load discovery results
-            with open("temp_discovery_results.json", "r") as f:
+            with open(discovery_file, "r") as f:
                 discovery_data = json.load(f)
             
             # Extract endpoints for testing
@@ -186,7 +189,8 @@ class QATestingTool(BaseTool):
                 "total_endpoints_tested": len(endpoints)
             }
             
-            with open("temp_qa_results.json", "w") as f:
+            output_file = Path(__file__).parent.parent / "temp_qa_results.json"
+            with open(output_file, "w") as f:
                 json.dump(qa_data, f, indent=2, default=str)
             
             print("✅ QA testing completed. Results saved to temp_qa_results.json")
@@ -294,18 +298,21 @@ class TechnicalWriterTool(BaseTool):
         try:
             print("📝 Starting technical report generation...")
             
-            # Check if required files exist
-            if not os.path.exists("temp_discovery_results.json"):
+            # Check if required files exist in workspace root
+            discovery_file = Path(__file__).parent.parent / "temp_discovery_results.json"
+            qa_file = Path(__file__).parent.parent / "temp_qa_results.json"
+            
+            if not os.path.exists(discovery_file):
                 return "❌ No discovery results found. Please run the discovery tool first."
             
-            if not os.path.exists("temp_qa_results.json"):
+            if not os.path.exists(qa_file):
                 return "❌ No QA results found. Please run the QA testing tool first."
             
             # Load discovery and QA results
-            with open("temp_discovery_results.json", "r") as f:
+            with open(discovery_file, "r") as f:
                 discovery_data = json.load(f)
             
-            with open("temp_qa_results.json", "r") as f:
+            with open(qa_file, "r") as f:
                 qa_data = json.load(f)
             
             # Create comprehensive discovery report
@@ -317,8 +324,8 @@ class TechnicalWriterTool(BaseTool):
             # Generate markdown report
             self._generate_markdown_report(discovery_report)
             
-            # Cleanup temporary files
-            self._cleanup_temp_files()
+            # Don't cleanup temporary files immediately - let the main script handle it
+            # self._cleanup_temp_files()
             
             print("✅ Technical report generation completed successfully!")
             
@@ -459,15 +466,18 @@ class TechnicalWriterTool(BaseTool):
     def _save_final_report(self, report: DiscoveryReport):
         """Save the final discovery report."""
         try:
+            # Save to workspace root
+            output_file = Path(__file__).parent.parent / "discovered_endpoints.json"
+            
             # Backup existing report if it exists
-            if os.path.exists("discovered_endpoints.json"):
+            if os.path.exists(output_file):
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                backup_file = f"discovered_endpoints.json.bak.{timestamp}"
-                os.rename("discovered_endpoints.json", backup_file)
+                backup_file = Path(__file__).parent.parent / f"discovered_endpoints.json.bak.{timestamp}"
+                os.rename(output_file, backup_file)
                 logger.info(f"Backed up existing report to {backup_file}")
             
             # Save new report
-            report.save_to_file("discovered_endpoints.json")
+            report.save_to_file(str(output_file))
             logger.info("Final discovery report saved successfully")
             
         except Exception as e:
@@ -538,8 +548,9 @@ class TechnicalWriterTool(BaseTool):
             markdown_content += f"7. **Use HTTPS** for all API communications\n"
             markdown_content += f"8. **Implement proper error handling** without information disclosure\n\n"
             
-            # Save markdown report
-            with open("discovery_report.md", "w") as f:
+            # Save markdown report to workspace root
+            output_file = Path(__file__).parent.parent / "discovery_report.md"
+            with open(output_file, "w") as f:
                 f.write(markdown_content)
             
             logger.info("Markdown report generated successfully: discovery_report.md")
@@ -550,7 +561,10 @@ class TechnicalWriterTool(BaseTool):
     
     def _cleanup_temp_files(self):
         """Clean up temporary files."""
-        temp_files = ["temp_discovery_results.json", "temp_qa_results.json"]
+        temp_files = [
+            Path(__file__).parent.parent / "temp_discovery_results.json",
+            Path(__file__).parent.parent / "temp_qa_results.json"
+        ]
         for temp_file in temp_files:
             try:
                 if os.path.exists(temp_file):
