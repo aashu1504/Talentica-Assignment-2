@@ -222,13 +222,34 @@ class VAmPIDiscoveryEngine:
         if "x-api-key" in response.headers:
             headers.append("X-API-Key")
         
-        # Try to extract body parameters from response
+        # Enhanced security headers detection
+        security_headers = self._detect_security_headers(response.headers)
+        headers.extend(security_headers)
+        
+        # Try to extract body parameters from response with type inference
         body_params = []
+        param_types = {}
         try:
             if response.headers.get("content-type", "").startswith("application/json"):
                 data = response.json()
                 if isinstance(data, dict):
                     body_params = list(data.keys())
+                    # Infer parameter types
+                    for key, value in data.items():
+                        if isinstance(value, str):
+                            param_types[key] = "string"
+                        elif isinstance(value, int):
+                            param_types[key] = "integer"
+                        elif isinstance(value, float):
+                            param_types[key] = "float"
+                        elif isinstance(value, bool):
+                            param_types[key] = "boolean"
+                        elif isinstance(value, list):
+                            param_types[key] = "array"
+                        elif isinstance(value, dict):
+                            param_types[key] = "object"
+                        else:
+                            param_types[key] = "unknown"
         except Exception:
             pass
         
@@ -236,8 +257,78 @@ class VAmPIDiscoveryEngine:
             query_params=query_params,
             path_params=path_params,
             body_params=body_params,
-            headers=headers
+            headers=headers,
+            param_types=param_types
         )
+    
+    def _detect_security_headers(self, headers: Dict[str, str]) -> List[str]:
+        """
+        Detect security-related headers in the response.
+        
+        Args:
+            headers: Response headers dictionary
+            
+        Returns:
+            List of security header names
+        """
+        security_headers = []
+        
+        # Common security headers
+        security_header_patterns = {
+            "x-frame-options": "X-Frame-Options",
+            "x-content-type-options": "X-Content-Type-Options", 
+            "strict-transport-security": "HSTS",
+            "x-xss-protection": "XSS-Protection",
+            "content-security-policy": "CSP",
+            "referrer-policy": "Referrer-Policy",
+            "permissions-policy": "Permissions-Policy",
+            "x-permitted-cross-domain-policies": "X-Permitted-Cross-Domain-Policies"
+        }
+        
+        for header_name, header_display in security_header_patterns.items():
+            if header_name in headers:
+                security_headers.append(header_display)
+        
+        return security_headers
+    
+    def _detect_deprecated_endpoint(self, response: httpx.Response) -> bool:
+        """
+        Detect if endpoint is deprecated.
+        
+        Args:
+            response: HTTP response
+            
+        Returns:
+            True if endpoint is deprecated, False otherwise
+        """
+        # Check for deprecation headers
+        if "deprecation" in response.headers:
+            return True
+        
+        # Check response body for deprecation warnings
+        try:
+            if response.headers.get("content-type", "").startswith("application/json"):
+                data = response.json()
+                if isinstance(data, dict):
+                    # Look for deprecation indicators in response
+                    if any("deprecated" in str(value).lower() for value in data.values()):
+                        return True
+                    # Check for deprecation in error messages
+                    if "message" in data and "deprecated" in str(data["message"]).lower():
+                        return True
+        except Exception:
+            pass
+        
+        # Check for deprecation in HTML responses
+        try:
+            if response.headers.get("content-type", "").startswith("text/html"):
+                content = response.text.lower()
+                if "deprecated" in content or "deprecation" in content:
+                    return True
+        except Exception:
+            pass
+        
+        return False
     
     async def _test_endpoint(self, url: str, method: str) -> Optional[EndpointMetadata]:
         """
@@ -282,6 +373,9 @@ class VAmPIDiscoveryEngine:
             # Generate endpoint ID
             endpoint_id = f"EP{len(self.discovered_endpoints):03d}"
             
+            # Detect deprecated endpoints
+            deprecated = self._detect_deprecated_endpoint(response)
+            
             # Create endpoint metadata
             endpoint = EndpointMetadata(
                 id=endpoint_id,
@@ -296,7 +390,8 @@ class VAmPIDiscoveryEngine:
                 response_types=response_types,
                 discovered_via=DiscoveryMethod.ENDPOINT_SCANNING,
                 status_code=response.status_code,
-                response_time=response_time
+                response_time=response_time,
+                deprecated=deprecated
             )
             
             self.discovered_endpoints.add(path)
@@ -673,12 +768,89 @@ class VAmPIDiscoveryEngine:
             if endpoint.response_types and "application/json" in endpoint.response_types:
                 patterns.add("JSON_responses")
         
+        # Enhanced versioning analysis
+        versioning_info = self._detect_api_versioning(endpoints)
+        latest_version = versioning_info.get("latest_version", "v1")
+        
         return APIStructure(
             base_url=self.config.base_url,
+            version=latest_version,
             discovery_method="endpoint_scanning",
             title="VAmPI API",
-            description="VAmPI API discovered through endpoint scanning"
+            description="VAmPI API discovered through endpoint scanning",
+            base_path="/",
+            schemes=["http", "https"],
+            host=urlparse(self.config.base_url).hostname,
+            port=urlparse(self.config.base_url).port or 80,
+            endpoint_groups=self._group_endpoints_by_functionality(endpoints),
+            contact_info=None,
+            license_info=None,
+            external_docs=None,
+            discovered_at=datetime.now()
         )
+    
+    def _detect_api_versioning(self, endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
+        """
+        Detect API versioning patterns and deprecated endpoints.
+        
+        Args:
+            endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with versioning information
+        """
+        version_patterns = {}
+        deprecated_endpoints = []
+        latest_version = "v1"  # Default
+        
+        for endpoint in endpoints:
+            # Extract version from path
+            if '/v' in endpoint.path:
+                version_match = re.search(r'/v(\d+)', endpoint.path)
+                if version_match:
+                    version_num = version_match.group(1)
+                    if version_num not in version_patterns:
+                        version_patterns[version_num] = []
+                    version_patterns[version_num].append(endpoint)
+                    
+                    # Track latest version
+                    if version_num > latest_version.lstrip('v'):
+                        latest_version = f"v{version_num}"
+        
+        # Check for deprecated endpoints
+        for endpoint in endpoints:
+            if hasattr(endpoint, 'deprecated') and endpoint.deprecated:
+                deprecated_endpoints.append(endpoint)
+        
+        return {
+            "versions": version_patterns,
+            "deprecated": deprecated_endpoints,
+            "latest_version": latest_version,
+            "total_versions": len(version_patterns)
+        }
+    
+    def _group_endpoints_by_functionality(self, endpoints: List[EndpointMetadata]) -> Dict[str, List[EndpointMetadata]]:
+        """
+        Group endpoints by functionality for better organization.
+        
+        Args:
+            endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with grouped endpoints
+        """
+        endpoint_groups = {}
+        
+        for endpoint in endpoints:
+            # Extract main resource from path
+            path_parts = endpoint.path.strip('/').split('/')
+            if len(path_parts) > 0:
+                main_resource = path_parts[0]
+                if main_resource not in endpoint_groups:
+                    endpoint_groups[main_resource] = []
+                endpoint_groups[main_resource].append(endpoint)
+        
+        return endpoint_groups
     
     def _detect_auth_mechanisms(self, endpoints: List[EndpointMetadata]) -> List[AuthenticationMechanism]:
         """

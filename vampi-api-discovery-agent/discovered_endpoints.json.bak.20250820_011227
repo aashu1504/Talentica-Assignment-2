@@ -34,8 +34,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -51,8 +50,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 200,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP001",
@@ -73,8 +71,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -91,8 +88,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 400,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP002",
@@ -113,8 +109,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "JWT",
@@ -131,8 +126,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 400,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP003",
@@ -152,8 +146,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -169,8 +162,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 200,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP004",
@@ -187,8 +179,7 @@
         "body_params": [],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": true,
       "authentication_type": "None",
@@ -202,8 +193,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 401,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP005",
@@ -220,8 +210,7 @@
         "body_params": [],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": true,
       "authentication_type": "None",
@@ -235,8 +224,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 401,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP006",
@@ -256,8 +244,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -272,8 +259,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 200,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP007",
@@ -288,8 +274,7 @@
         "body_params": [],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": true,
       "authentication_type": "None",
@@ -301,8 +286,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 401,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP008",
@@ -324,8 +308,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -337,8 +320,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 200,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     },
     {
       "id": "EP009",
@@ -358,8 +340,7 @@
         ],
         "headers": [
           "Content-Type"
-        ],
-        "param_types": {}
+        ]
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -371,8 +352,7 @@
       "discovered_via": "endpoint_scanning",
       "status_code": 200,
       "response_time": null,
-      "error_messages": [],
-      "deprecated": false
+      "error_messages": []
     }
   ],
   "authentication_mechanisms": [],
@@ -392,8 +372,8 @@
     "discovered_at": "2025-08-20T00:32:29.055651",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_011227",
-  "generated_at": "2025-08-20T01:12:27.904452",
+  "report_id": "vampi_discovery_20250820_003318",
+  "generated_at": "2025-08-20T00:33:18.621483",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

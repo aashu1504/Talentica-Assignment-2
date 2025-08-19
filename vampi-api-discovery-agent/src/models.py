@@ -92,6 +92,7 @@ class EndpointParameters(BaseModel):
     path_params: List[str] = Field(default_factory=list, description="Path parameters")
     body_params: List[str] = Field(default_factory=list, description="Body parameters")
     headers: List[str] = Field(default_factory=list, description="Required headers")
+    param_types: Dict[str, str] = Field(default_factory=dict, description="Parameter types (string, integer, etc.)")
 
 
 class EndpointMetadata(BaseModel):
@@ -110,6 +111,7 @@ class EndpointMetadata(BaseModel):
     status_code: Optional[int] = Field(None, description="HTTP status code from discovery")
     response_time: Optional[float] = Field(None, description="Response time in seconds")
     error_messages: List[str] = Field(default_factory=list, description="Error messages encountered during discovery")
+    deprecated: bool = Field(default=False, description="Whether this endpoint is deprecated")
     
     @validator('path')
     def validate_path(cls, v):
