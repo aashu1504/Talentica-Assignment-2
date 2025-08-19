@@ -17,6 +17,9 @@ from pathlib import Path
 import re
 
 import httpx
+import urllib3
+from urllib3.util.retry import Retry
+from urllib3.poolmanager import PoolManager
 
 # Configure logging - Cleaner output
 logging.basicConfig(
@@ -60,6 +63,16 @@ class VAmPIDiscoveryEngine:
         self.session = None
         self.discovered_endpoints: Set[str] = set()
         self.auth_mechanisms: List[AuthenticationMechanism] = []
+        
+        # Configure urllib3 for connection pooling and retries
+        self.urllib3_pool = PoolManager(
+            maxsize=10,
+            retries=Retry(
+                total=3,
+                backoff_factor=0.1,
+                status_forcelist=[500, 502, 503, 504]
+            )
+        )
         
         # VAmPI-specific API paths to scan
         self.common_paths = [
@@ -403,10 +416,163 @@ class VAmPIDiscoveryEngine:
             
         except Exception as e:
             self.logger.warning(f"Failed to test {method} {url}: {e}")
-            # Log more details for debugging
-            if hasattr(e, '__class__'):
-                self.logger.debug(f"Error type: {e.__class__.__name__}")
-            return None
+            
+            # Fallback to urllib3 for connection issues
+            try:
+                self.logger.info(f"httpx failed, trying urllib3 fallback for {url}")
+                urllib3_response = self.urllib3_pool.request(method, url, timeout=5.0)
+                
+                # Extract path from URL
+                path = urlparse(str(url)).path
+                
+                # Detect authentication
+                auth_type, auth_required = self._detect_authentication_type_urllib3(urllib3_response, path)
+                
+                # Assess risk
+                risk_level, risk_factors = self._assess_risk_level(path, method, auth_required)
+                
+                # Extract parameters
+                parameters = self._extract_parameters(path, urllib3_response)
+                
+                # Determine response types
+                response_types = []
+                content_type = urllib3_response.headers.get("content-type", "")
+                if "application/json" in content_type:
+                    response_types.append("application/json")
+                if "text/html" in content_type:
+                    response_types.append("text/html")
+                if "text/plain" in content_type:
+                    response_types.append("text/plain")
+                
+                # Generate endpoint ID
+                endpoint_id = f"EP{len(self.discovered_endpoints):03d}"
+                
+                # Create endpoint metadata with urllib3 fallback
+                endpoint = EndpointMetadata(
+                    id=endpoint_id,
+                    path=path,
+                    methods=[method],
+                    description=f"VAmPI endpoint discovered via urllib3 fallback - {self._generate_description_fallback(path, method)}",
+                    parameters=parameters,
+                    authentication_required=auth_required,
+                    authentication_type=auth_type,
+                    risk_level=risk_level,
+                    risk_factors=risk_factors,
+                    response_types=response_types,
+                    discovered_via=DiscoveryMethod.ENDPOINT_SCANNING,
+                    status_code=urllib3_response.status,
+                    response_time=None,  # urllib3 doesn't provide timing
+                    deprecated=False
+                )
+                
+                self.discovered_endpoints.add(path)
+                self.logger.info(f"Successfully discovered endpoint via urllib3 fallback: {path}")
+                return endpoint
+                
+            except Exception as urllib3_error:
+                self.logger.warning(f"Both httpx and urllib3 failed for {method} {url}: httpx={e}, urllib3={urllib3_error}")
+                # Log more details for debugging
+                if hasattr(e, '__class__'):
+                    self.logger.debug(f"Error type: {e.__class__.__name__}")
+                return None
+    
+    def _detect_authentication_type_urllib3(self, response, path: str) -> Tuple[AuthenticationType, bool]:
+        """
+        Detect authentication type from urllib3 response.
+        
+        Args:
+            response: urllib3 response object
+            path: Endpoint path
+            
+        Returns:
+            Tuple of (authentication_type, authentication_required)
+        """
+        # Check for authentication headers
+        auth_header = response.headers.get("www-authenticate", "").lower()
+        if "bearer" in auth_header:
+            return AuthenticationType.BEARER, True
+        elif "basic" in auth_header:
+            return AuthenticationType.BASIC, True
+        
+        # Check for JWT tokens in response
+        if "jwt" in response.headers.get("authorization", "").lower():
+            return AuthenticationType.JWT, True
+        
+        # VAmPI-specific authentication patterns
+        if "/login" in path or "/register" in path:
+            return AuthenticationType.NONE, False  # These are auth endpoints
+        
+        # Default to no authentication for VAmPI
+        return AuthenticationType.NONE, False
+    
+    def _extract_parameters(self, path: str, response) -> EndpointParameters:
+        """
+        Extract parameters from path and response (works with both httpx and urllib3).
+        
+        Args:
+            path: Endpoint path
+            response: HTTP response object (httpx.Response or urllib3 response)
+            
+        Returns:
+            EndpointParameters object
+        """
+        # Extract path parameters
+        path_params = extract_path_parameters(path)
+        
+        # Extract query parameters from URL if available
+        query_params = []
+        if hasattr(response, 'url'):
+            parsed_url = urlparse(str(response.url))
+            query_params = [param.split('=')[0] for param in parsed_url.query.split('&') if param]
+        
+        return EndpointParameters(
+            path_params=path_params,
+            query_params=query_params,
+            body_params=[],
+            headers=[],
+            param_types={}
+        )
+    
+    def _generate_description_fallback(self, path: str, method: str) -> str:
+        """
+        Generate description for endpoints discovered via urllib3 fallback.
+        
+        Args:
+            path: Endpoint path
+            method: HTTP method
+            
+        Returns:
+            Generated description
+        """
+        path_lower = path.lower()
+        
+        if "/users/v1" in path_lower:
+            if "login" in path_lower:
+                return "VAmPI user authentication endpoint"
+            elif "register" in path_lower:
+                return "VAmPI user registration endpoint"
+            elif path_lower.endswith("/users/v1") or path_lower.endswith("/users/v1/"):
+                return "VAmPI user management endpoint - list all users"
+            elif "{username}" in path_lower:
+                if "email" in path_lower:
+                    return "VAmPI update user email endpoint"
+                elif "password" in path_lower:
+                    return "VAmPI update user password endpoint"
+                else:
+                    return "VAmPI user profile management endpoint"
+        
+        elif "/books/v1" in path_lower:
+            if "{book_title}" in path_lower:
+                return "VAmPI book details endpoint"
+            else:
+                return "VAmPI book management endpoint"
+        
+        elif path == "/":
+            return "VAmPI home endpoint"
+        elif path == "/createdb":
+            return "VAmPI database initialization endpoint"
+        
+        return f"VAmPI {method} endpoint for {path}"
     
     def _generate_description(self, path: str, method: str, response: httpx.Response) -> str:
         """

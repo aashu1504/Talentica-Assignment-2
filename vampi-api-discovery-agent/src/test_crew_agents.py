@@ -45,7 +45,6 @@ logging.basicConfig(
 logging.getLogger('crewai').setLevel(logging.WARNING)
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('LiteLLM').setLevel(logging.WARNING)
-logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 class CrewAITestOrchestrator:
     """Orchestrates the VAmPI API discovery workflow using CrewAI."""

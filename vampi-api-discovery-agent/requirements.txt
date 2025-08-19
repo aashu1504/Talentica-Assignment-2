@@ -6,4 +6,5 @@ pytest
 google-generativeai
 requests
 python-dotenv
-pyyaml 
+pyyaml
+urllib3 

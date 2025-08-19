@@ -8,6 +8,8 @@ import time
 from typing import List, Optional
 from urllib.parse import urljoin, urlparse
 import httpx
+import urllib3
+from urllib3.util.retry import Retry
 
 
 def check_vampi(base_url: str) -> bool:
@@ -47,6 +49,44 @@ def check_vampi(base_url: str) -> bool:
         return False
     except Exception as e:
         print(f"❌ Error checking VAmPI: {e}")
+        return False
+
+
+def check_vampi_urllib3(base_url: str) -> bool:
+    """
+    Check if VAmPI is running using urllib3 as a fallback.
+    
+    Args:
+        base_url: Base URL to check (e.g., "http://localhost:5000")
+        
+    Returns:
+        True if VAmPI is running and accessible, False otherwise
+    """
+    try:
+        # Configure urllib3 with retry logic
+        http = urllib3.PoolManager(
+            retries=Retry(
+                total=3,
+                backoff_factor=0.1,
+                status_forcelist=[500, 502, 503, 504]
+            )
+        )
+        
+        response = http.request('GET', base_url, timeout=5.0)
+        if response.status == 200:
+            # Check if response contains VAmPI indicators
+            content = response.data.decode('utf-8').lower()
+            if "vampi" in content or "api" in content or "swagger" in content:
+                print(f"✅ VAmPI is running at {base_url} (checked via urllib3)")
+                return True
+            else:
+                print(f"⚠️  Server responded with 200 but content doesn't match VAmPI (urllib3)")
+                return False
+        else:
+            print(f"❌ Server responded with status {response.status} (urllib3)")
+            return False
+    except Exception as e:
+        print(f"❌ urllib3 fallback also failed: {e}")
         return False
 
 
