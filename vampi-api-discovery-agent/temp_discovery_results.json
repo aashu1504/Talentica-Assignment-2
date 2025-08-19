@@ -10,9 +10,9 @@
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 0.0,
-      "discovery_start_time": "2025-08-20 01:55:34.276536",
+      "discovery_start_time": "2025-08-20 02:02:08.551704",
       "discovery_end_time": null,
-      "discovery_duration": 48.64819622039795,
+      "discovery_duration": 48.46595597267151,
       "total_parameters": 0,
       "unique_parameters": 0
     },
@@ -586,7 +586,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 01:55:34.275745",
+        "discovered_at": "2025-08-20 02:02:08.551557",
         "endpoints_using": [
           "/me",
           "/users/v1/{username}/email",
@@ -1013,8 +1013,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
             "endpoints": [
@@ -1122,8 +1122,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           }
         },
         "dependencies": {
@@ -1462,10 +1462,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-20 01:55:34.268373",
+      "discovered_at": "2025-08-20 02:02:08.522894",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-20 01:55:34.298838",
+  "discovery_timestamp": "2025-08-20 02:02:08.588171",
   "total_endpoints": 16
 }

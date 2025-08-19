@@ -18,10 +18,11 @@ import re
 
 import httpx
 
-# Configure logging
+# Configure logging - Cleaner output
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(levelname)s: %(message)s',
+    datefmt='%H:%M:%S'
 )
 
 # Import models and utils
@@ -512,7 +513,7 @@ class VAmPIDiscoveryEngine:
         postman_endpoints = await self._parse_postman_collection()
         endpoints = doc_endpoints + postman_endpoints
         
-        self.logger.info(f"📚 Documentation parsing found {len(endpoints)} endpoints")
+        self.logger.info(f"📚 Documentation parsing: {len(endpoints)} endpoints")
         
         # Discover endpoints using VAmPI-specific endpoint testing
         self.logger.info("🎯 Starting active endpoint scanning...")
@@ -527,7 +528,8 @@ class VAmPIDiscoveryEngine:
         pattern_endpoints = await self._pattern_based_discovery()
         endpoints.extend(pattern_endpoints)
         
-        self.logger.info(f"🚀 Active scanning found {len(active_endpoints + common_endpoints + pattern_endpoints)} additional endpoints")
+        total_active = len(active_endpoints + common_endpoints + pattern_endpoints)
+        self.logger.info(f"🚀 Active scanning: {total_active} additional endpoints")
         
         # Remove duplicates and merge methods
         unique_endpoints = self._merge_endpoint_methods(endpoints)
@@ -1239,7 +1241,7 @@ class VAmPIDiscoveryEngine:
                     endpoints.append(endpoint)
                     self.logger.debug(f"Extracted from docs: {method.upper()} {path}")
             
-            self.logger.info(f"Successfully parsed {len(endpoints)} endpoints from OpenAPI documentation")
+            self.logger.info(f"OpenAPI: {len(endpoints)} endpoints parsed")
             return endpoints
             
         except Exception as e:
@@ -1353,7 +1355,7 @@ class VAmPIDiscoveryEngine:
             # Extract endpoints from collection items
             endpoints.extend(self._extract_postman_items(collection.get('item', []), []))
             
-            self.logger.info(f"Successfully parsed {len(endpoints)} endpoints from Postman collection")
+            self.logger.info(f"Postman: {len(endpoints)} endpoints parsed")
             return endpoints
             
         except Exception as e:

@@ -33,6 +33,20 @@ from tools import APIDiscoveryTool, QATestingTool, TechnicalWriterTool
 # Import models for data validation
 from models import DiscoveryReport, EndpointMetadata
 
+# Configure logging - Cleaner output
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s',
+    datefmt='%H:%M:%S'
+)
+
+# Reduce noise from external libraries
+logging.getLogger('crewai').setLevel(logging.WARNING)
+logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('LiteLLM').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+
 class CrewAITestOrchestrator:
     """Orchestrates the VAmPI API discovery workflow using CrewAI."""
     
@@ -66,7 +80,7 @@ class CrewAITestOrchestrator:
             backstory="""You are an expert API security researcher with deep knowledge of 
             REST APIs, authentication mechanisms, and security vulnerabilities. Your expertise 
             lies in systematically discovering API endpoints and analyzing their security posture.""",
-            verbose=True,
+            verbose=False,  # Reduced verbosity
             allow_delegation=False,
             llm=self.llm,
             tools=[
@@ -81,7 +95,7 @@ class CrewAITestOrchestrator:
             backstory="""You are a senior QA engineer specializing in security testing and 
             API validation. You have extensive experience in penetration testing, vulnerability 
             assessment, and quality assurance for web applications.""",
-            verbose=True,
+            verbose=False,  # Reduced verbosity
             allow_delegation=False,
             llm=self.llm,
             tools=[
@@ -96,7 +110,7 @@ class CrewAITestOrchestrator:
             backstory="""You are a technical writer and security analyst with expertise in 
             creating detailed security reports, risk assessments, and technical documentation. 
             You excel at translating complex security findings into actionable insights.""",
-            verbose=True,
+            verbose=False,  # Reduced verbosity
             allow_delegation=False,
             llm=self.llm,
             tools=[
