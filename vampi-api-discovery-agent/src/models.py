@@ -182,6 +182,18 @@ class APIStructure(BaseModel):
         description="Grouped endpoints by category or functionality"
     )
     
+    # Endpoint relationships and dependencies
+    endpoint_relationships: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Analysis of endpoint relationships, dependencies, and data flow"
+    )
+    
+    # API compliance analysis
+    api_compliance: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Compliance analysis with OWASP API Security Top 10 and other standards"
+    )
+    
     # API metadata
     contact_info: Optional[Dict[str, str]] = Field(None, description="Contact information")
     license_info: Optional[Dict[str, str]] = Field(None, description="License information")

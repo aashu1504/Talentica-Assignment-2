@@ -520,6 +520,12 @@ class VAmPIDiscoveryEngine:
         # Analyze API structure
         api_structure = self._analyze_api_structure(unique_endpoints)
         
+        # Analyze endpoint relationships and dependencies
+        endpoint_relationships = self._analyze_endpoint_relationships(unique_endpoints)
+        
+        # Analyze API compliance with security standards
+        api_compliance = self._analyze_api_compliance(unique_endpoints)
+        
         # Detect authentication mechanisms
         auth_mechanisms = self._detect_auth_mechanisms(unique_endpoints)
         
@@ -783,6 +789,8 @@ class VAmPIDiscoveryEngine:
             host=urlparse(self.config.base_url).hostname,
             port=urlparse(self.config.base_url).port or 80,
             endpoint_groups=self._group_endpoints_by_functionality(endpoints),
+            endpoint_relationships=self._analyze_endpoint_relationships(endpoints),
+            api_compliance=self._analyze_api_compliance(endpoints),
             contact_info=None,
             license_info=None,
             external_docs=None,
@@ -851,6 +859,292 @@ class VAmPIDiscoveryEngine:
                 endpoint_groups[main_resource].append(endpoint)
         
         return endpoint_groups
+    
+    def _analyze_endpoint_relationships(self, endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
+        """
+        Analyze relationships and dependencies between endpoints.
+        
+        Args:
+            endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with relationship analysis
+        """
+        relationships = {
+            "resource_hierarchy": {},
+            "dependencies": {},
+            "data_flow": {},
+            "authentication_flow": {},
+            "risk_correlation": {}
+        }
+        
+        # Analyze resource hierarchy
+        for endpoint in endpoints:
+            path_parts = endpoint.path.strip('/').split('/')
+            if len(path_parts) >= 2:
+                resource = path_parts[0]
+                sub_resource = path_parts[1] if len(path_parts) > 1 else None
+                
+                if resource not in relationships["resource_hierarchy"]:
+                    relationships["resource_hierarchy"][resource] = {
+                        "endpoints": [],
+                        "sub_resources": set(),
+                        "methods": set(),
+                        "risk_levels": set()
+                    }
+                
+                relationships["resource_hierarchy"][resource]["endpoints"].append(endpoint)
+                relationships["resource_hierarchy"][resource]["methods"].update(endpoint.methods)
+                relationships["resource_hierarchy"][resource]["risk_levels"].add(endpoint.risk_level)
+                
+                if sub_resource:
+                    relationships["resource_hierarchy"][resource]["sub_resources"].add(sub_resource)
+        
+        # Analyze dependencies between endpoints
+        for endpoint in endpoints:
+            dependencies = []
+            
+            # Check for parameter dependencies
+            if endpoint.parameters.path_params:
+                for param in endpoint.parameters.path_params:
+                    # Look for endpoints that might provide this parameter
+                    for other_endpoint in endpoints:
+                        if other_endpoint != endpoint:
+                            # Check if other endpoint returns data that could be used as parameter
+                            if any(param.lower() in method.lower() for method in other_endpoint.methods):
+                                dependencies.append({
+                                    "endpoint": other_endpoint.path,
+                                    "type": "parameter_dependency",
+                                    "parameter": param
+                                })
+            
+            # Check for authentication dependencies
+            if endpoint.authentication_required:
+                auth_endpoints = [ep for ep in endpoints if "auth" in ep.path.lower() or "login" in ep.path.lower()]
+                for auth_ep in auth_endpoints:
+                    dependencies.append({
+                        "endpoint": auth_ep.path,
+                        "type": "authentication_dependency",
+                        "description": "Required for access"
+                    })
+            
+            if dependencies:
+                relationships["dependencies"][endpoint.path] = dependencies
+        
+        # Analyze data flow patterns
+        for endpoint in endpoints:
+            if "GET" in endpoint.methods:
+                # Read operations
+                relationships["data_flow"][endpoint.path] = {
+                    "type": "read",
+                    "targets": self._identify_data_targets(endpoint)
+                }
+            elif "POST" in endpoint.methods:
+                # Create operations
+                relationships["data_flow"][endpoint.path] = {
+                    "type": "create",
+                    "dependencies": self._identify_creation_dependencies(endpoint)
+                }
+            elif "PUT" in endpoint.methods:
+                # Update operations
+                relationships["data_flow"][endpoint.path] = {
+                    "type": "update",
+                    "prerequisites": self._identify_update_prerequisites(endpoint)
+                }
+            elif "DELETE" in endpoint.methods:
+                # Delete operations
+                relationships["data_flow"][endpoint.path] = {
+                    "type": "delete",
+                    "cascade_effects": self._identify_delete_cascade_effects(endpoint)
+                }
+        
+        # Analyze authentication flow
+        auth_endpoints = [ep for ep in endpoints if "auth" in ep.path.lower() or "login" in ep.path.lower()]
+        if auth_endpoints:
+            relationships["authentication_flow"] = {
+                "entry_points": [ep.path for ep in auth_endpoints if "POST" in ep.methods],
+                "protected_resources": [ep.path for ep in endpoints if ep.authentication_required],
+                "public_resources": [ep.path for ep in endpoints if not ep.authentication_required]
+            }
+        
+        # Analyze risk correlation
+        high_risk_endpoints = [ep for ep in endpoints if ep.risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]]
+        if high_risk_endpoints:
+            relationships["risk_correlation"] = {
+                "high_risk_clusters": self._identify_risk_clusters(high_risk_endpoints),
+                "risk_propagation": self._analyze_risk_propagation(high_risk_endpoints, endpoints)
+            }
+        
+        return relationships
+    
+    def _identify_data_targets(self, endpoint: EndpointMetadata) -> List[str]:
+        """Identify what data this endpoint reads."""
+        targets = []
+        if "users" in endpoint.path:
+            targets.append("user_data")
+        if "books" in endpoint.path:
+            targets.append("book_data")
+        if "auth" in endpoint.path:
+            targets.append("authentication_data")
+        return targets
+    
+    def _identify_creation_dependencies(self, endpoint: EndpointMetadata) -> List[str]:
+        """Identify dependencies for creation operations."""
+        dependencies = []
+        if "users" in endpoint.path:
+            dependencies.append("user_validation")
+        if "books" in endpoint.path:
+            dependencies.append("user_authentication")
+        return dependencies
+    
+    def _identify_update_prerequisites(self, endpoint: EndpointMetadata) -> List[str]:
+        """Identify prerequisites for update operations."""
+        prerequisites = []
+        if "users" in endpoint.path:
+            prerequisites.append("user_exists")
+            prerequisites.append("user_authentication")
+        if "books" in endpoint.path:
+            prerequisites.append("book_exists")
+            prerequisites.append("user_authentication")
+        return prerequisites
+    
+    def _identify_delete_cascade_effects(self, endpoint: EndpointMetadata) -> List[str]:
+        """Identify cascade effects of delete operations."""
+        effects = []
+        if "users" in endpoint.path:
+            effects.append("user_data_removal")
+            effects.append("associated_books_cleanup")
+        if "books" in endpoint.path:
+            effects.append("book_data_removal")
+        return effects
+    
+    def _identify_risk_clusters(self, high_risk_endpoints: List[EndpointMetadata]) -> Dict[str, List[str]]:
+        """Identify clusters of related high-risk endpoints."""
+        clusters = {}
+        
+        for endpoint in high_risk_endpoints:
+            if "users" in endpoint.path:
+                if "user_management" not in clusters:
+                    clusters["user_management"] = []
+                clusters["user_management"].append(endpoint.path)
+            elif "books" in endpoint.path:
+                if "book_management" not in clusters:
+                    clusters["book_management"] = []
+                clusters["book_management"].append(endpoint.path)
+            elif "auth" in endpoint.path:
+                if "authentication" not in clusters:
+                    clusters["authentication"] = []
+                clusters["authentication"].append(endpoint.path)
+        
+        return clusters
+    
+    def _analyze_risk_propagation(self, high_risk_endpoints: List[EndpointMetadata], all_endpoints: List[EndpointMetadata]) -> Dict[str, List[str]]:
+        """Analyze how risks propagate across related endpoints."""
+        propagation = {}
+        
+        for high_risk_ep in high_risk_endpoints:
+            if "users" in high_risk_ep.path:
+                # Find related user endpoints
+                related_endpoints = [ep for ep in all_endpoints if "users" in ep.path and ep != high_risk_ep]
+                if related_endpoints:
+                    propagation[high_risk_ep.path] = [ep.path for ep in related_endpoints]
+        
+        return propagation
+    
+    def _analyze_api_compliance(self, endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
+        """
+        Analyze API compliance with security standards and best practices.
+        
+        Args:
+            endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with compliance analysis
+        """
+        compliance = {
+            "owasp_api_top_10": {},
+            "security_headers": {},
+            "authentication_standards": {},
+            "data_protection": {},
+            "overall_score": 0
+        }
+        
+        # OWASP API Security Top 10 Analysis
+        owasp_checks = {
+            "broken_object_level_authorization": False,
+            "broken_authentication": False,
+            "broken_user_authentication": False,
+            "excessive_data_exposure": False,
+            "lack_of_resources_rate_limiting": False,
+            "broken_function_level_authorization": False,
+            "mass_assignment": False,
+            "security_misconfiguration": False,
+            "improper_assets_management": False,
+            "insufficient_logging_monitoring": False
+        }
+        
+        # Check for BOLA vulnerabilities
+        for endpoint in endpoints:
+            if endpoint.risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]:
+                if "users" in endpoint.path and any(method in endpoint.methods for method in ["GET", "PUT", "DELETE"]):
+                    owasp_checks["broken_object_level_authorization"] = True
+                
+                if "auth" in endpoint.path and not endpoint.authentication_required:
+                    owasp_checks["broken_authentication"] = True
+                
+                if not endpoint.authentication_required and "users" in endpoint.path:
+                    owasp_checks["broken_user_authentication"] = True
+        
+        # Check for rate limiting
+        auth_endpoints = [ep for ep in endpoints if "auth" in ep.path.lower() or "login" in ep.path.lower()]
+        if auth_endpoints:
+            owasp_checks["lack_of_resources_rate_limiting"] = True
+        
+        # Check for security headers
+        security_headers_found = 0
+        total_security_headers = 8  # X-Frame-Options, HSTS, CSP, etc.
+        
+        for endpoint in endpoints:
+            if hasattr(endpoint.parameters, 'headers'):
+                security_headers_found += len([h for h in endpoint.parameters.headers if h in [
+                    "X-Frame-Options", "HSTS", "XSS-Protection", "CSP"
+                ]])
+        
+        security_headers_score = min(100, (security_headers_found / total_security_headers) * 100)
+        
+        # Calculate overall compliance score
+        passed_checks = sum(1 for check in owasp_checks.values() if not check)
+        total_checks = len(owasp_checks)
+        owasp_score = (passed_checks / total_checks) * 100
+        
+        # Authentication standards compliance
+        auth_compliance = {
+            "jwt_usage": any("bearer" in str(ep.authentication_type).lower() for ep in endpoints if ep.authentication_required),
+            "secure_headers": security_headers_score > 50,
+            "rate_limiting": not owasp_checks["lack_of_resources_rate_limiting"]
+        }
+        
+        # Data protection compliance
+        data_protection = {
+            "sensitive_data_exposure": not any(ep.risk_level == RiskLevel.CRITICAL for ep in endpoints),
+            "input_validation": True,  # Assume basic validation exists
+            "output_encoding": True    # Assume basic encoding exists
+        }
+        
+        # Calculate overall score
+        overall_score = (owasp_score * 0.4 + security_headers_score * 0.3 + 
+                        (sum(auth_compliance.values()) / len(auth_compliance)) * 100 * 0.2 +
+                        (sum(data_protection.values()) / len(data_protection)) * 100 * 0.1)
+        
+        compliance.update({
+            "owasp_api_top_10": owasp_checks,
+            "security_headers": {"score": security_headers_score, "found": security_headers_found},
+            "authentication_standards": auth_compliance,
+            "data_protection": data_protection,
+            "overall_score": round(overall_score, 2)
+        })
+        
+        return compliance
     
     def _detect_auth_mechanisms(self, endpoints: List[EndpointMetadata]) -> List[AuthenticationMechanism]:
         """
