@@ -52,7 +52,6 @@ class APIDiscoveryTool(BaseTool):
             print(f"🔍 Starting API discovery for {self.base_url}")
             
             # Create discovery config
-            from models import DiscoveryConfig
             config = DiscoveryConfig(
                 base_url=self.base_url,
                 timeout=30.0,
@@ -473,6 +472,80 @@ class TechnicalWriterTool(BaseTool):
             
         except Exception as e:
             logger.error(f"Failed to save final report: {e}")
+            raise
+    
+    def _generate_markdown_report(self, report: DiscoveryReport):
+        """Generate a markdown report from the discovery report."""
+        try:
+            # Create markdown content
+            markdown_content = f"# VAmPI API Discovery Report\n\n"
+            markdown_content += f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            
+            # Summary section
+            markdown_content += f"## Executive Summary\n\n"
+            markdown_content += f"- **Total Endpoints Discovered:** {report.discovery_summary.total_endpoints}\n"
+            markdown_content += f"- **Authenticated Endpoints:** {report.discovery_summary.authenticated_endpoints}\n"
+            markdown_content += f"- **Public Endpoints:** {report.discovery_summary.public_endpoints}\n"
+            markdown_content += f"- **High Risk Endpoints:** {report.discovery_summary.high_risk_endpoints}\n"
+            markdown_content += f"- **Discovery Coverage:** {report.discovery_summary.discovery_coverage:.1f}%\n\n"
+            
+            # Endpoints section
+            markdown_content += f"## Discovered Endpoints\n\n"
+            for endpoint in report.endpoints:
+                markdown_content += f"### {endpoint.path}\n\n"
+                markdown_content += f"- **Methods:** {', '.join(endpoint.methods)}\n"
+                markdown_content += f"- **Description:** {endpoint.description}\n"
+                markdown_content += f"- **Authentication Required:** {'Yes' if endpoint.authentication_required else 'No'}\n"
+                markdown_content += f"- **Risk Level:** {endpoint.risk_level}\n"
+                markdown_content += f"- **Risk Factors:** {', '.join(endpoint.risk_factors) if endpoint.risk_factors else 'None'}\n"
+                markdown_content += f"- **Response Types:** {', '.join(endpoint.response_types) if endpoint.response_types else 'Unknown'}\n\n"
+                
+                if endpoint.parameters:
+                    markdown_content += f"**Parameters:**\n"
+                    if endpoint.parameters.query_params:
+                        markdown_content += f"- Query: {', '.join(endpoint.parameters.query_params)}\n"
+                    if endpoint.parameters.path_params:
+                        markdown_content += f"- Path: {', '.join(endpoint.parameters.path_params)}\n"
+                    if endpoint.parameters.body_params:
+                        markdown_content += f"- Body: {', '.join(endpoint.parameters.body_params)}\n"
+                    markdown_content += f"\n"
+            
+            # Authentication mechanisms
+            if report.authentication_mechanisms:
+                markdown_content += f"## Authentication Mechanisms\n\n"
+                for auth in report.authentication_mechanisms:
+                    markdown_content += f"### {auth.name}\n\n"
+                    markdown_content += f"- **Type:** {auth.type}\n"
+                    markdown_content += f"- **Description:** {auth.description}\n"
+                    markdown_content += f"- **Endpoints Using:** {', '.join(auth.endpoints_using)}\n\n"
+            
+            # API structure
+            if report.api_structure:
+                markdown_content += f"## API Structure\n\n"
+                markdown_content += f"- **Title:** {report.api_structure.title}\n"
+                markdown_content += f"- **Description:** {report.api_structure.description}\n"
+                markdown_content += f"- **Discovery Method:** {report.api_structure.discovery_method}\n"
+                markdown_content += f"- **Base URL:** {report.api_structure.base_url}\n\n"
+            
+            # Security recommendations
+            markdown_content += f"## Security Recommendations\n\n"
+            markdown_content += f"1. **Implement proper authentication** for all sensitive endpoints\n"
+            markdown_content += f"2. **Add input validation and sanitization** for all user inputs\n"
+            markdown_content += f"3. **Implement rate limiting** for public endpoints\n"
+            markdown_content += f"4. **Regular security audits** and penetration testing\n"
+            markdown_content += f"5. **Monitor and log** all API access attempts\n"
+            markdown_content += f"6. **Implement CORS policies** to restrict cross-origin requests\n"
+            markdown_content += f"7. **Use HTTPS** for all API communications\n"
+            markdown_content += f"8. **Implement proper error handling** without information disclosure\n\n"
+            
+            # Save markdown report
+            with open("discovery_report.md", "w") as f:
+                f.write(markdown_content)
+            
+            logger.info("Markdown report generated successfully: discovery_report.md")
+            
+        except Exception as e:
+            logger.error(f"Failed to generate markdown report: {e}")
             raise
     
     def _cleanup_temp_files(self):
