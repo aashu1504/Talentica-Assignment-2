@@ -7,13 +7,13 @@
     "medium_risk_endpoints": 0,
     "low_risk_endpoints": 3,
     "authentication_types": [],
-    "discovery_coverage": 94.45454545454545,
-    "parameter_coverage": 100.0,
-    "discovery_start_time": "2025-08-20T17:02:02.505358",
-    "discovery_end_time": "2025-08-20T17:02:02.505361",
-    "discovery_duration": 65.10844612121582,
-    "total_parameters": 4,
-    "unique_parameters": 2
+    "discovery_coverage": 100.0,
+    "parameter_coverage": 0.0,
+    "discovery_start_time": "2025-08-20T16:33:05.698560",
+    "discovery_end_time": null,
+    "discovery_duration": 64.74256896972656,
+    "total_parameters": 0,
+    "unique_parameters": 0
   },
   "endpoints": [
     {
@@ -527,9 +527,9 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "PUT",
         "GET",
         "POST",
+        "PUT",
         "DELETE"
       ],
       "description": "Retrieves user by username",
@@ -614,9 +614,9 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "PUT",
         "GET",
         "POST",
+        "PUT",
         "DELETE"
       ],
       "description": "Update users email",
@@ -718,9 +718,9 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "PUT",
         "GET",
         "POST",
+        "PUT",
         "DELETE"
       ],
       "description": "Update users password",
@@ -883,9 +883,9 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
         "GET",
         "POST",
+        "PUT",
         "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
@@ -1019,13 +1019,13 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T17:02:02.502376",
+    "discovered_at": "2025-08-20T16:33:05.695964",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_170215",
-  "generated_at": "2025-08-20T17:02:15.619159",
+  "report_id": "vampi_discovery_20250820_163315",
+  "generated_at": "2025-08-20T16:33:15.830416",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
-  "notes": "Technical Analysis: Generated from discovery data with validation metrics"
+  "notes": "Technical Analysis: Generated from discovery data"
 }

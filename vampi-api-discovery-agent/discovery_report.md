@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-20 16:33:15
+**Generated:** 2025-08-20 17:02:15
 
 ## Executive Summary
 
@@ -8,7 +8,7 @@
 - **Authenticated Endpoints:** 8
 - **Public Endpoints:** 4
 - **High Risk Endpoints:** 3
-- **Discovery Coverage:** 100.0%
+- **Discovery Coverage:** 94.5%
 
 ## Discovered Endpoints
 
@@ -91,7 +91,7 @@
 
 ### /users/v1/{user_id}
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** PUT, GET, POST, DELETE
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -103,7 +103,7 @@
 
 ### /users/v1/{user_id}/email
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** PUT, GET, POST, DELETE
 - **Description:** Update users email
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -115,7 +115,7 @@
 
 ### /users/v1/{user_id}/password
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** PUT, GET, POST, DELETE
 - **Description:** Update users password
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -138,7 +138,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** PUT, GET, POST, DELETE
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High

@@ -731,11 +731,14 @@ class VAmPIDiscoveryEngine:
         medium_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.MEDIUM])
         low_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.LOW])
         
-        # Calculate coverage (simple percentage of discovered vs expected endpoints)
-        expected_endpoints = 10  # VAmPI has about 10 main endpoints
-        discovery_coverage = min(100.0, (len(unique_endpoints) / expected_endpoints) * 100)
+        # Validate discovery accuracy and completeness
+        accuracy_metrics = self._validate_discovery_accuracy(unique_endpoints)
+        completeness_metrics = self._assess_discovery_completeness(unique_endpoints)
         
-        # Create discovery summary
+        # Calculate coverage using validation metrics
+        discovery_coverage = completeness_metrics["overall_completeness"]
+        
+        # Create discovery summary with validation metrics
         summary = DiscoverySummary(
             total_endpoints=len(unique_endpoints),
             authenticated_endpoints=authenticated_count,
@@ -744,16 +747,24 @@ class VAmPIDiscoveryEngine:
             medium_risk_endpoints=medium_risk_count,
             low_risk_endpoints=low_risk_count,
             discovery_coverage=discovery_coverage,
+            parameter_coverage=completeness_metrics.get("parameter_coverage", {}).get("coverage_percentage", 0.0),
             discovery_start_time=datetime.now(),
-            discovery_duration=scan_duration
+            discovery_end_time=datetime.now(),
+            discovery_duration=scan_duration,
+            total_parameters=sum(len(ep.parameters.path_params) + len(ep.parameters.query_params) + len(ep.parameters.body_params) for ep in unique_endpoints),
+            unique_parameters=len(set(param for ep in unique_endpoints for param in ep.parameters.path_params + ep.parameters.query_params + ep.parameters.body_params))
         )
         
-        # Create result
+        # Create result with validation metrics
         result = APIDiscoveryResult(
             discovery_summary=summary,
             endpoints=unique_endpoints,
             authentication_mechanisms=auth_mechanisms,
-            api_structure=api_structure
+            api_structure=api_structure,
+            validation_metrics={
+                "accuracy": accuracy_metrics,
+                "completeness": completeness_metrics
+            }
         )
         
         self.logger.info(f"Discovery completed. Found {len(unique_endpoints)} endpoints in {scan_duration:.2f}s")
@@ -1981,6 +1992,365 @@ class VAmPIDiscoveryEngine:
             auth_map[auth_type].endpoints_using.append(endpoint.path)
         
         return list(auth_map.values())
+
+
+    def _validate_discovery_accuracy(self, discovered_endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
+        """
+        Validate the accuracy of discovered endpoints against known VAmPI endpoints.
+        
+        Args:
+            discovered_endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with accuracy metrics and validation results
+        """
+        # Known VAmPI endpoints for validation
+        known_vampi_endpoints = {
+            "/": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": False},
+            "/createdb": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": False},
+            "/users/v1": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": True},
+            "/users/v1/register": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": False},
+            "/users/v1/login": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": False},
+            "/users/v1/{user_id}": {"methods": ["GET", "PUT", "DELETE", "POST"], "auth": True},
+            "/users/v1/{user_id}/email": {"methods": ["GET", "PUT", "DELETE", "POST"], "auth": True},
+            "/users/v1/{user_id}/password": {"methods": ["GET", "PUT", "DELETE", "POST"], "auth": True},
+            "/books/v1": {"methods": ["GET", "POST", "PUT", "DELETE"], "auth": True},
+            "/books/v1/{book_title}": {"methods": ["GET", "PUT", "DELETE", "POST"], "auth": True},
+            "/me": {"methods": ["GET"], "auth": True}
+        }
+        
+        # Initialize accuracy metrics
+        accuracy_metrics = {
+            "total_known_endpoints": len(known_vampi_endpoints),
+            "total_discovered_endpoints": len(discovered_endpoints),
+            "correctly_identified_endpoints": 0,
+            "correctly_identified_methods": 0,
+            "correctly_identified_auth": 0,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "method_accuracy": 0.0,
+            "auth_accuracy": 0.0,
+            "overall_accuracy": 0.0,
+            "validation_details": []
+        }
+        
+        # Track discovered paths for false positive detection
+        discovered_paths = set()
+        
+        # Validate each discovered endpoint
+        for endpoint in discovered_endpoints:
+            discovered_paths.add(endpoint.path)
+            
+            if endpoint.path in known_vampi_endpoints:
+                known_endpoint = known_vampi_endpoints[endpoint.path]
+                
+                # Validate HTTP methods
+                correct_methods = set(known_endpoint["methods"])
+                discovered_methods = set(endpoint.methods)
+                method_intersection = correct_methods.intersection(discovered_methods)
+                
+                if method_intersection:
+                    accuracy_metrics["correctly_identified_methods"] += len(method_intersection)
+                
+                # Validate authentication requirements
+                correct_auth = known_endpoint["auth"]
+                discovered_auth = endpoint.authentication_required
+                
+                if correct_auth == discovered_auth:
+                    accuracy_metrics["correctly_identified_auth"] += 1
+                
+                # Overall endpoint identification
+                accuracy_metrics["correctly_identified_endpoints"] += 1
+                
+                # Add validation details
+                validation_detail = {
+                    "path": endpoint.path,
+                    "status": "correct",
+                    "method_accuracy": len(method_intersection) / len(correct_methods) if correct_methods else 0,
+                    "auth_accuracy": 1.0 if correct_auth == discovered_auth else 0.0,
+                    "expected_methods": list(correct_methods),
+                    "discovered_methods": list(discovered_methods),
+                    "expected_auth": correct_auth,
+                    "discovered_auth": discovered_auth
+                }
+                accuracy_metrics["validation_details"].append(validation_detail)
+            else:
+                # False positive - discovered endpoint not in known list
+                accuracy_metrics["false_positives"] += 1
+                validation_detail = {
+                    "path": endpoint.path,
+                    "status": "false_positive",
+                    "method_accuracy": 0.0,
+                    "auth_accuracy": 0.0,
+                    "expected_methods": [],
+                    "discovered_methods": list(endpoint.methods),
+                    "expected_auth": None,
+                    "discovered_auth": endpoint.authentication_required
+                }
+                accuracy_metrics["validation_details"].append(validation_detail)
+        
+        # Detect false negatives (known endpoints not discovered)
+        for known_path in known_vampi_endpoints:
+            if known_path not in discovered_paths:
+                accuracy_metrics["false_negatives"] += 1
+                validation_detail = {
+                    "path": known_path,
+                    "status": "false_negative",
+                    "method_accuracy": 0.0,
+                    "auth_accuracy": 0.0,
+                    "expected_methods": known_vampi_endpoints[known_path]["methods"],
+                    "discovered_methods": [],
+                    "expected_auth": known_vampi_endpoints[known_path]["auth"],
+                    "discovered_auth": None
+                }
+                accuracy_metrics["validation_details"].append(validation_detail)
+        
+        # Calculate accuracy percentages
+        if accuracy_metrics["total_known_endpoints"] > 0:
+            accuracy_metrics["overall_accuracy"] = (
+                accuracy_metrics["correctly_identified_endpoints"] / 
+                accuracy_metrics["total_known_endpoints"]
+            ) * 100
+        
+        # Calculate method accuracy
+        total_expected_methods = sum(len(ep["methods"]) for ep in known_vampi_endpoints.values())
+        if total_expected_methods > 0:
+            accuracy_metrics["method_accuracy"] = (
+                accuracy_metrics["correctly_identified_methods"] / total_expected_methods
+            ) * 100
+        
+        # Calculate authentication accuracy
+        if accuracy_metrics["total_known_endpoints"] > 0:
+            accuracy_metrics["auth_accuracy"] = (
+                accuracy_metrics["correctly_identified_auth"] / 
+                accuracy_metrics["total_known_endpoints"]
+            ) * 100
+        
+        return accuracy_metrics
+
+
+    def _assess_discovery_completeness(self, discovered_endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
+        """
+        Assess the completeness of the discovery process.
+        
+        Args:
+            discovered_endpoints: List of discovered endpoints
+            
+        Returns:
+            Dictionary with completeness metrics
+        """
+        # Expected VAmPI API structure
+        expected_resources = {
+            "user_management": {
+                "base_paths": ["/users/v1"],
+                "expected_endpoints": [
+                    "/users/v1",
+                    "/users/v1/register", 
+                    "/users/v1/login",
+                    "/users/v1/{user_id}",
+                    "/users/v1/{user_id}/email",
+                    "/users/v1/{user_id}/password"
+                ],
+                "required_methods": ["GET", "POST", "PUT", "DELETE"]
+            },
+            "book_management": {
+                "base_paths": ["/books/v1"],
+                "expected_endpoints": [
+                    "/books/v1",
+                    "/books/v1/{book_title}"
+                ],
+                "required_methods": ["GET", "POST", "PUT", "DELETE"]
+            },
+            "system_operations": {
+                "base_paths": ["/", "/createdb", "/me"],
+                "expected_endpoints": ["/", "/createdb", "/me"],
+                "required_methods": ["GET", "POST", "PUT", "DELETE"]
+            }
+        }
+        
+        completeness_metrics = {
+            "resource_coverage": {},
+            "method_coverage": {},
+            "parameter_coverage": {},
+            "schema_coverage": {},
+            "overall_completeness": 0.0,
+            "missing_endpoints": [],
+            "incomplete_methods": [],
+            "missing_parameters": [],
+            "missing_schemas": []
+        }
+        
+        # Analyze resource coverage
+        discovered_paths = {ep.path for ep in discovered_endpoints}
+        
+        for resource_name, resource_info in expected_resources.items():
+            expected_paths = set(resource_info["expected_endpoints"])
+            discovered_resource_paths = discovered_paths.intersection(expected_paths)
+            
+            coverage_percentage = (len(discovered_resource_paths) / len(expected_paths)) * 100
+            
+            completeness_metrics["resource_coverage"][resource_name] = {
+                "expected": len(expected_paths),
+                "discovered": len(discovered_resource_paths),
+                "coverage_percentage": coverage_percentage,
+                "missing_paths": list(expected_paths - discovered_resource_paths)
+            }
+            
+            # Track missing endpoints
+            missing = expected_paths - discovered_resource_paths
+            if missing:
+                completeness_metrics["missing_endpoints"].extend(list(missing))
+        
+        # Analyze method coverage
+        for endpoint in discovered_endpoints:
+            if len(endpoint.methods) < 4:  # Most VAmPI endpoints support 4 methods
+                completeness_metrics["incomplete_methods"].append({
+                    "path": endpoint.path,
+                    "discovered_methods": endpoint.methods,
+                    "expected_methods": ["GET", "POST", "PUT", "DELETE"]
+                })
+        
+        # Analyze parameter coverage
+        total_parameters = 0
+        discovered_parameters = 0
+        
+        for endpoint in discovered_endpoints:
+            if endpoint.parameters:
+                # Count expected parameters based on path
+                if "/{user_id}" in endpoint.path:
+                    total_parameters += 1
+                if "/{book_title}" in endpoint.path:
+                    total_parameters += 1
+                
+                # Count discovered parameters
+                discovered_parameters += len(endpoint.parameters.path_params)
+        
+        if total_parameters > 0:
+            completeness_metrics["parameter_coverage"] = {
+                "expected": total_parameters,
+                "discovered": discovered_parameters,
+                "coverage_percentage": (discovered_parameters / total_parameters) * 100
+            }
+        
+        # Analyze schema coverage
+        total_schemas = 0
+        discovered_schemas = 0
+        
+        for endpoint in discovered_endpoints:
+            if endpoint.request_schema:
+                discovered_schemas += 1
+            if endpoint.response_schemas:
+                discovered_schemas += len(endpoint.response_schemas)
+            
+            # Count expected schemas (POST/PUT endpoints should have request schemas)
+            if any(method in ["POST", "PUT"] for method in endpoint.methods):
+                total_schemas += 1
+            total_schemas += 1  # Response schema
+        
+        if total_schemas > 0:
+            completeness_metrics["schema_coverage"] = {
+                "expected": total_schemas,
+                "discovered": discovered_schemas,
+                "coverage_percentage": (discovered_schemas / total_schemas) * 100
+            }
+        
+        # Calculate overall completeness
+        coverage_scores = []
+        
+        # Resource coverage (40% weight)
+        resource_scores = [info["coverage_percentage"] for info in completeness_metrics["resource_coverage"].values()]
+        if resource_scores:
+            coverage_scores.append((sum(resource_scores) / len(resource_scores)) * 0.4)
+        
+        # Method coverage (30% weight)
+        method_coverage = 100.0
+        if completeness_metrics["incomplete_methods"]:
+            method_coverage = max(0, 100 - (len(completeness_metrics["incomplete_methods"]) * 10))
+        coverage_scores.append(method_coverage * 0.3)
+        
+        # Parameter coverage (20% weight)
+        if completeness_metrics["parameter_coverage"]:
+            coverage_scores.append(completeness_metrics["parameter_coverage"]["coverage_percentage"] * 0.2)
+        
+        # Schema coverage (10% weight)
+        if completeness_metrics["schema_coverage"]:
+            coverage_scores.append(completeness_metrics["schema_coverage"]["coverage_percentage"] * 0.1)
+        
+        completeness_metrics["overall_completeness"] = sum(coverage_scores)
+        
+        return completeness_metrics
+
+
+    def get_validation_report(self, discovered_endpoints: List[EndpointMetadata]) -> str:
+        """
+        Generate a comprehensive validation report for discovery accuracy and completeness.
+        
+        Args:
+            discovered_endpoints: List of discovered endpoints
+            
+        Returns:
+            Formatted validation report string
+        """
+        accuracy_metrics = self._validate_discovery_accuracy(discovered_endpoints)
+        completeness_metrics = self._assess_discovery_completeness(discovered_endpoints)
+        
+        report = []
+        report.append("🔍 DISCOVERY VALIDATION REPORT")
+        report.append("=" * 50)
+        
+        # Accuracy Section
+        report.append("\n📊 ACCURACY METRICS:")
+        report.append(f"  • Overall Accuracy: {accuracy_metrics['overall_accuracy']:.1f}%")
+        report.append(f"  • Method Accuracy: {accuracy_metrics['method_accuracy']:.1f}%")
+        report.append(f"  • Authentication Accuracy: {accuracy_metrics['auth_accuracy']:.1f}%")
+        report.append(f"  • Correctly Identified Endpoints: {accuracy_metrics['correctly_identified_endpoints']}/{accuracy_metrics['total_known_endpoints']}")
+        report.append(f"  • False Positives: {accuracy_metrics['false_positives']}")
+        report.append(f"  • False Negatives: {accuracy_metrics['false_negatives']}")
+        
+        # Completeness Section
+        report.append("\n📈 COMPLETENESS METRICS:")
+        report.append(f"  • Overall Completeness: {completeness_metrics['overall_completeness']:.1f}%")
+        
+        # Resource Coverage
+        report.append("\n  📁 RESOURCE COVERAGE:")
+        for resource, info in completeness_metrics['resource_coverage'].items():
+            report.append(f"    • {resource.replace('_', ' ').title()}: {info['coverage_percentage']:.1f}% ({info['discovered']}/{info['expected']})")
+        
+        # Method Coverage
+        if completeness_metrics['incomplete_methods']:
+            report.append(f"  ⚠️  INCOMPLETE METHODS: {len(completeness_metrics['incomplete_methods'])} endpoints")
+        
+        # Parameter Coverage
+        if completeness_metrics['parameter_coverage']:
+            report.append(f"  🔗 PARAMETER COVERAGE: {completeness_metrics['parameter_coverage']['coverage_percentage']:.1f}%")
+        
+        # Schema Coverage
+        if completeness_metrics['schema_coverage']:
+            report.append(f"  📋 SCHEMA COVERAGE: {completeness_metrics['schema_coverage']['coverage_percentage']:.1f}%")
+        
+        # Issues Section
+        report.append("\n🚨 ISSUES IDENTIFIED:")
+        if completeness_metrics['missing_endpoints']:
+            report.append(f"  • Missing Endpoints: {len(completeness_metrics['missing_endpoints'])}")
+            for endpoint in completeness_metrics['missing_endpoints'][:5]:  # Show first 5
+                report.append(f"    - {endpoint}")
+        
+        if completeness_metrics['incomplete_methods']:
+            report.append(f"  • Incomplete Methods: {len(completeness_metrics['incomplete_methods'])} endpoints")
+        
+        # Recommendations
+        report.append("\n💡 RECOMMENDATIONS:")
+        if accuracy_metrics['overall_accuracy'] < 90:
+            report.append("  • Focus on improving endpoint identification accuracy")
+        if completeness_metrics['overall_completeness'] < 90:
+            report.append("  • Enhance discovery coverage for missing resources")
+        if accuracy_metrics['method_accuracy'] < 90:
+            report.append("  • Improve HTTP method detection accuracy")
+        if accuracy_metrics['auth_accuracy'] < 90:
+            report.append("  • Enhance authentication requirement detection")
+        
+        report.append("\n" + "=" * 50)
+        return "\n".join(report)
 
 
     def _determine_auth_requirement(self, path: str) -> bool:

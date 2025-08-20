@@ -8,13 +8,13 @@
       "medium_risk_endpoints": 0,
       "low_risk_endpoints": 3,
       "authentication_types": [],
-      "discovery_coverage": 100.0,
-      "parameter_coverage": 0.0,
-      "discovery_start_time": "2025-08-20 16:33:05.698560",
-      "discovery_end_time": null,
-      "discovery_duration": 64.74256896972656,
-      "total_parameters": 0,
-      "unique_parameters": 0
+      "discovery_coverage": 94.45454545454545,
+      "parameter_coverage": 100.0,
+      "discovery_start_time": "2025-08-20 17:02:02.505358",
+      "discovery_end_time": "2025-08-20 17:02:02.505361",
+      "discovery_duration": 65.10844612121582,
+      "total_parameters": 4,
+      "unique_parameters": 2
     },
     "endpoints": [
       {
@@ -528,9 +528,9 @@
         "id": "DOC007",
         "path": "/users/v1/{user_id}",
         "methods": [
+          "PUT",
           "GET",
           "POST",
-          "PUT",
           "DELETE"
         ],
         "description": "Retrieves user by username",
@@ -615,9 +615,9 @@
         "id": "DOC009",
         "path": "/users/v1/{user_id}/email",
         "methods": [
+          "PUT",
           "GET",
           "POST",
-          "PUT",
           "DELETE"
         ],
         "description": "Update users email",
@@ -719,9 +719,9 @@
         "id": "DOC010",
         "path": "/users/v1/{user_id}/password",
         "methods": [
+          "PUT",
           "GET",
           "POST",
-          "PUT",
           "DELETE"
         ],
         "description": "Update users password",
@@ -884,9 +884,9 @@
         "id": "DOC013",
         "path": "/books/v1/{book_title}",
         "methods": [
+          "PUT",
           "GET",
           "POST",
-          "PUT",
           "DELETE"
         ],
         "description": "Retrieves book by title along with secret",
@@ -988,7 +988,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 16:33:05.698468",
+        "discovered_at": "2025-08-20 17:02:02.505148",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -1005,7 +1005,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 16:33:05.698502",
+        "discovered_at": "2025-08-20 17:02:02.505178",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -1382,9 +1382,9 @@
                 "id": "DOC007",
                 "path": "/users/v1/{user_id}",
                 "methods": [
+                  "PUT",
                   "GET",
                   "POST",
-                  "PUT",
                   "DELETE"
                 ],
                 "description": "Retrieves user by username",
@@ -1469,9 +1469,9 @@
                 "id": "DOC009",
                 "path": "/users/v1/{user_id}/email",
                 "methods": [
+                  "PUT",
                   "GET",
                   "POST",
-                  "PUT",
                   "DELETE"
                 ],
                 "description": "Update users email",
@@ -1573,9 +1573,9 @@
                 "id": "DOC010",
                 "path": "/users/v1/{user_id}/password",
                 "methods": [
+                  "PUT",
                   "GET",
                   "POST",
-                  "PUT",
                   "DELETE"
                 ],
                 "description": "Update users password",
@@ -1675,8 +1675,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
             "endpoints": [
@@ -1745,9 +1745,9 @@
                 "id": "DOC013",
                 "path": "/books/v1/{book_title}",
                 "methods": [
+                  "PUT",
                   "GET",
                   "POST",
-                  "PUT",
                   "DELETE"
                 ],
                 "description": "Retrieves book by title along with secret",
@@ -1840,8 +1840,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           }
         },
         "dependencies": {
@@ -2071,10 +2071,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-20 16:33:05.695964",
+      "discovered_at": "2025-08-20 17:02:02.502376",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-20 16:33:05.731315",
+  "discovery_timestamp": "2025-08-20 17:02:02.530568",
   "total_endpoints": 12
 }

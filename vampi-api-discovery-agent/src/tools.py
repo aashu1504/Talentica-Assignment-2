@@ -462,7 +462,7 @@ class TechnicalWriterTool(BaseTool):
                 discovery_summary=summary,
                 api_structure=api_structure,
                 report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-                notes=f"Technical Analysis: Generated from discovery data"
+                notes=f"Technical Analysis: Generated from discovery data with validation metrics"
             )
             
             return report

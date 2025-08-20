@@ -377,6 +377,7 @@ class APIDiscoveryResult(BaseModel):
     endpoints: List[EndpointMetadata] = Field(..., description="List of discovered endpoints")
     authentication_mechanisms: List[AuthenticationMechanism] = Field(..., description="Authentication mechanisms")
     api_structure: APIStructure = Field(..., description="API structure analysis")
+    validation_metrics: Optional[Dict[str, Any]] = Field(None, description="Discovery accuracy and completeness metrics")
     security_insights: Optional[Dict[str, Any]] = Field(None, description="Additional security insights")
     recommendations: Optional[List[str]] = Field(None, description="Security recommendations")
 

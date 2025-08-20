@@ -9,9 +9,9 @@
     "authentication_types": [],
     "discovery_coverage": 94.45454545454545,
     "parameter_coverage": 100.0,
-    "discovery_start_time": "2025-08-20T17:02:02.505358",
-    "discovery_end_time": "2025-08-20T17:02:02.505361",
-    "discovery_duration": 65.10844612121582,
+    "discovery_start_time": "2025-08-20T16:50:13.228422",
+    "discovery_end_time": "2025-08-20T16:50:13.228424",
+    "discovery_duration": 64.26170086860657,
     "total_parameters": 4,
     "unique_parameters": 2
   },
@@ -527,8 +527,8 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "PUT",
         "GET",
+        "PUT",
         "POST",
         "DELETE"
       ],
@@ -614,8 +614,8 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "PUT",
         "GET",
+        "PUT",
         "POST",
         "DELETE"
       ],
@@ -718,8 +718,8 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "PUT",
         "GET",
+        "PUT",
         "POST",
         "DELETE"
       ],
@@ -883,8 +883,8 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
         "GET",
+        "PUT",
         "POST",
         "DELETE"
       ],
@@ -1019,11 +1019,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T17:02:02.502376",
+    "discovered_at": "2025-08-20T16:50:13.225314",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_170215",
-  "generated_at": "2025-08-20T17:02:15.619159",
+  "report_id": "vampi_discovery_20250820_165053",
+  "generated_at": "2025-08-20T16:50:53.281596",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
