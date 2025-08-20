@@ -9,9 +9,9 @@
     "authentication_types": [],
     "discovery_coverage": 100.0,
     "parameter_coverage": 0.0,
-    "discovery_start_time": "2025-08-20T13:46:43.700148",
+    "discovery_start_time": "2025-08-20T16:33:05.698560",
     "discovery_end_time": null,
-    "discovery_duration": 64.04127192497253,
+    "discovery_duration": 64.74256896972656,
     "total_parameters": 0,
     "unique_parameters": 0
   },
@@ -31,7 +31,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -40,6 +41,23 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "Creates and populates the database with dummy data",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Database populated."
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -61,7 +79,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -70,6 +89,31 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "Home - Help",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "VAmPI the Vulnerable API"
+              },
+              "help": {
+                "type": "string",
+                "example": "VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes."
+              },
+              "vulnerable": {
+                "type": "number",
+                "example": 1
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -91,7 +135,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -104,6 +149,35 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "See basic info about all users",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "mail1@mail.com"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "name1"
+                    }
+                  }
+                }
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -122,7 +196,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -135,6 +210,43 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "See all details of the users",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "admin": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "mail1@mail.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "pass1"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "name1"
+                    }
+                  }
+                }
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -156,7 +268,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -170,6 +283,53 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {
+        "content_type": "application/json",
+        "required": true,
+        "description": "Username of the user",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "name1"
+          },
+          "password": {
+            "type": "string",
+            "example": "pass1"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@tempmail.com"
+          }
+        },
+        "required_fields": [],
+        "example": {},
+        "additional_properties": true
+      },
+      "response_schemas": {
+        "200": {
+          "description": "Successfully created user",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Successfully registered. Login to receive an auth token."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "fail"
+                ],
+                "example": "success"
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -191,7 +351,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -205,6 +366,74 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {
+        "content_type": "application/json",
+        "required": true,
+        "description": "Username of the user",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "name1"
+          },
+          "password": {
+            "type": "string",
+            "example": "pass1"
+          }
+        },
+        "required_fields": [],
+        "example": {},
+        "additional_properties": true
+      },
+      "response_schemas": {
+        "200": {
+          "description": "Sucessfully logged in user",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "auth_token": {
+                "type": "string",
+                "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw"
+              },
+              "message": {
+                "type": "string",
+                "example": "Successfully logged in."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "fail"
+                ],
+                "example": "success"
+              }
+            },
+            "example": {}
+          }
+        },
+        "400": {
+          "description": "Invalid request",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Password is not correct for the given username."
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -223,7 +452,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -232,6 +462,61 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "Display current user info",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "admin": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "mail1@mail.com"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "name1"
+                  }
+                }
+              },
+              "status": {
+                "type": "string",
+                "example": "success"
+              }
+            },
+            "example": {}
+          }
+        },
+        "401": {
+          "description": "Unauthorized access due to expired, invalid, or missing token",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "enum": [
+                  "Signature expired. Please log in again.",
+                  "Invalid token. Please log in again."
+                ]
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -243,9 +528,9 @@
       "path": "/users/v1/{user_id}",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -255,7 +540,16 @@
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {
+          "user_id": "string"
+        },
+        "validation_rules": {
+          "user_id": {
+            "required": true,
+            "description": "retrieve username data",
+            "validation_rules": {}
+          }
+        }
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -268,6 +562,48 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "Successfully display user info",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "example": "name1"
+              },
+              "email": {
+                "type": "string",
+                "example": "mail1@mail.com"
+              }
+            },
+            "example": {}
+          }
+        },
+        "404": {
+          "description": "User not found",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "User not found"
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -279,9 +615,9 @@
       "path": "/users/v1/{user_id}/email",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "description": "Update users email",
       "parameters": {
@@ -291,7 +627,16 @@
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {
+          "user_id": "string"
+        },
+        "validation_rules": {
+          "user_id": {
+            "required": true,
+            "description": "username to update email",
+            "validation_rules": {}
+          }
+        }
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -304,6 +649,65 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {
+        "content_type": "application/json",
+        "required": true,
+        "description": "field to update",
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "mail3@mail.com"
+          }
+        },
+        "required_fields": [],
+        "example": {},
+        "additional_properties": true
+      },
+      "response_schemas": {
+        "400": {
+          "description": "Invalid request",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Please Provide a valid email address."
+              }
+            },
+            "example": {}
+          }
+        },
+        "401": {
+          "description": "User not authorized",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Invalid token. Please log in again."
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -315,9 +719,9 @@
       "path": "/users/v1/{user_id}/password",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "description": "Update users password",
       "parameters": {
@@ -327,7 +731,16 @@
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {
+          "user_id": "string"
+        },
+        "validation_rules": {
+          "user_id": {
+            "required": true,
+            "description": "username to update password",
+            "validation_rules": {}
+          }
+        }
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -340,6 +753,65 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {
+        "content_type": "application/json",
+        "required": true,
+        "description": "field to update",
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "pass4"
+          }
+        },
+        "required_fields": [],
+        "example": {},
+        "additional_properties": true
+      },
+      "response_schemas": {
+        "400": {
+          "description": "Invalid request",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Malformed Data"
+              }
+            },
+            "example": {}
+          }
+        },
+        "401": {
+          "description": "User not authorized",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Invalid token. Please log in again."
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -361,7 +833,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -373,6 +846,33 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "See all books",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "Books": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "book_title": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -383,10 +883,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
         "GET",
-        "DELETE",
-        "POST"
+        "POST",
+        "PUT",
+        "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -396,7 +896,16 @@
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {
+          "book_title": "string"
+        },
+        "validation_rules": {
+          "book_title": {
+            "required": true,
+            "description": "retrieve book data",
+            "validation_rules": {}
+          }
+        }
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -407,6 +916,60 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": {},
+      "response_schemas": {
+        "200": {
+          "description": "Successfully retrieve book info",
+          "content_type": "application/json",
+          "schema": {
+            "type": "array",
+            "properties": {},
+            "example": {}
+          }
+        },
+        "401": {
+          "description": "User not authorized",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Invalid token. Please log in again."
+              }
+            },
+            "example": {}
+          }
+        },
+        "404": {
+          "description": "Book not found",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "fail"
+                ],
+                "example": "fail"
+              },
+              "message": {
+                "type": "string",
+                "example": "Book not found!"
+              }
+            },
+            "example": {}
+          }
+        }
+      },
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -456,11 +1019,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T13:46:43.694588",
+    "discovered_at": "2025-08-20T16:33:05.695964",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_134723",
-  "generated_at": "2025-08-20T13:47:23.451913",
+  "report_id": "vampi_discovery_20250820_163315",
+  "generated_at": "2025-08-20T16:33:15.830416",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

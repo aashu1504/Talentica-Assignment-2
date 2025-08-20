@@ -11,8 +11,8 @@
       "risk_level": "Low",
       "authentication_required": false,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }",
-      "test_timestamp": "2025-08-20 13:46:48.266890"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }",
+      "test_timestamp": "2025-08-20 16:33:10.994674"
     },
     {
       "path": "/",
@@ -25,8 +25,8 @@
       "risk_level": "Low",
       "authentication_required": false,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}",
-      "test_timestamp": "2025-08-20 13:46:48.397213"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}",
+      "test_timestamp": "2025-08-20 16:33:11.188824"
     },
     {
       "path": "/users/v1",
@@ -39,8 +39,8 @@
       "risk_level": "Critical",
       "authentication_required": true,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '236', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"email\": \"mail1@mail.com\",\n      \"username\": \"name1\"\n    },\n    {\n      \"email\": \"mail2@mail.com\",\n      \"username\": \"name2\"\n    },\n    {\n      \"email\": \"admin@mail.com\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n",
-      "test_timestamp": "2025-08-20 13:46:48.455785"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '236', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"email\": \"mail1@mail.com\",\n      \"username\": \"name1\"\n    },\n    {\n      \"email\": \"mail2@mail.com\",\n      \"username\": \"name2\"\n    },\n    {\n      \"email\": \"admin@mail.com\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n",
+      "test_timestamp": "2025-08-20 16:33:11.232469"
     },
     {
       "path": "/users/v1/_debug",
@@ -50,8 +50,8 @@
       "risk_level": "Critical",
       "authentication_required": true,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '382', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"admin\": false,\n      \"email\": \"mail1@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"name1\"\n    },\n    {\n      \"admin\": false,\n      \"email\": \"mail2@mail.com\",\n      \"password\": \"pass2\",\n      \"username\": \"name2\"\n    },\n    {\n      \"admin\": true,\n      \"email\": \"admin@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n",
-      "test_timestamp": "2025-08-20 13:46:48.496192"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '382', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"admin\": false,\n      \"email\": \"mail1@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"name1\"\n    },\n    {\n      \"admin\": false,\n      \"email\": \"mail2@mail.com\",\n      \"password\": \"pass2\",\n      \"username\": \"name2\"\n    },\n    {\n      \"admin\": true,\n      \"email\": \"admin@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n",
+      "test_timestamp": "2025-08-20 16:33:11.292053"
     },
     {
       "path": "/users/v1/register",
@@ -65,7 +65,7 @@
       "authentication_required": false,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
-      "test_timestamp": "2025-08-20 13:46:48.543640"
+      "test_timestamp": "2025-08-20 16:33:11.342295"
     },
     {
       "path": "/users/v1/login",
@@ -79,7 +79,7 @@
       "authentication_required": false,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
-      "test_timestamp": "2025-08-20 13:46:48.579057"
+      "test_timestamp": "2025-08-20 16:33:11.406520"
     },
     {
       "path": "/me",
@@ -90,49 +90,49 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '401 UNAUTHORIZED' for url 'http://localhost:5000/me'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
-      "test_timestamp": "2025-08-20 13:46:48.614404"
+      "test_timestamp": "2025-08-20 16:33:11.478493"
     },
     {
       "path": "/users/v1/{user_id}",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "risk_level": "Critical",
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '404 NOT FOUND' for url 'http://localhost:5000/users/v1/%7Buser_id%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
-      "test_timestamp": "2025-08-20 13:46:48.681955"
+      "test_timestamp": "2025-08-20 16:33:11.553752"
     },
     {
       "path": "/users/v1/{user_id}/email",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "risk_level": "High",
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/email'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405",
-      "test_timestamp": "2025-08-20 13:46:48.748279"
+      "test_timestamp": "2025-08-20 16:33:11.609706"
     },
     {
       "path": "/users/v1/{user_id}/password",
       "methods": [
         "GET",
+        "POST",
         "PUT",
-        "DELETE",
-        "POST"
+        "DELETE"
       ],
       "risk_level": "High",
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/password'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405",
-      "test_timestamp": "2025-08-20 13:46:48.793138"
+      "test_timestamp": "2025-08-20 16:33:11.712957"
     },
     {
       "path": "/books/v1",
@@ -145,25 +145,25 @@
       "risk_level": "Critical",
       "authentication_required": true,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '230', 'connection': 'close'}), Body: {\n  \"Books\": [\n    {\n      \"book_title\": \"bookTitle17\",\n      \"user\": \"name1\"\n    },\n    {\n      \"book_title\": \"bookTitle18\",\n      \"user\": \"name2\"\n    },\n    {\n      \"book_title\": \"bookTitle84\",\n      \"user\": \"admin\"\n    }\n  ]\n}\n",
-      "test_timestamp": "2025-08-20 13:46:48.840793"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '230', 'connection': 'close'}), Body: {\n  \"Books\": [\n    {\n      \"book_title\": \"bookTitle37\",\n      \"user\": \"name1\"\n    },\n    {\n      \"book_title\": \"bookTitle26\",\n      \"user\": \"name2\"\n    },\n    {\n      \"book_title\": \"bookTitle66\",\n      \"user\": \"admin\"\n    }\n  ]\n}\n",
+      "test_timestamp": "2025-08-20 16:33:11.784948"
     },
     {
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
         "GET",
-        "DELETE",
-        "POST"
+        "POST",
+        "PUT",
+        "DELETE"
       ],
       "risk_level": "High",
       "authentication_required": true,
       "test_status": "Failed",
-      "test_details": "Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/books/v1/%7Bbook_title%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405",
-      "test_timestamp": "2025-08-20 13:46:48.877930"
+      "test_details": "Unexpected Error: Client error '401 UNAUTHORIZED' for url 'http://localhost:5000/books/v1/%7Bbook_title%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+      "test_timestamp": "2025-08-20 16:33:11.848340"
     }
   ],
-  "qa_report": "# VAmPI API Test Report\n\n## Overview\n- Total Endpoints Tested: 12\n- High Risk Endpoints: 9\n- Test Date: 2025-08-20 13:46:48\n\n## Test Results\n\n### Test Case 1: ['GET', 'POST', 'PUT', 'DELETE'] /createdb\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }\n- **Test Timestamp**: 2025-08-20 13:46:48.266890\n\n### Test Case 2: ['GET', 'POST', 'PUT', 'DELETE'] /\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}\n- **Test Timestamp**: 2025-08-20 13:46:48.397213\n\n### Test Case 3: ['GET', 'POST', 'PUT', 'DELETE'] /users/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '236', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"email\": \"mail1@mail.com\",\n      \"username\": \"name1\"\n    },\n    {\n      \"email\": \"mail2@mail.com\",\n      \"username\": \"name2\"\n    },\n    {\n      \"email\": \"admin@mail.com\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 13:46:48.455785\n\n### Test Case 4: ['GET'] /users/v1/_debug\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '382', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"admin\": false,\n      \"email\": \"mail1@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"name1\"\n    },\n    {\n      \"admin\": false,\n      \"email\": \"mail2@mail.com\",\n      \"password\": \"pass2\",\n      \"username\": \"name2\"\n    },\n    {\n      \"admin\": true,\n      \"email\": \"admin@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 13:46:48.496192\n\n### Test Case 5: ['POST', 'GET', 'PUT', 'DELETE'] /users/v1/register\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-20 13:46:48.543640\n\n### Test Case 6: ['POST', 'GET', 'PUT', 'DELETE'] /users/v1/login\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-20 13:46:48.579057\n\n### Test Case 7: ['GET'] /me\n- **Risk Level**: Low\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '401 UNAUTHORIZED' for url 'http://localhost:5000/me'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401\n- **Test Timestamp**: 2025-08-20 13:46:48.614404\n\n### Test Case 8: ['GET', 'PUT', 'DELETE', 'POST'] /users/v1/{user_id}\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '404 NOT FOUND' for url 'http://localhost:5000/users/v1/%7Buser_id%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404\n- **Test Timestamp**: 2025-08-20 13:46:48.681955\n\n### Test Case 9: ['GET', 'PUT', 'DELETE', 'POST'] /users/v1/{user_id}/email\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/email'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405\n- **Test Timestamp**: 2025-08-20 13:46:48.748279\n\n### Test Case 10: ['GET', 'PUT', 'DELETE', 'POST'] /users/v1/{user_id}/password\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/password'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405\n- **Test Timestamp**: 2025-08-20 13:46:48.793138\n\n### Test Case 11: ['GET', 'POST', 'PUT', 'DELETE'] /books/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 08:16:48 GMT', 'content-type': 'application/json', 'content-length': '230', 'connection': 'close'}), Body: {\n  \"Books\": [\n    {\n      \"book_title\": \"bookTitle17\",\n      \"user\": \"name1\"\n    },\n    {\n      \"book_title\": \"bookTitle18\",\n      \"user\": \"name2\"\n    },\n    {\n      \"book_title\": \"bookTitle84\",\n      \"user\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 13:46:48.840793\n\n### Test Case 12: ['PUT', 'GET', 'DELETE', 'POST'] /books/v1/{book_title}\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/books/v1/%7Bbook_title%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405\n- **Test Timestamp**: 2025-08-20 13:46:48.877930\n\n## Recommendations\n1. Implement proper authentication for all sensitive endpoints\n2. Add input validation and sanitization\n3. Implement rate limiting for public endpoints\n4. Regular security audits and penetration testing\n",
-  "qa_timestamp": "2025-08-20 13:46:48.911233",
+  "qa_report": "# VAmPI API Test Report\n\n## Overview\n- Total Endpoints Tested: 12\n- High Risk Endpoints: 9\n- Test Date: 2025-08-20 16:33:11\n\n## Test Results\n\n### Test Case 1: ['GET', 'POST', 'PUT', 'DELETE'] /createdb\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }\n- **Test Timestamp**: 2025-08-20 16:33:10.994674\n\n### Test Case 2: ['GET', 'POST', 'PUT', 'DELETE'] /\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}\n- **Test Timestamp**: 2025-08-20 16:33:11.188824\n\n### Test Case 3: ['GET', 'POST', 'PUT', 'DELETE'] /users/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '236', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"email\": \"mail1@mail.com\",\n      \"username\": \"name1\"\n    },\n    {\n      \"email\": \"mail2@mail.com\",\n      \"username\": \"name2\"\n    },\n    {\n      \"email\": \"admin@mail.com\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 16:33:11.232469\n\n### Test Case 4: ['GET'] /users/v1/_debug\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '382', 'connection': 'close'}), Body: {\n  \"users\": [\n    {\n      \"admin\": false,\n      \"email\": \"mail1@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"name1\"\n    },\n    {\n      \"admin\": false,\n      \"email\": \"mail2@mail.com\",\n      \"password\": \"pass2\",\n      \"username\": \"name2\"\n    },\n    {\n      \"admin\": true,\n      \"email\": \"admin@mail.com\",\n      \"password\": \"pass1\",\n      \"username\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 16:33:11.292053\n\n### Test Case 5: ['POST', 'GET', 'PUT', 'DELETE'] /users/v1/register\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-20 16:33:11.342295\n\n### Test Case 6: ['POST', 'GET', 'PUT', 'DELETE'] /users/v1/login\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-20 16:33:11.406520\n\n### Test Case 7: ['GET'] /me\n- **Risk Level**: Low\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '401 UNAUTHORIZED' for url 'http://localhost:5000/me'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401\n- **Test Timestamp**: 2025-08-20 16:33:11.478493\n\n### Test Case 8: ['GET', 'POST', 'PUT', 'DELETE'] /users/v1/{user_id}\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '404 NOT FOUND' for url 'http://localhost:5000/users/v1/%7Buser_id%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404\n- **Test Timestamp**: 2025-08-20 16:33:11.553752\n\n### Test Case 9: ['GET', 'POST', 'PUT', 'DELETE'] /users/v1/{user_id}/email\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/email'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405\n- **Test Timestamp**: 2025-08-20 16:33:11.609706\n\n### Test Case 10: ['GET', 'POST', 'PUT', 'DELETE'] /users/v1/{user_id}/password\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '405 METHOD NOT ALLOWED' for url 'http://localhost:5000/users/v1/%7Buser_id%7D/password'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405\n- **Test Timestamp**: 2025-08-20 16:33:11.712957\n\n### Test Case 11: ['GET', 'POST', 'PUT', 'DELETE'] /books/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Wed, 20 Aug 2025 11:03:11 GMT', 'content-type': 'application/json', 'content-length': '230', 'connection': 'close'}), Body: {\n  \"Books\": [\n    {\n      \"book_title\": \"bookTitle37\",\n      \"user\": \"name1\"\n    },\n    {\n      \"book_title\": \"bookTitle26\",\n      \"user\": \"name2\"\n    },\n    {\n      \"book_title\": \"bookTitle66\",\n      \"user\": \"admin\"\n    }\n  ]\n}\n\n- **Test Timestamp**: 2025-08-20 16:33:11.784948\n\n### Test Case 12: ['GET', 'POST', 'PUT', 'DELETE'] /books/v1/{book_title}\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '401 UNAUTHORIZED' for url 'http://localhost:5000/books/v1/%7Bbook_title%7D'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401\n- **Test Timestamp**: 2025-08-20 16:33:11.848340\n\n## Recommendations\n1. Implement proper authentication for all sensitive endpoints\n2. Add input validation and sanitization\n3. Implement rate limiting for public endpoints\n4. Regular security audits and penetration testing\n",
+  "qa_timestamp": "2025-08-20 16:33:11.934992",
   "total_endpoints_tested": 12
 }

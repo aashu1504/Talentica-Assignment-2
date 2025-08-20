@@ -1,17 +1,17 @@
 {
   "discovery_summary": {
-    "total_endpoints": 16,
-    "authenticated_endpoints": 7,
-    "public_endpoints": 9,
-    "high_risk_endpoints": 6,
+    "total_endpoints": 12,
+    "authenticated_endpoints": 8,
+    "public_endpoints": 4,
+    "high_risk_endpoints": 3,
     "medium_risk_endpoints": 0,
     "low_risk_endpoints": 3,
     "authentication_types": [],
     "discovery_coverage": 100.0,
     "parameter_coverage": 0.0,
-    "discovery_start_time": "2025-08-20T03:01:47.484762",
+    "discovery_start_time": "2025-08-20T16:28:44.282355",
     "discovery_end_time": null,
-    "discovery_duration": 48.9787859916687,
+    "discovery_duration": 64.67370796203613,
     "total_parameters": 0,
     "unique_parameters": 0
   },
@@ -31,7 +31,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -40,6 +41,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -61,7 +64,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -70,6 +74,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -91,10 +97,11 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
-      "authentication_required": false,
-      "authentication_type": "None",
+      "authentication_required": true,
+      "authentication_type": "Bearer",
       "risk_level": "Critical",
       "risk_factors": [
         "user_management",
@@ -104,6 +111,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -122,10 +131,11 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
-      "authentication_required": false,
-      "authentication_type": "None",
+      "authentication_required": true,
+      "authentication_type": "Bearer",
       "risk_level": "Critical",
       "risk_factors": [
         "user_management",
@@ -135,6 +145,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -156,7 +168,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -170,6 +183,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -191,7 +206,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": false,
       "authentication_type": "None",
@@ -205,6 +221,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -223,7 +241,8 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -232,6 +251,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -240,24 +261,26 @@
     },
     {
       "id": "DOC007",
-      "path": "/users/v1/{username}",
+      "path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
+        "POST",
         "DELETE",
+        "GET",
         "PUT"
       ],
       "description": "Retrieves user by username",
       "parameters": {
         "query_params": [],
         "path_params": [
-          "username"
+          "user_id"
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
-      "authentication_required": false,
-      "authentication_type": "None",
+      "authentication_required": true,
+      "authentication_type": "Bearer",
       "risk_level": "Critical",
       "risk_factors": [
         "user_management",
@@ -267,6 +290,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -275,21 +300,23 @@
     },
     {
       "id": "DOC009",
-      "path": "/users/v1/{username}/email",
+      "path": "/users/v1/{user_id}/email",
       "methods": [
-        "PUT",
+        "POST",
+        "DELETE",
         "GET",
-        "DELETE"
+        "PUT"
       ],
       "description": "Update users email",
       "parameters": {
         "query_params": [],
         "path_params": [
-          "username"
+          "user_id"
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -302,6 +329,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -310,21 +339,23 @@
     },
     {
       "id": "DOC010",
-      "path": "/users/v1/{username}/password",
+      "path": "/users/v1/{user_id}/password",
       "methods": [
-        "PUT",
+        "POST",
+        "DELETE",
         "GET",
-        "DELETE"
+        "PUT"
       ],
       "description": "Update users password",
       "parameters": {
         "query_params": [],
         "path_params": [
-          "username"
+          "user_id"
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -337,6 +368,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -358,10 +391,11 @@
         "path_params": [],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
-      "authentication_required": false,
-      "authentication_type": "None",
+      "authentication_required": true,
+      "authentication_type": "Bearer",
       "risk_level": "Critical",
       "risk_factors": [
         "data_exposure",
@@ -370,6 +404,8 @@
       "response_types": [
         "application/json"
       ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -380,7 +416,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "GET"
+        "POST",
+        "DELETE",
+        "GET",
+        "PUT"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -390,7 +429,8 @@
         ],
         "body_params": [],
         "headers": [],
-        "param_types": {}
+        "param_types": {},
+        "validation_rules": {}
       },
       "authentication_required": true,
       "authentication_type": "Bearer",
@@ -401,155 +441,8 @@
       "response_types": [
         "application/json"
       ],
-      "discovered_via": "documentation_parsing",
-      "status_code": null,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "PMN002",
-      "path": "/users/v1/:username",
-      "methods": [
-        "GET",
-        "DELETE"
-      ],
-      "description": "Retrieves user by username",
-      "parameters": {
-        "query_params": [],
-        "path_params": [
-          "baseUrl",
-          "baseUrl"
-        ],
-        "body_params": [],
-        "headers": [
-          "Accept"
-        ],
-        "param_types": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [
-        "application/json"
-      ],
-      "discovered_via": "documentation_parsing",
-      "status_code": null,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "PMN010",
-      "path": "/books/v1/:book_title",
-      "methods": [
-        "GET"
-      ],
-      "description": "Retrieves book by title along with secret",
-      "parameters": {
-        "query_params": [],
-        "path_params": [
-          "baseUrl",
-          "baseUrl"
-        ],
-        "body_params": [],
-        "headers": [
-          "Accept"
-        ],
-        "param_types": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "High",
-      "risk_factors": [
-        "data_exposure"
-      ],
-      "response_types": [
-        "application/json"
-      ],
-      "discovered_via": "documentation_parsing",
-      "status_code": null,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "PMN011",
-      "path": "/users/v1/:username/email",
-      "methods": [
-        "PUT"
-      ],
-      "description": "Update users email",
-      "parameters": {
-        "query_params": [],
-        "path_params": [
-          "baseUrl",
-          "baseUrl"
-        ],
-        "body_params": [
-          "email"
-        ],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "High",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "modification_operations"
-      ],
-      "response_types": [
-        "application/json"
-      ],
-      "discovered_via": "documentation_parsing",
-      "status_code": null,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "PMN012",
-      "path": "/users/v1/:username/password",
-      "methods": [
-        "PUT"
-      ],
-      "description": "Update users password",
-      "parameters": {
-        "query_params": [],
-        "path_params": [
-          "baseUrl",
-          "baseUrl"
-        ],
-        "body_params": [
-          "password"
-        ],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "High",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "modification_operations"
-      ],
-      "response_types": [
-        "application/json"
-      ],
+      "request_schema": null,
+      "response_schemas": null,
       "discovered_via": "documentation_parsing",
       "status_code": null,
       "response_time": null,
@@ -582,20 +475,16 @@
         "/users/v1/_debug",
         "/users/v1/register",
         "/users/v1/login",
-        "/users/v1/{username}",
-        "/users/v1/{username}/email",
-        "/users/v1/{username}/password",
-        "/users/v1/:username",
-        "/users/v1/:username/email",
-        "/users/v1/:username/password"
+        "/users/v1/{user_id}",
+        "/users/v1/{user_id}/email",
+        "/users/v1/{user_id}/password"
       ],
       "me": [
         "/me"
       ],
       "books": [
         "/books/v1",
-        "/books/v1/{book_title}",
-        "/books/v1/:book_title"
+        "/books/v1/{book_title}"
       ]
     },
     "endpoint_relationships": {},
@@ -603,11 +492,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T03:01:47.476423",
+    "discovered_at": "2025-08-20T16:28:44.280838",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_030237",
-  "generated_at": "2025-08-20T03:02:37.918184",
+  "report_id": "vampi_discovery_20250820_162855",
+  "generated_at": "2025-08-20T16:28:55.952380",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

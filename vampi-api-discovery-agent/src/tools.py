@@ -389,15 +389,17 @@ class TechnicalWriterTool(BaseTool):
             # Convert to EndpointMetadata objects
             endpoints = []
             for ep_data in endpoints_data:
-                # Create EndpointParameters
+                # Create EndpointParameters with enhanced information
                 parameters = EndpointParameters(
                     query_params=ep_data.get("parameters", {}).get("query_params", []),
                     path_params=ep_data.get("parameters", {}).get("path_params", []),
                     body_params=ep_data.get("parameters", {}).get("body_params", []),
-                    headers=ep_data.get("parameters", {}).get("headers", [])
+                    headers=ep_data.get("parameters", {}).get("headers", []),
+                    param_types=ep_data.get("parameters", {}).get("param_types", {}),
+                    validation_rules=ep_data.get("parameters", {}).get("validation_rules", {})
                 )
                 
-                # Create EndpointMetadata
+                # Create EndpointMetadata with enhanced schema information
                 endpoint = EndpointMetadata(
                     id=ep_data.get("id", ""),
                     path=ep_data.get("path", ""),
@@ -409,6 +411,8 @@ class TechnicalWriterTool(BaseTool):
                     risk_level=ep_data.get("risk_level", "Medium"),
                     risk_factors=ep_data.get("risk_factors", []),
                     response_types=ep_data.get("response_types", []),
+                    request_schema=ep_data.get("request_schema"),
+                    response_schemas=ep_data.get("response_schemas"),
                     discovered_via=ep_data.get("discovered_via", "endpoint_scanning"),
                     status_code=ep_data.get("status_code", 200)
                 )

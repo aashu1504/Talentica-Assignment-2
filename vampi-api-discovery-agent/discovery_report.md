@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-20 13:47:23
+**Generated:** 2025-08-20 16:33:15
 
 ## Executive Summary
 
@@ -91,7 +91,7 @@
 
 ### /users/v1/{user_id}
 
-- **Methods:** GET, PUT, DELETE, POST
+- **Methods:** GET, POST, PUT, DELETE
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -103,7 +103,7 @@
 
 ### /users/v1/{user_id}/email
 
-- **Methods:** GET, PUT, DELETE, POST
+- **Methods:** GET, POST, PUT, DELETE
 - **Description:** Update users email
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -115,7 +115,7 @@
 
 ### /users/v1/{user_id}/password
 
-- **Methods:** GET, PUT, DELETE, POST
+- **Methods:** GET, POST, PUT, DELETE
 - **Description:** Update users password
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -138,7 +138,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** PUT, GET, DELETE, POST
+- **Methods:** GET, POST, PUT, DELETE
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High

@@ -1434,6 +1434,10 @@ class VAmPIDiscoveryEngine:
                     # Extract parameters
                     parameters = self._extract_openapi_parameters(method_info.get('parameters', []))
                     
+                    # Extract enhanced schema information
+                    request_schema = self._extract_openapi_request_body(method_info, spec)
+                    response_schemas = self._extract_openapi_response_schemas(method_info, spec)
+                    
                     # Extract authentication requirements
                     auth_required = 'security' in method_info or 'security' in spec
                     auth_type = self._extract_openapi_auth_type(method_info, spec)
@@ -1460,6 +1464,8 @@ class VAmPIDiscoveryEngine:
                         risk_level=risk_level,
                         risk_factors=risk_factors,
                         response_types=list(set(response_types)),
+                        request_schema=request_schema,
+                        response_schemas=response_schemas,
                         discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING,
                         status_code=None,
                         response_time=None,
@@ -1491,17 +1497,45 @@ class VAmPIDiscoveryEngine:
         body_params = []
         headers = []
         param_types = {}
+        param_validation = {}
         
         for param in param_list:
             param_name = param.get('name', '')
             param_in = param.get('in', '')
-            param_type = param.get('schema', {}).get('type', 'string')
+            schema = param.get('schema', {})
+            
+            # Extract detailed parameter information
+            param_type = schema.get('type', 'string')
+            param_format = schema.get('format', '')
+            param_required = param.get('required', False)
+            param_description = param.get('description', '')
+            
+            # Extract validation rules
+            validation_rules = {}
+            if 'minimum' in schema:
+                validation_rules['minimum'] = schema['minimum']
+            if 'maximum' in schema:
+                validation_rules['maximum'] = schema['maximum']
+            if 'pattern' in schema:
+                validation_rules['pattern'] = schema['pattern']
+            if 'minLength' in schema:
+                validation_rules['minLength'] = schema['minLength']
+            if 'maxLength' in schema:
+                validation_rules['maxLength'] = schema['maxLength']
+            if 'enum' in schema:
+                validation_rules['enum'] = schema['enum']
             
             # Normalize parameter names for consistency
             if param_name == "username":
                 param_name = "user_id"
             
-            param_types[param_name] = param_type
+            # Store enhanced parameter information
+            param_types[param_name] = f"{param_type}{'/' + param_format if param_format else ''}"
+            param_validation[param_name] = {
+                'required': param_required,
+                'description': param_description,
+                'validation_rules': validation_rules
+            }
             
             if param_in == 'query':
                 query_params.append(param_name)
@@ -1517,8 +1551,90 @@ class VAmPIDiscoveryEngine:
             path_params=path_params,
             body_params=body_params,
             headers=headers,
-            param_types=param_types
+            param_types=param_types,
+            validation_rules=param_validation
         )
+
+
+    def _extract_openapi_request_body(self, method_info: Dict, spec: Dict) -> Dict:
+        """
+        Extract request body schema from OpenAPI specification.
+        
+        Args:
+            method_info: Method information from OpenAPI spec
+            spec: Full OpenAPI specification
+            
+        Returns:
+            Request body schema dictionary
+        """
+        request_body = method_info.get('requestBody', {})
+        if not request_body:
+            return {}
+        
+        content = request_body.get('content', {})
+        if not content:
+            return {}
+        
+        # Get the first available content type (usually application/json)
+        content_type = list(content.keys())[0] if content else 'application/json'
+        schema = content[content_type].get('schema', {})
+        
+        # Extract detailed schema information
+        schema_info = {
+            'content_type': content_type,
+            'required': request_body.get('required', False),
+            'description': request_body.get('description', '')
+        }
+        
+        if schema:
+            schema_info.update({
+                'type': schema.get('type', 'object'),
+                'properties': schema.get('properties', {}),
+                'required_fields': schema.get('required', []),
+                'example': schema.get('example', {}),
+                'additional_properties': schema.get('additionalProperties', True)
+            })
+        
+        return schema_info
+
+
+    def _extract_openapi_response_schemas(self, method_info: Dict, spec: Dict) -> Dict:
+        """
+        Extract response schemas from OpenAPI specification.
+        
+        Args:
+            method_info: Method information from OpenAPI spec
+            spec: Full OpenAPI specification
+            
+        Returns:
+            Response schemas dictionary
+        """
+        responses = method_info.get('responses', {})
+        if not responses:
+            return {}
+        
+        response_schemas = {}
+        
+        for status_code, response_info in responses.items():
+            content = response_info.get('content', {})
+            if not content:
+                continue
+            
+            # Get the first available content type
+            content_type = list(content.keys())[0] if content else 'application/json'
+            schema = content[content_type].get('schema', {})
+            
+            response_schemas[status_code] = {
+                'description': response_info.get('description', ''),
+                'content_type': content_type,
+                'schema': {
+                    'type': schema.get('type', 'object'),
+                    'properties': schema.get('properties', {}),
+                    'example': schema.get('example', {})
+                } if schema else {}
+            }
+        
+        return response_schemas
     
     def _extract_openapi_auth_type(self, method_info: Dict, spec: Dict) -> str:
         """
@@ -1634,6 +1750,10 @@ class VAmPIDiscoveryEngine:
                 # Extract parameters from Postman request
                 parameters = self._extract_postman_parameters(request)
                 
+                # Extract enhanced schema information from Postman
+                request_schema = self._extract_postman_request_schema(request)
+                response_schemas = self._extract_postman_response_schemas(request)
+                
                 # Determine authentication
                 auth_required = 'auth' in request or any('authorization' in str(h).lower() for h in request.get('header', []))
                 auth_type = self._extract_postman_auth_type(request)
@@ -1653,6 +1773,8 @@ class VAmPIDiscoveryEngine:
                     risk_level=risk_level,
                     risk_factors=risk_factors,
                     response_types=['application/json'],  # Default for API collections
+                    request_schema=request_schema,
+                    response_schemas=response_schemas,
                     discovered_via=DiscoveryMethod.DOCUMENTATION_PARSING,
                     status_code=None,
                     response_time=None,
@@ -1766,7 +1888,66 @@ class VAmPIDiscoveryEngine:
                         return 'Basic'
         
         return 'None'
-    
+
+
+    def _extract_postman_request_schema(self, request: Dict) -> Dict:
+        """
+        Extract request body schema from Postman request.
+        
+        Args:
+            request: Postman request object
+            
+        Returns:
+            Request body schema dictionary
+        """
+        body = request.get('body', {})
+        if not body or 'raw' not in body:
+            return {}
+        
+        try:
+            body_data = json.loads(body['raw'])
+            if isinstance(body_data, dict):
+                return {
+                    'type': 'object',
+                    'properties': body_data,
+                    'example': body_data,
+                    'content_type': body.get('mode', 'raw')
+                }
+        except:
+            pass
+        
+        return {}
+
+
+    def _extract_postman_response_schemas(self, request: Dict) -> Dict:
+        """
+        Extract response schemas from Postman request examples.
+        
+        Args:
+            request: Postman request object
+            
+        Returns:
+            Response schemas dictionary
+        """
+        # Postman doesn't typically store response schemas, but we can infer from examples
+        examples = request.get('response', [])
+        if not examples:
+            return {}
+        
+        response_schemas = {}
+        
+        for i, example in enumerate(examples):
+            if isinstance(example, dict):
+                status_code = example.get('code', f'200_{i}')
+                response_schemas[status_code] = {
+                    'description': example.get('name', f'Example response {i}'),
+                    'content_type': 'application/json',
+                    'example': example.get('body', {})
+                }
+        
+        return response_schemas
+
+
     def _detect_auth_mechanisms(self, endpoints: List[EndpointMetadata]) -> List[AuthenticationMechanism]:
         """
         Detect and categorize authentication mechanisms.

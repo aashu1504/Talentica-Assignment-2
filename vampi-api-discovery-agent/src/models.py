@@ -93,6 +93,10 @@ class EndpointParameters(BaseModel):
     body_params: List[str] = Field(default_factory=list, description="Body parameters")
     headers: List[str] = Field(default_factory=list, description="Required headers")
     param_types: Dict[str, str] = Field(default_factory=dict, description="Parameter types (string, integer, etc.)")
+    validation_rules: Dict[str, Dict[str, Any]] = Field(
+        default_factory=dict, 
+        description="Parameter validation rules (min/max, patterns, required, etc.)"
+    )
 
 
 class EndpointMetadata(BaseModel):
@@ -107,6 +111,14 @@ class EndpointMetadata(BaseModel):
     risk_level: RiskLevel = Field(..., description="Security risk level")
     risk_factors: List[str] = Field(default_factory=list, description="Factors contributing to risk level")
     response_types: List[str] = Field(default_factory=list, description="Supported response content types")
+    request_schema: Optional[Dict[str, Any]] = Field(
+        None, 
+        description="Request body schema with properties, types, and examples"
+    )
+    response_schemas: Optional[Dict[str, Any]] = Field(
+        None, 
+        description="Response schemas by status code with properties and examples"
+    )
     discovered_via: DiscoveryMethod = Field(..., description="Method used to discover this endpoint")
     status_code: Optional[int] = Field(None, description="HTTP status code from discovery")
     response_time: Optional[float] = Field(None, description="Response time in seconds")
