@@ -218,6 +218,8 @@ class APIStructure(BaseModel):
 
 class DiscoverySummary(BaseModel):
     """Summary of API discovery results"""
+    target_application: str = Field(default="VAmPI", description="Target application being discovered")
+    base_url: str = Field(default="http://localhost:5000", description="Base URL of the target application")
     total_endpoints: int = Field(..., description="Total number of discovered endpoints")
     authenticated_endpoints: int = Field(..., description="Number of endpoints requiring authentication")
     public_endpoints: int = Field(..., description="Number of public endpoints")

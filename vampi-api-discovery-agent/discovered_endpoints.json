@@ -1,5 +1,7 @@
 {
   "discovery_summary": {
+    "target_application": "VAmPI",
+    "base_url": "http://localhost:5000",
     "total_endpoints": 37,
     "authenticated_endpoints": 19,
     "public_endpoints": 18,
@@ -9,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-20T21:16:00.421912",
-    "discovery_end_time": "2025-08-20T21:16:00.421940",
-    "discovery_duration": 144.5285999774933,
+    "discovery_start_time": "2025-08-20T22:20:37.130156",
+    "discovery_end_time": "2025-08-20T22:20:37.130158",
+    "discovery_duration": 143.98073410987854,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -530,10 +532,10 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "PUT",
-        "DELETE",
         "POST",
-        "GET"
+        "PUT",
+        "GET",
+        "DELETE"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -617,10 +619,10 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "PUT",
-        "DELETE",
         "POST",
-        "GET"
+        "PUT",
+        "GET",
+        "DELETE"
       ],
       "description": "Update users email",
       "parameters": {
@@ -721,10 +723,10 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "PUT",
-        "DELETE",
         "POST",
-        "GET"
+        "PUT",
+        "GET",
+        "DELETE"
       ],
       "description": "Update users password",
       "parameters": {
@@ -886,10 +888,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
-        "DELETE",
         "POST",
-        "GET"
+        "PUT",
+        "GET",
+        "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -1877,11 +1879,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T21:16:00.383612",
+    "discovered_at": "2025-08-20T22:20:37.111513",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_211636",
-  "generated_at": "2025-08-20T21:16:36.018974",
+  "report_id": "vampi_discovery_20250820_222108",
+  "generated_at": "2025-08-20T22:21:08.712337",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

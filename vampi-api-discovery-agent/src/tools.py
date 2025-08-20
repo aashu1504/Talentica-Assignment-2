@@ -552,6 +552,11 @@ class TechnicalWriterTool(BaseTool):
             markdown_content = f"# VAmPI API Discovery Report\n\n"
             markdown_content += f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
             
+            # Configuration section
+            markdown_content += f"## Configuration\n\n"
+            markdown_content += f"- **Target Application:** {report.discovery_summary.target_application}\n"
+            markdown_content += f"- **Base URL:** {report.discovery_summary.base_url}\n\n"
+            
             # Summary section
             markdown_content += f"## Executive Summary\n\n"
             markdown_content += f"- **Total Endpoints Discovered:** {report.discovery_summary.total_endpoints}\n"
