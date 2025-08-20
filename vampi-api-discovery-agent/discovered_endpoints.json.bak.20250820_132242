@@ -9,9 +9,9 @@
     "authentication_types": [],
     "discovery_coverage": 100.0,
     "parameter_coverage": 0.0,
-    "discovery_start_time": "2025-08-20T13:46:43.700148",
+    "discovery_start_time": "2025-08-20T13:16:16.750546",
     "discovery_end_time": null,
-    "discovery_duration": 64.04127192497253,
+    "discovery_duration": 64.21700692176819,
     "total_parameters": 0,
     "unique_parameters": 0
   },
@@ -242,10 +242,10 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
-        "PUT",
         "DELETE",
-        "POST"
+        "POST",
+        "PUT",
+        "GET"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -278,10 +278,10 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "GET",
-        "PUT",
         "DELETE",
-        "POST"
+        "POST",
+        "PUT",
+        "GET"
       ],
       "description": "Update users email",
       "parameters": {
@@ -314,10 +314,10 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "GET",
-        "PUT",
         "DELETE",
-        "POST"
+        "POST",
+        "PUT",
+        "GET"
       ],
       "description": "Update users password",
       "parameters": {
@@ -383,10 +383,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
-        "GET",
+        "POST",
         "DELETE",
-        "POST"
+        "PUT",
+        "GET"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -456,11 +456,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T13:46:43.694588",
+    "discovered_at": "2025-08-20T13:16:16.734431",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_134723",
-  "generated_at": "2025-08-20T13:47:23.451913",
+  "report_id": "vampi_discovery_20250820_131711",
+  "generated_at": "2025-08-20T13:17:11.489976",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

@@ -24,6 +24,10 @@ from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 # Import models
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
 from models import (
     DiscoveryReport, DiscoverySummary, EndpointMetadata,
     AuthenticationMechanism, APIStructure, RiskLevel, 

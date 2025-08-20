@@ -948,17 +948,37 @@ class VAmPIDiscoveryEngine:
             # Normalize the path for comparison
             normalized_path = normalize_parameter_format(endpoint.path)
             
+            # Standardize parameter names before comparison
+            normalized_path = normalized_path.replace("{username}", "{user_id}")
+            
             if normalized_path not in normalized_paths:
                 normalized_paths.add(normalized_path)
                 
                 # Update the endpoint path to use normalized format
                 endpoint.path = normalized_path
                 
-                # Standardize parameter names
-                if "{username}" in endpoint.path:
-                    endpoint.path = endpoint.path.replace("{username}", "{user_id}")
+                # Ensure path parameters are also standardized
+                if endpoint.parameters and endpoint.parameters.path_params:
+                    endpoint.parameters.path_params = [
+                        "user_id" if param == "username" else param 
+                        for param in endpoint.parameters.path_params
+                    ]
                 
                 unique_endpoints.append(endpoint)
+            else:
+                # Merge methods if we have the same normalized path
+                existing_endpoint = next(ep for ep in unique_endpoints if normalize_parameter_format(ep.path).replace("{username}", "{user_id}") == normalized_path)
+                if existing_endpoint:
+                    # Merge HTTP methods
+                    existing_methods = set(existing_endpoint.methods)
+                    new_methods = set(endpoint.methods)
+                    existing_endpoint.methods = list(existing_methods.union(new_methods))
+                    
+                    # Merge other properties if needed
+                    if not existing_endpoint.description and endpoint.description:
+                        existing_endpoint.description = endpoint.description
+                    if not existing_endpoint.parameters and endpoint.parameters:
+                        existing_endpoint.parameters = endpoint.parameters
         
         return unique_endpoints
 
@@ -1477,6 +1497,10 @@ class VAmPIDiscoveryEngine:
             param_in = param.get('in', '')
             param_type = param.get('schema', {}).get('type', 'string')
             
+            # Normalize parameter names for consistency
+            if param_name == "username":
+                param_name = "user_id"
+            
             param_types[param_name] = param_type
             
             if param_in == 'query':
@@ -1664,11 +1688,20 @@ class VAmPIDiscoveryEngine:
                 query_params.append(param_name)
                 param_types[param_name] = 'string'
         
-        # Extract path parameters (look for {{variable}} patterns)
+        # Extract path parameters (look for {{variable}} patterns and {param} patterns)
         path_str = str(url_info)
-        path_params = re.findall(r'\{\{(\w+)\}\}', path_str)
-        for param in path_params:
-            param_types[param] = 'string'
+        # Look for Postman variables {{variable}} and OpenAPI style {param}
+        postman_params = re.findall(r'\{\{(\w+)\}\}', path_str)
+        openapi_params = re.findall(r'\{(\w+)\}', path_str)
+        
+        # Combine and normalize parameter names
+        all_params = postman_params + openapi_params
+        path_params = []
+        for param in all_params:
+            # Normalize parameter names for consistency
+            normalized_param = "user_id" if param == "username" else param
+            path_params.append(normalized_param)
+            param_types[normalized_param] = 'string'
         
         # Extract headers
         for header in request.get('header', []):
@@ -1746,21 +1779,77 @@ class VAmPIDiscoveryEngine:
         """
         auth_map = {}
         
+        # Apply authentication rules to all endpoints
         for endpoint in endpoints:
-            if endpoint.authentication_required and endpoint.authentication_type != AuthenticationType.NONE:
-                auth_type = endpoint.authentication_type
-                
-                if auth_type not in auth_map:
-                    auth_map[auth_type] = AuthenticationMechanism(
-                        type=auth_type,
-                        name=f"{auth_type.value}_auth",
-                        description=f"{auth_type.value} authentication mechanism",
-                        endpoints_using=[]
-                    )
-                
-                auth_map[auth_type].endpoints_using.append(endpoint.path)
+            # Determine auth requirement based on VAmPI rules
+            auth_required = self._determine_auth_requirement(endpoint.path)
+            auth_type = "Bearer" if auth_required else "None"
+            
+            # Update endpoint with correct auth info
+            endpoint.authentication_required = auth_required
+            endpoint.authentication_type = auth_type
+            
+            if auth_type not in auth_map:
+                auth_map[auth_type] = AuthenticationMechanism(
+                    type=auth_type,
+                    name=f"{auth_type}_auth",
+                    description=f"{auth_type} authentication mechanism",
+                    endpoints_using=[]
+                )
+            
+            auth_map[auth_type].endpoints_using.append(endpoint.path)
         
         return list(auth_map.values())
+
+
+    def _determine_auth_requirement(self, path: str) -> bool:
+        """
+        Determine if an endpoint requires authentication based on VAmPI rules.
+        
+        Args:
+            path: Endpoint path
+            
+        Returns:
+            True if authentication required, False otherwise
+        """
+        # Public endpoints (no auth)
+        public_patterns = [
+            "/",
+            "/createdb",
+            "/users/v1/register",
+            "/users/v1/login"
+        ]
+        
+        # Protected endpoints (auth required)
+        protected_patterns = [
+            "/me",
+            "/users/v1/{user_id}/email",
+            "/users/v1/{user_id}/password",
+            "/books/v1/{book_title}"
+        ]
+        
+        # Admin endpoints (auth required)
+        admin_patterns = [
+            "/users/v1",
+            "/users/v1/{user_id}",
+            "/books/v1"
+        ]
+        
+        # Check if path matches any pattern
+        if path in public_patterns:
+            return False
+        elif path in protected_patterns or path in admin_patterns:
+            return True
+        
+        # For parameterized paths, check pattern matching
+        if "/{user_id}" in path or "/{book_title}" in path:
+            return True
+        
+        # Default to requiring auth for sensitive operations
+        if any(op in path for op in ["/users/", "/books/", "/admin/"]):
+            return True
+        
+        return False
     
     def get_discovery_stats(self) -> Dict[str, Any]:
         """

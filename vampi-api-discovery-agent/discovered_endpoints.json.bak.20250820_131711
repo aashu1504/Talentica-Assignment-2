@@ -9,9 +9,9 @@
     "authentication_types": [],
     "discovery_coverage": 100.0,
     "parameter_coverage": 0.0,
-    "discovery_start_time": "2025-08-20T13:46:43.700148",
+    "discovery_start_time": "2025-08-20T13:06:12.257764",
     "discovery_end_time": null,
-    "discovery_duration": 64.04127192497253,
+    "discovery_duration": 64.70753979682922,
     "total_parameters": 0,
     "unique_parameters": 0
   },
@@ -383,10 +383,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
         "GET",
-        "DELETE",
-        "POST"
+        "PUT",
+        "POST",
+        "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -456,11 +456,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T13:46:43.694588",
+    "discovered_at": "2025-08-20T13:06:12.245029",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_134723",
-  "generated_at": "2025-08-20T13:47:23.451913",
+  "report_id": "vampi_discovery_20250820_130645",
+  "generated_at": "2025-08-20T13:06:45.957942",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
