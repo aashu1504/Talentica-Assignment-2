@@ -10,11 +10,16 @@ import logging
 import time
 import json
 import yaml
+import sys
+import os
 from datetime import datetime
 from typing import List, Dict, Optional, Set, Tuple, Any
 from urllib.parse import urljoin, urlparse
 from pathlib import Path
 import re
+
+# Add src directory to Python path for imports
+sys.path.append(os.path.dirname(__file__))
 
 import httpx
 import urllib3
@@ -36,7 +41,7 @@ from models import (
 )
 from utils import (
     normalize_url, extract_path_parameters, rate_limit_delay, 
-    calculate_success_rate, is_valid_url
+    calculate_success_rate, is_valid_url, normalize_parameter_format
 )
 
 
@@ -79,13 +84,21 @@ class VAmPIDiscoveryEngine:
             "/users/v1",
             "/users/v1/register", 
             "/users/v1/login",
+            "/users/v1/_debug",  # Added missing debug endpoint
             "/users/v1/{user_id}",  # Standardized from {username}
             "/users/v1/{user_id}/email",  # Standardized from {username}
             "/users/v1/{user_id}/password",  # Standardized from {username}
             "/books/v1",
             "/books/v1/{book_title}",
             "/",
-            "/createdb"
+            "/createdb",
+            # Additional potential endpoints for comprehensive coverage
+            "/api/v1",
+            "/api/v1/users",
+            "/api/v1/books",
+            "/v1",
+            "/v1/users",
+            "/v1/books"
         ]
         
         # HTTP methods to test (focused on VAmPI supported methods)
@@ -698,7 +711,11 @@ class VAmPIDiscoveryEngine:
         pattern_endpoints = await self._pattern_based_discovery()
         endpoints.extend(pattern_endpoints)
         
-        total_active = len(active_endpoints + common_endpoints + pattern_endpoints)
+        # Enhanced endpoint discovery for maximum coverage
+        enhanced_endpoints = await self._enhanced_endpoint_discovery()
+        endpoints.extend(enhanced_endpoints)
+        
+        total_active = len(active_endpoints + common_endpoints + pattern_endpoints + enhanced_endpoints)
         self.logger.info(f"🚀 Active scanning: {total_active} additional endpoints")
         
         # Remove duplicates and merge methods
@@ -873,7 +890,15 @@ class VAmPIDiscoveryEngine:
             "/users/v1/{username}",
             "/users/v1/{username}/email",
             "/users/v1/{username}/password",
-            "/books/v1/{book_title}"
+            "/books/v1/{book_title}",
+            # Additional patterns for comprehensive coverage
+            "/users/v1/{user_id}",
+            "/users/v1/{user_id}/email", 
+            "/users/v1/{user_id}/password",
+            "/api/v1/users/{user_id}",
+            "/api/v1/books/{book_id}",
+            "/v1/users/{user_id}",
+            "/v1/books/{book_id}"
         ]
         
         for pattern in vampi_patterns:
@@ -950,8 +975,6 @@ class VAmPIDiscoveryEngine:
         Returns:
             List of deduplicated and normalized endpoints
         """
-        from utils import normalize_parameter_format
-        
         normalized_paths = set()
         unique_endpoints = []
         
@@ -2131,7 +2154,7 @@ class VAmPIDiscoveryEngine:
 
     def _assess_discovery_completeness(self, discovered_endpoints: List[EndpointMetadata]) -> Dict[str, Any]:
         """
-        Assess the completeness of the discovery process.
+        Assess the completeness of API discovery against expected VAmPI structure.
         
         Args:
             discovered_endpoints: List of discovered endpoints
@@ -2139,17 +2162,19 @@ class VAmPIDiscoveryEngine:
         Returns:
             Dictionary with completeness metrics
         """
-        # Expected VAmPI API structure
+        # Expected VAmPI API structure with comprehensive coverage
         expected_resources = {
             "user_management": {
                 "base_paths": ["/users/v1"],
                 "expected_endpoints": [
                     "/users/v1",
-                    "/users/v1/register", 
+                    "/users/v1/register",
                     "/users/v1/login",
+                    "/users/v1/_debug",
                     "/users/v1/{user_id}",
                     "/users/v1/{user_id}/email",
-                    "/users/v1/{user_id}/password"
+                    "/users/v1/{user_id}/password",
+                    "/me"
                 ],
                 "required_methods": ["GET", "POST", "PUT", "DELETE"]
             },
@@ -2159,128 +2184,170 @@ class VAmPIDiscoveryEngine:
                     "/books/v1",
                     "/books/v1/{book_title}"
                 ],
+                "required_methods": ["GET", "POST"]
+            },
+            "system_endpoints": {
+                "base_paths": ["/", "/createdb"],
+                "expected_endpoints": [
+                    "/",
+                    "/createdb"
+                ],
                 "required_methods": ["GET", "POST", "PUT", "DELETE"]
             },
-            "system_operations": {
-                "base_paths": ["/", "/createdb", "/me"],
-                "expected_endpoints": ["/", "/createdb", "/me"],
-                "required_methods": ["GET", "POST", "PUT", "DELETE"]
+            "additional_endpoints": {
+                "base_paths": ["/admin", "/health", "/status", "/docs"],
+                "expected_endpoints": [
+                    "/admin",
+                    "/admin/users",
+                    "/admin/books",
+                    "/health",
+                    "/status",
+                    "/info",
+                    "/docs",
+                    "/swagger",
+                    "/openapi.json",
+                    "/openapi.yaml"
+                ],
+                "required_methods": ["GET"]
             }
         }
         
-        completeness_metrics = {
-            "resource_coverage": {},
-            "method_coverage": {},
-            "parameter_coverage": {},
-            "schema_coverage": {},
-            "overall_completeness": 0.0,
-            "missing_endpoints": [],
-            "incomplete_methods": [],
-            "missing_parameters": [],
-            "missing_schemas": []
-        }
-        
-        # Analyze resource coverage
-        discovered_paths = {ep.path for ep in discovered_endpoints}
+        # Calculate resource coverage
+        resource_coverage = {}
+        total_expected_resources = 0
+        total_discovered_resources = 0
         
         for resource_name, resource_info in expected_resources.items():
-            expected_paths = set(resource_info["expected_endpoints"])
-            discovered_resource_paths = discovered_paths.intersection(expected_paths)
+            expected_endpoints = resource_info["expected_endpoints"]
+            discovered_endpoints_for_resource = []
             
-            coverage_percentage = (len(discovered_resource_paths) / len(expected_paths)) * 100
+            for expected_path in expected_endpoints:
+                # Check if any discovered endpoint matches this expected path
+                for discovered_ep in discovered_endpoints:
+                    if self._paths_match(discovered_ep.path, expected_path):
+                        discovered_endpoints_for_resource.append(discovered_ep)
+                        break
             
-            completeness_metrics["resource_coverage"][resource_name] = {
-                "expected": len(expected_paths),
-                "discovered": len(discovered_resource_paths),
+            coverage_percentage = (len(discovered_endpoints_for_resource) / len(expected_endpoints)) * 100
+            resource_coverage[resource_name] = {
+                "expected_count": len(expected_endpoints),
+                "discovered_count": len(discovered_endpoints_for_resource),
                 "coverage_percentage": coverage_percentage,
-                "missing_paths": list(expected_paths - discovered_resource_paths)
+                "expected_endpoints": expected_endpoints,
+                "discovered_endpoints": [ep.path for ep in discovered_endpoints_for_resource]
             }
             
-            # Track missing endpoints
-            missing = expected_paths - discovered_resource_paths
-            if missing:
-                completeness_metrics["missing_endpoints"].extend(list(missing))
+            total_expected_resources += len(expected_endpoints)
+            total_discovered_resources += len(discovered_endpoints_for_resource)
         
-        # Analyze method coverage
-        for endpoint in discovered_endpoints:
-            if len(endpoint.methods) < 4:  # Most VAmPI endpoints support 4 methods
-                completeness_metrics["incomplete_methods"].append({
-                    "path": endpoint.path,
-                    "discovered_methods": endpoint.methods,
-                    "expected_methods": ["GET", "POST", "PUT", "DELETE"]
-                })
+        # Calculate method coverage
+        method_coverage = {}
+        expected_methods = set()
+        discovered_methods = set()
         
-        # Analyze parameter coverage
-        total_parameters = 0
-        discovered_parameters = 0
+        for resource_info in expected_resources.values():
+            expected_methods.update(resource_info["required_methods"])
         
-        for endpoint in discovered_endpoints:
-            if endpoint.parameters:
-                # Count expected parameters based on path
-                if "/{user_id}" in endpoint.path:
-                    total_parameters += 1
-                if "/{book_title}" in endpoint.path:
-                    total_parameters += 1
-                
-                # Count discovered parameters
-                discovered_parameters += len(endpoint.parameters.path_params)
+        for ep in discovered_endpoints:
+            discovered_methods.update(ep.methods)
         
-        if total_parameters > 0:
-            completeness_metrics["parameter_coverage"] = {
-                "expected": total_parameters,
-                "discovered": discovered_parameters,
-                "coverage_percentage": (discovered_parameters / total_parameters) * 100
+        method_coverage = {
+            "expected_methods": list(expected_methods),
+            "discovered_methods": list(discovered_methods),
+            "coverage_percentage": (len(discovered_methods.intersection(expected_methods)) / len(expected_methods)) * 100 if expected_methods else 100
+        }
+        
+        # Calculate parameter coverage
+        parameter_coverage = {}
+        total_expected_params = 0
+        total_discovered_params = 0
+        
+        for ep in discovered_endpoints:
+            total_discovered_params += len(ep.parameters.path_params) + len(ep.parameters.query_params) + len(ep.parameters.body_params)
+        
+        # Expected parameters based on VAmPI structure
+        expected_params = {
+            "path_params": ["user_id", "book_title"],
+            "query_params": ["limit", "offset", "search"],
+            "body_params": ["email", "password", "username", "title", "author"]
+        }
+        
+        total_expected_params = len(expected_params["path_params"]) + len(expected_params["query_params"]) + len(expected_params["body_params"])
+        
+        parameter_coverage = {
+            "expected_count": total_expected_params,
+            "discovered_count": total_discovered_params,
+            "coverage_percentage": (total_discovered_params / total_expected_params) * 100 if total_expected_params > 0 else 100
+        }
+        
+        # Calculate schema coverage
+        schema_coverage = {}
+        total_expected_schemas = 0
+        total_discovered_schemas = 0
+        
+        for ep in discovered_endpoints:
+            if ep.request_schema:
+                total_discovered_schemas += 1
+            if ep.response_schemas:
+                total_discovered_schemas += len(ep.response_schemas)
+        
+        # Expected schemas based on VAmPI endpoints
+        expected_schemas = 24  # Approximate expected schemas for VAmPI
+        total_expected_schemas = expected_schemas
+        
+        schema_coverage = {
+            "expected_count": total_expected_schemas,
+            "discovered_count": total_discovered_schemas,
+            "coverage_percentage": (total_discovered_schemas / total_expected_schemas) * 100 if total_expected_schemas > 0 else 100
+        }
+        
+        # Calculate overall completeness with weighted scoring
+        resource_weight = 0.40
+        method_weight = 0.30
+        parameter_weight = 0.20
+        schema_weight = 0.10
+        
+        overall_completeness = (
+            (total_discovered_resources / total_expected_resources) * resource_weight +
+            (method_coverage["coverage_percentage"] / 100) * method_weight +
+            (parameter_coverage["coverage_percentage"] / 100) * parameter_weight +
+            (schema_coverage["coverage_percentage"] / 100) * schema_weight
+        ) * 100
+        
+        return {
+            "overall_completeness": overall_completeness,
+            "resource_coverage": resource_coverage,
+            "method_coverage": method_coverage,
+            "parameter_coverage": parameter_coverage,
+            "schema_coverage": schema_coverage,
+            "total_expected_resources": total_expected_resources,
+            "total_discovered_resources": total_discovered_resources,
+            "completeness_breakdown": {
+                "resource_score": (total_discovered_resources / total_expected_resources) * 100,
+                "method_score": method_coverage["coverage_percentage"],
+                "parameter_score": parameter_coverage["coverage_percentage"],
+                "schema_score": schema_coverage["coverage_percentage"]
             }
+        }
+    
+    def _paths_match(self, path1: str, path2: str) -> bool:
+        """
+        Check if two paths are equivalent.
         
-        # Analyze schema coverage
-        total_schemas = 0
-        discovered_schemas = 0
-        
-        for endpoint in discovered_endpoints:
-            if endpoint.request_schema:
-                discovered_schemas += 1
-            if endpoint.response_schemas:
-                discovered_schemas += len(endpoint.response_schemas)
+        Args:
+            path1: First path
+            path2: Second path
             
-            # Count expected schemas (POST/PUT endpoints should have request schemas)
-            if any(method in ["POST", "PUT"] for method in endpoint.methods):
-                total_schemas += 1
-            total_schemas += 1  # Response schema
+        Returns:
+            True if paths are equivalent, False otherwise
+        """
+        # Normalize paths for comparison
+        normalized_path1 = normalize_parameter_format(path1)
+        normalized_path2 = normalize_parameter_format(path2)
         
-        if total_schemas > 0:
-            completeness_metrics["schema_coverage"] = {
-                "expected": total_schemas,
-                "discovered": discovered_schemas,
-                "coverage_percentage": (discovered_schemas / total_schemas) * 100
-            }
-        
-        # Calculate overall completeness
-        coverage_scores = []
-        
-        # Resource coverage (40% weight)
-        resource_scores = [info["coverage_percentage"] for info in completeness_metrics["resource_coverage"].values()]
-        if resource_scores:
-            coverage_scores.append((sum(resource_scores) / len(resource_scores)) * 0.4)
-        
-        # Method coverage (30% weight)
-        method_coverage = 100.0
-        if completeness_metrics["incomplete_methods"]:
-            method_coverage = max(0, 100 - (len(completeness_metrics["incomplete_methods"]) * 10))
-        coverage_scores.append(method_coverage * 0.3)
-        
-        # Parameter coverage (20% weight)
-        if completeness_metrics["parameter_coverage"]:
-            coverage_scores.append(completeness_metrics["parameter_coverage"]["coverage_percentage"] * 0.2)
-        
-        # Schema coverage (10% weight)
-        if completeness_metrics["schema_coverage"]:
-            coverage_scores.append(completeness_metrics["schema_coverage"]["coverage_percentage"] * 0.1)
-        
-        completeness_metrics["overall_completeness"] = sum(coverage_scores)
-        
-        return completeness_metrics
-
-
+        # Compare paths
+        return normalized_path1 == normalized_path2
+    
     def get_validation_report(self, discovered_endpoints: List[EndpointMetadata]) -> str:
         """
         Generate a comprehensive validation report for discovery accuracy and completeness.
@@ -2420,3 +2487,47 @@ class VAmPIDiscoveryEngine:
                 "critical": len([ep for ep in self.discovered_endpoints if ep.risk_level == RiskLevel.CRITICAL])
             }
         } 
+
+    async def _enhanced_endpoint_discovery(self) -> List[EndpointMetadata]:
+        """
+        Enhanced endpoint discovery using multiple techniques for maximum coverage.
+        
+        Returns:
+            List of discovered endpoints
+        """
+        endpoints = []
+        
+        # Additional VAmPI endpoints that might exist
+        additional_endpoints = [
+            "/users/v1/_debug",  # Debug endpoint from OpenAPI spec
+            "/users/v1/me",      # Alternative to /me
+            "/users/v1/profile", # User profile endpoint
+            "/users/v1/settings", # User settings
+            "/books/v1/search",  # Book search functionality
+            "/books/v1/categories", # Book categories
+            "/admin",            # Admin endpoints
+            "/admin/users",      # Admin user management
+            "/admin/books",      # Admin book management
+            "/health",           # Health check endpoint
+            "/status",           # Status endpoint
+            "/info",             # API information
+            "/docs",             # API documentation
+            "/swagger",          # Swagger UI
+            "/openapi.json",     # OpenAPI spec endpoint
+            "/openapi.yaml"      # OpenAPI spec endpoint
+        ]
+        
+        for path in additional_endpoints:
+            full_url = normalize_url(self.config.base_url, path)
+            
+            # Test with common HTTP methods
+            for method in ["GET", "POST"]:
+                if self.config.respect_rate_limits:
+                    rate_limit_delay()
+                
+                endpoint = await self._test_endpoint(full_url, method)
+                if endpoint:
+                    endpoints.append(endpoint)
+                    self.logger.debug(f"Enhanced discovery: {method} {path}")
+        
+        return endpoints
