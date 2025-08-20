@@ -52,6 +52,23 @@ def check_vampi(base_url: str) -> bool:
         return False
 
 
+def normalize_parameter_format(path: str) -> str:
+    """
+    Normalize parameter formats for consistency.
+    Converts Express.js format (:param) to OpenAPI format ({param})
+    
+    Args:
+        path: URL path with parameters
+        
+    Returns:
+        Normalized path with consistent parameter format
+    """
+    import re
+    # Convert Express.js format to OpenAPI format
+    normalized = re.sub(r':(\w+)', r'{\1}', path)
+    return normalized
+
+
 def check_vampi_urllib3(base_url: str) -> bool:
     """
     Check if VAmPI is running using urllib3 as a fallback.

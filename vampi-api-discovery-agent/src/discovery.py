@@ -74,12 +74,16 @@ class VAmPIDiscoveryEngine:
             )
         )
         
-        # VAmPI-specific API paths to scan
+        # VAmPI-specific API paths to scan (standardized parameter names)
         self.common_paths = [
             "/users/v1",
             "/users/v1/register", 
             "/users/v1/login",
+            "/users/v1/{user_id}",  # Standardized from {username}
+            "/users/v1/{user_id}/email",  # Standardized from {username}
+            "/users/v1/{user_id}/password",  # Standardized from {username}
             "/books/v1",
+            "/books/v1/{book_title}",
             "/",
             "/createdb"
         ]
@@ -553,7 +557,7 @@ class VAmPIDiscoveryEngine:
                 return "VAmPI user registration endpoint"
             elif path_lower.endswith("/users/v1") or path_lower.endswith("/users/v1/"):
                 return "VAmPI user management endpoint - list all users"
-            elif "{username}" in path_lower:
+            elif "{user_id}" in path_lower or "{username}" in path_lower:
                 if "email" in path_lower:
                     return "VAmPI update user email endpoint"
                 elif "password" in path_lower:
@@ -699,6 +703,9 @@ class VAmPIDiscoveryEngine:
         
         # Remove duplicates and merge methods
         unique_endpoints = self._merge_endpoint_methods(endpoints)
+        
+        # Apply parameter format normalization and deduplication
+        unique_endpoints = self._deduplicate_and_normalize_endpoints(unique_endpoints)
         
         # Analyze API structure
         api_structure = self._analyze_api_structure(unique_endpoints)
@@ -920,7 +927,42 @@ class VAmPIDiscoveryEngine:
                 path_map[endpoint.path] = endpoint
         
         return list(path_map.values())
-    
+
+
+    def _deduplicate_and_normalize_endpoints(self, endpoints: List[EndpointMetadata]) -> List[EndpointMetadata]:
+        """
+        Remove duplicate endpoints with different parameter formats and normalize paths.
+        
+        Args:
+            endpoints: List of endpoints to deduplicate
+            
+        Returns:
+            List of deduplicated and normalized endpoints
+        """
+        from utils import normalize_parameter_format
+        
+        normalized_paths = set()
+        unique_endpoints = []
+        
+        for endpoint in endpoints:
+            # Normalize the path for comparison
+            normalized_path = normalize_parameter_format(endpoint.path)
+            
+            if normalized_path not in normalized_paths:
+                normalized_paths.add(normalized_path)
+                
+                # Update the endpoint path to use normalized format
+                endpoint.path = normalized_path
+                
+                # Standardize parameter names
+                if "{username}" in endpoint.path:
+                    endpoint.path = endpoint.path.replace("{username}", "{user_id}")
+                
+                unique_endpoints.append(endpoint)
+        
+        return unique_endpoints
+
+
     def _analyze_api_structure(self, endpoints: List[EndpointMetadata]) -> APIStructure:
         """
         Analyze the overall API structure.

@@ -1,13 +1,13 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-20 03:02:37
+**Generated:** 2025-08-20 12:52:07
 
 ## Executive Summary
 
-- **Total Endpoints Discovered:** 16
-- **Authenticated Endpoints:** 7
-- **Public Endpoints:** 9
-- **High Risk Endpoints:** 6
+- **Total Endpoints Discovered:** 15
+- **Authenticated Endpoints:** 4
+- **Public Endpoints:** 11
+- **High Risk Endpoints:** 3
 - **Discovery Coverage:** 100.0%
 
 ## Discovered Endpoints
@@ -89,7 +89,7 @@
 
 **Parameters:**
 
-### /users/v1/{username}
+### /users/v1/{user_id}
 
 - **Methods:** GET, DELETE, PUT
 - **Description:** Retrieves user by username
@@ -101,7 +101,7 @@
 **Parameters:**
 - Path: username
 
-### /users/v1/{username}/email
+### /users/v1/{user_id}/email
 
 - **Methods:** PUT, GET, DELETE
 - **Description:** Update users email
@@ -113,7 +113,7 @@
 **Parameters:**
 - Path: username
 
-### /users/v1/{username}/password
+### /users/v1/{user_id}/password
 
 - **Methods:** PUT, GET, DELETE
 - **Description:** Update users password
@@ -138,7 +138,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** GET
+- **Methods:** GET, POST, PUT, DELETE
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -148,55 +148,41 @@
 **Parameters:**
 - Path: book_title
 
-### /users/v1/:username
+### /users/v1/{user_id}
 
-- **Methods:** GET, DELETE
-- **Description:** Retrieves user by username
+- **Methods:** GET, POST, PUT, DELETE
+- **Description:** VAmPI user operation endpoint
 - **Authentication Required:** No
 - **Risk Level:** Critical
 - **Risk Factors:** user_management, data_exposure, no_authentication
 - **Response Types:** application/json
 
 **Parameters:**
-- Path: baseUrl, baseUrl
+- Path: user_id
 
-### /books/v1/:book_title
+### /users/v1/{user_id}/email
 
-- **Methods:** GET
-- **Description:** Retrieves book by title along with secret
-- **Authentication Required:** Yes
-- **Risk Level:** High
-- **Risk Factors:** data_exposure
-- **Response Types:** application/json
-
-**Parameters:**
-- Path: baseUrl, baseUrl
-
-### /users/v1/:username/email
-
-- **Methods:** PUT
-- **Description:** Update users email
-- **Authentication Required:** Yes
-- **Risk Level:** High
-- **Risk Factors:** user_management, data_exposure, modification_operations
-- **Response Types:** application/json
+- **Methods:** GET, POST, PUT, DELETE
+- **Description:** VAmPI user operation endpoint
+- **Authentication Required:** No
+- **Risk Level:** Critical
+- **Risk Factors:** user_management, data_exposure, no_authentication
+- **Response Types:** Unknown
 
 **Parameters:**
-- Path: baseUrl, baseUrl
-- Body: email
+- Path: user_id
 
-### /users/v1/:username/password
+### /users/v1/{user_id}/password
 
-- **Methods:** PUT
-- **Description:** Update users password
-- **Authentication Required:** Yes
-- **Risk Level:** High
-- **Risk Factors:** user_management, data_exposure, modification_operations
-- **Response Types:** application/json
+- **Methods:** GET, POST, PUT, DELETE
+- **Description:** VAmPI user operation endpoint
+- **Authentication Required:** No
+- **Risk Level:** Critical
+- **Risk Factors:** user_management, data_exposure, no_authentication
+- **Response Types:** Unknown
 
 **Parameters:**
-- Path: baseUrl, baseUrl
-- Body: password
+- Path: user_id
 
 ## API Structure
 

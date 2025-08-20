@@ -1,18 +1,18 @@
 {
   "discovery_data": {
     "discovery_summary": {
-      "total_endpoints": 16,
-      "authenticated_endpoints": 7,
-      "public_endpoints": 9,
-      "high_risk_endpoints": 6,
+      "total_endpoints": 15,
+      "authenticated_endpoints": 4,
+      "public_endpoints": 11,
+      "high_risk_endpoints": 3,
       "medium_risk_endpoints": 0,
       "low_risk_endpoints": 3,
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 0.0,
-      "discovery_start_time": "2025-08-20 03:01:47.484762",
+      "discovery_start_time": "2025-08-20 12:51:44.092287",
       "discovery_end_time": null,
-      "discovery_duration": 48.9787859916687,
+      "discovery_duration": 66.74565887451172,
       "total_parameters": 0,
       "unique_parameters": 0
     },
@@ -241,7 +241,7 @@
       },
       {
         "id": "DOC007",
-        "path": "/users/v1/{username}",
+        "path": "/users/v1/{user_id}",
         "methods": [
           "GET",
           "DELETE",
@@ -278,7 +278,7 @@
       },
       {
         "id": "DOC009",
-        "path": "/users/v1/{username}/email",
+        "path": "/users/v1/{user_id}/email",
         "methods": [
           "PUT",
           "GET",
@@ -315,7 +315,7 @@
       },
       {
         "id": "DOC010",
-        "path": "/users/v1/{username}/password",
+        "path": "/users/v1/{user_id}/password",
         "methods": [
           "PUT",
           "GET",
@@ -387,7 +387,10 @@
         "id": "DOC013",
         "path": "/books/v1/{book_title}",
         "methods": [
-          "GET"
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
         ],
         "description": "Retrieves book by title along with secret",
         "parameters": {
@@ -417,26 +420,23 @@
         "deprecated": false
       },
       {
-        "id": "PMN002",
-        "path": "/users/v1/:username",
+        "id": "EP010",
+        "path": "/users/v1/{user_id}",
         "methods": [
           "GET",
+          "POST",
+          "PUT",
           "DELETE"
         ],
-        "description": "Retrieves user by username",
+        "description": "VAmPI user operation endpoint",
         "parameters": {
           "query_params": [],
           "path_params": [
-            "baseUrl",
-            "baseUrl"
+            "user_id"
           ],
           "body_params": [],
-          "headers": [
-            "Accept"
-          ],
-          "param_types": {
-            "baseUrl": "string"
-          }
+          "headers": [],
+          "param_types": {}
         },
         "authentication_required": false,
         "authentication_type": "None",
@@ -449,129 +449,77 @@
         "response_types": [
           "application/json"
         ],
-        "discovered_via": "documentation_parsing",
-        "status_code": null,
-        "response_time": null,
+        "discovered_via": "endpoint_scanning",
+        "status_code": 404,
+        "response_time": 0.06778407096862793,
         "error_messages": [],
         "deprecated": false
       },
       {
-        "id": "PMN010",
-        "path": "/books/v1/:book_title",
+        "id": "EP011",
+        "path": "/users/v1/{user_id}/email",
         "methods": [
-          "GET"
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
         ],
-        "description": "Retrieves book by title along with secret",
+        "description": "VAmPI user operation endpoint",
         "parameters": {
           "query_params": [],
           "path_params": [
-            "baseUrl",
-            "baseUrl"
+            "user_id"
           ],
           "body_params": [],
-          "headers": [
-            "Accept"
-          ],
-          "param_types": {
-            "baseUrl": "string"
-          }
+          "headers": [],
+          "param_types": {}
         },
-        "authentication_required": true,
-        "authentication_type": "Bearer",
-        "risk_level": "High",
+        "authentication_required": false,
+        "authentication_type": "None",
+        "risk_level": "Critical",
         "risk_factors": [
-          "data_exposure"
+          "user_management",
+          "data_exposure",
+          "no_authentication"
         ],
-        "response_types": [
-          "application/json"
-        ],
-        "discovered_via": "documentation_parsing",
-        "status_code": null,
-        "response_time": null,
+        "response_types": [],
+        "discovered_via": "endpoint_scanning",
+        "status_code": 405,
+        "response_time": 0.0863800048828125,
         "error_messages": [],
         "deprecated": false
       },
       {
-        "id": "PMN011",
-        "path": "/users/v1/:username/email",
+        "id": "EP012",
+        "path": "/users/v1/{user_id}/password",
         "methods": [
-          "PUT"
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE"
         ],
-        "description": "Update users email",
+        "description": "VAmPI user operation endpoint",
         "parameters": {
           "query_params": [],
           "path_params": [
-            "baseUrl",
-            "baseUrl"
+            "user_id"
           ],
-          "body_params": [
-            "email"
-          ],
-          "headers": [
-            "Content-Type",
-            "Accept"
-          ],
-          "param_types": {
-            "baseUrl": "string",
-            "email": "str"
-          }
+          "body_params": [],
+          "headers": [],
+          "param_types": {}
         },
-        "authentication_required": true,
-        "authentication_type": "Bearer",
-        "risk_level": "High",
+        "authentication_required": false,
+        "authentication_type": "None",
+        "risk_level": "Critical",
         "risk_factors": [
           "user_management",
           "data_exposure",
-          "modification_operations"
+          "no_authentication"
         ],
-        "response_types": [
-          "application/json"
-        ],
-        "discovered_via": "documentation_parsing",
-        "status_code": null,
-        "response_time": null,
-        "error_messages": [],
-        "deprecated": false
-      },
-      {
-        "id": "PMN012",
-        "path": "/users/v1/:username/password",
-        "methods": [
-          "PUT"
-        ],
-        "description": "Update users password",
-        "parameters": {
-          "query_params": [],
-          "path_params": [
-            "baseUrl",
-            "baseUrl"
-          ],
-          "body_params": [
-            "password"
-          ],
-          "headers": [
-            "Content-Type",
-            "Accept"
-          ],
-          "param_types": {
-            "baseUrl": "string",
-            "password": "str"
-          }
-        },
-        "authentication_required": true,
-        "authentication_type": "Bearer",
-        "risk_level": "High",
-        "risk_factors": [
-          "user_management",
-          "data_exposure",
-          "modification_operations"
-        ],
-        "response_types": [
-          "application/json"
-        ],
-        "discovered_via": "documentation_parsing",
-        "status_code": null,
-        "response_time": null,
+        "response_types": [],
+        "discovered_via": "endpoint_scanning",
+        "status_code": 405,
+        "response_time": 0.03562593460083008,
         "error_messages": [],
         "deprecated": false
       }
@@ -586,15 +534,12 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 03:01:47.484634",
+        "discovered_at": "2025-08-20 12:51:44.092213",
         "endpoints_using": [
           "/me",
-          "/users/v1/{username}/email",
-          "/users/v1/{username}/password",
-          "/books/v1/{book_title}",
-          "/books/v1/:book_title",
-          "/users/v1/:username/email",
-          "/users/v1/:username/password"
+          "/users/v1/{user_id}/email",
+          "/users/v1/{user_id}/password",
+          "/books/v1/{book_title}"
         ]
       }
     ],
@@ -622,20 +567,19 @@
           "/users/v1/_debug",
           "/users/v1/register",
           "/users/v1/login",
-          "/users/v1/{username}",
-          "/users/v1/{username}/email",
-          "/users/v1/{username}/password",
-          "/users/v1/:username",
-          "/users/v1/:username/email",
-          "/users/v1/:username/password"
+          "/users/v1/{user_id}",
+          "/users/v1/{user_id}/email",
+          "/users/v1/{user_id}/password",
+          "/users/v1/{user_id}",
+          "/users/v1/{user_id}/email",
+          "/users/v1/{user_id}/password"
         ],
         "me": [
           "/me"
         ],
         "books": [
           "/books/v1",
-          "/books/v1/{book_title}",
-          "/books/v1/:book_title"
+          "/books/v1/{book_title}"
         ]
       },
       "endpoint_relationships": {
@@ -779,7 +723,7 @@
               },
               {
                 "id": "DOC007",
-                "path": "/users/v1/{username}",
+                "path": "/users/v1/{user_id}",
                 "methods": [
                   "GET",
                   "DELETE",
@@ -816,7 +760,7 @@
               },
               {
                 "id": "DOC009",
-                "path": "/users/v1/{username}/email",
+                "path": "/users/v1/{user_id}/email",
                 "methods": [
                   "PUT",
                   "GET",
@@ -853,7 +797,7 @@
               },
               {
                 "id": "DOC010",
-                "path": "/users/v1/{username}/password",
+                "path": "/users/v1/{user_id}/password",
                 "methods": [
                   "PUT",
                   "GET",
@@ -889,26 +833,23 @@
                 "deprecated": false
               },
               {
-                "id": "PMN002",
-                "path": "/users/v1/:username",
+                "id": "EP010",
+                "path": "/users/v1/{user_id}",
                 "methods": [
                   "GET",
+                  "POST",
+                  "PUT",
                   "DELETE"
                 ],
-                "description": "Retrieves user by username",
+                "description": "VAmPI user operation endpoint",
                 "parameters": {
                   "query_params": [],
                   "path_params": [
-                    "baseUrl",
-                    "baseUrl"
+                    "user_id"
                   ],
                   "body_params": [],
-                  "headers": [
-                    "Accept"
-                  ],
-                  "param_types": {
-                    "baseUrl": "string"
-                  }
+                  "headers": [],
+                  "param_types": {}
                 },
                 "authentication_required": false,
                 "authentication_type": "None",
@@ -921,99 +862,83 @@
                 "response_types": [
                   "application/json"
                 ],
-                "discovered_via": "documentation_parsing",
-                "status_code": null,
-                "response_time": null,
+                "discovered_via": "endpoint_scanning",
+                "status_code": 404,
+                "response_time": 0.06778407096862793,
                 "error_messages": [],
                 "deprecated": false
               },
               {
-                "id": "PMN011",
-                "path": "/users/v1/:username/email",
+                "id": "EP011",
+                "path": "/users/v1/{user_id}/email",
                 "methods": [
-                  "PUT"
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE"
                 ],
-                "description": "Update users email",
+                "description": "VAmPI user operation endpoint",
                 "parameters": {
                   "query_params": [],
                   "path_params": [
-                    "baseUrl",
-                    "baseUrl"
+                    "user_id"
                   ],
-                  "body_params": [
-                    "email"
-                  ],
-                  "headers": [
-                    "Content-Type",
-                    "Accept"
-                  ],
-                  "param_types": {
-                    "baseUrl": "string",
-                    "email": "str"
-                  }
+                  "body_params": [],
+                  "headers": [],
+                  "param_types": {}
                 },
-                "authentication_required": true,
-                "authentication_type": "Bearer",
-                "risk_level": "High",
+                "authentication_required": false,
+                "authentication_type": "None",
+                "risk_level": "Critical",
                 "risk_factors": [
                   "user_management",
                   "data_exposure",
-                  "modification_operations"
+                  "no_authentication"
                 ],
-                "response_types": [
-                  "application/json"
-                ],
-                "discovered_via": "documentation_parsing",
-                "status_code": null,
-                "response_time": null,
+                "response_types": [],
+                "discovered_via": "endpoint_scanning",
+                "status_code": 405,
+                "response_time": 0.0863800048828125,
                 "error_messages": [],
                 "deprecated": false
               },
               {
-                "id": "PMN012",
-                "path": "/users/v1/:username/password",
+                "id": "EP012",
+                "path": "/users/v1/{user_id}/password",
                 "methods": [
-                  "PUT"
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE"
                 ],
-                "description": "Update users password",
+                "description": "VAmPI user operation endpoint",
                 "parameters": {
                   "query_params": [],
                   "path_params": [
-                    "baseUrl",
-                    "baseUrl"
+                    "user_id"
                   ],
-                  "body_params": [
-                    "password"
-                  ],
-                  "headers": [
-                    "Content-Type",
-                    "Accept"
-                  ],
-                  "param_types": {
-                    "baseUrl": "string",
-                    "password": "str"
-                  }
+                  "body_params": [],
+                  "headers": [],
+                  "param_types": {}
                 },
-                "authentication_required": true,
-                "authentication_type": "Bearer",
-                "risk_level": "High",
+                "authentication_required": false,
+                "authentication_type": "None",
+                "risk_level": "Critical",
                 "risk_factors": [
                   "user_management",
                   "data_exposure",
-                  "modification_operations"
+                  "no_authentication"
                 ],
-                "response_types": [
-                  "application/json"
-                ],
-                "discovered_via": "documentation_parsing",
-                "status_code": null,
-                "response_time": null,
+                "response_types": [],
+                "discovered_via": "endpoint_scanning",
+                "status_code": 405,
+                "response_time": 0.03562593460083008,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>}",
             "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           },
           "books": {
@@ -1055,7 +980,10 @@
                 "id": "DOC013",
                 "path": "/books/v1/{book_title}",
                 "methods": [
-                  "GET"
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE"
                 ],
                 "description": "Retrieves book by title along with secret",
                 "parameters": {
@@ -1083,46 +1011,10 @@
                 "response_time": null,
                 "error_messages": [],
                 "deprecated": false
-              },
-              {
-                "id": "PMN010",
-                "path": "/books/v1/:book_title",
-                "methods": [
-                  "GET"
-                ],
-                "description": "Retrieves book by title along with secret",
-                "parameters": {
-                  "query_params": [],
-                  "path_params": [
-                    "baseUrl",
-                    "baseUrl"
-                  ],
-                  "body_params": [],
-                  "headers": [
-                    "Accept"
-                  ],
-                  "param_types": {
-                    "baseUrl": "string"
-                  }
-                },
-                "authentication_required": true,
-                "authentication_type": "Bearer",
-                "risk_level": "High",
-                "risk_factors": [
-                  "data_exposure"
-                ],
-                "response_types": [
-                  "application/json"
-                ],
-                "discovered_via": "documentation_parsing",
-                "status_code": null,
-                "response_time": null,
-                "error_messages": [],
-                "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>}",
             "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           }
         },
@@ -1134,14 +1026,14 @@
               "description": "Required for access"
             }
           ],
-          "/users/v1/{username}/email": [
+          "/users/v1/{user_id}/email": [
             {
               "endpoint": "/users/v1/login",
               "type": "authentication_dependency",
               "description": "Required for access"
             }
           ],
-          "/users/v1/{username}/password": [
+          "/users/v1/{user_id}/password": [
             {
               "endpoint": "/users/v1/login",
               "type": "authentication_dependency",
@@ -1149,27 +1041,6 @@
             }
           ],
           "/books/v1/{book_title}": [
-            {
-              "endpoint": "/users/v1/login",
-              "type": "authentication_dependency",
-              "description": "Required for access"
-            }
-          ],
-          "/books/v1/:book_title": [
-            {
-              "endpoint": "/users/v1/login",
-              "type": "authentication_dependency",
-              "description": "Required for access"
-            }
-          ],
-          "/users/v1/:username/email": [
-            {
-              "endpoint": "/users/v1/login",
-              "type": "authentication_dependency",
-              "description": "Required for access"
-            }
-          ],
-          "/users/v1/:username/password": [
             {
               "endpoint": "/users/v1/login",
               "type": "authentication_dependency",
@@ -1214,19 +1085,19 @@
             "type": "read",
             "targets": []
           },
-          "/users/v1/{username}": {
+          "/users/v1/{user_id}": {
             "type": "read",
             "targets": [
               "user_data"
             ]
           },
-          "/users/v1/{username}/email": {
+          "/users/v1/{user_id}/email": {
             "type": "read",
             "targets": [
               "user_data"
             ]
           },
-          "/users/v1/{username}/password": {
+          "/users/v1/{user_id}/password": {
             "type": "read",
             "targets": [
               "user_data"
@@ -1243,32 +1114,6 @@
             "targets": [
               "book_data"
             ]
-          },
-          "/users/v1/:username": {
-            "type": "read",
-            "targets": [
-              "user_data"
-            ]
-          },
-          "/books/v1/:book_title": {
-            "type": "read",
-            "targets": [
-              "book_data"
-            ]
-          },
-          "/users/v1/:username/email": {
-            "type": "update",
-            "prerequisites": [
-              "user_exists",
-              "user_authentication"
-            ]
-          },
-          "/users/v1/:username/password": {
-            "type": "update",
-            "prerequisites": [
-              "user_exists",
-              "user_authentication"
-            ]
           }
         },
         "authentication_flow": {
@@ -1277,12 +1122,9 @@
           ],
           "protected_resources": [
             "/me",
-            "/users/v1/{username}/email",
-            "/users/v1/{username}/password",
-            "/books/v1/{book_title}",
-            "/books/v1/:book_title",
-            "/users/v1/:username/email",
-            "/users/v1/:username/password"
+            "/users/v1/{user_id}/email",
+            "/users/v1/{user_id}/password",
+            "/books/v1/{book_title}"
           ],
           "public_resources": [
             "/createdb",
@@ -1291,9 +1133,11 @@
             "/users/v1/_debug",
             "/users/v1/register",
             "/users/v1/login",
-            "/users/v1/{username}",
+            "/users/v1/{user_id}",
             "/books/v1",
-            "/users/v1/:username"
+            "/users/v1/{user_id}",
+            "/users/v1/{user_id}/email",
+            "/users/v1/{user_id}/password"
           ]
         },
         "risk_correlation": {
@@ -1303,17 +1147,16 @@
               "/users/v1/_debug",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
             "book_management": [
               "/books/v1",
-              "/books/v1/{book_title}",
-              "/books/v1/:book_title"
+              "/books/v1/{book_title}"
             ]
           },
           "risk_propagation": {
@@ -1321,111 +1164,78 @@
               "/users/v1/_debug",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
             "/users/v1/_debug": [
               "/users/v1",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
             "/users/v1/register": [
               "/users/v1",
               "/users/v1/_debug",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
             "/users/v1/login": [
               "/users/v1",
               "/users/v1/_debug",
               "/users/v1/register",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
-            "/users/v1/{username}": [
+            "/users/v1/{user_id}": [
               "/users/v1",
               "/users/v1/_debug",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password"
             ],
-            "/users/v1/{username}/email": [
+            "/users/v1/{user_id}/email": [
               "/users/v1",
               "/users/v1/_debug",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/password"
             ],
-            "/users/v1/{username}/password": [
+            "/users/v1/{user_id}/password": [
               "/users/v1",
               "/users/v1/_debug",
               "/users/v1/register",
               "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/:username",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
-            ],
-            "/users/v1/:username": [
-              "/users/v1",
-              "/users/v1/_debug",
-              "/users/v1/register",
-              "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username/email",
-              "/users/v1/:username/password"
-            ],
-            "/users/v1/:username/email": [
-              "/users/v1",
-              "/users/v1/_debug",
-              "/users/v1/register",
-              "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/password"
-            ],
-            "/users/v1/:username/password": [
-              "/users/v1",
-              "/users/v1/_debug",
-              "/users/v1/register",
-              "/users/v1/login",
-              "/users/v1/{username}",
-              "/users/v1/{username}/email",
-              "/users/v1/{username}/password",
-              "/users/v1/:username",
-              "/users/v1/:username/email"
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email",
+              "/users/v1/{user_id}/password",
+              "/users/v1/{user_id}",
+              "/users/v1/{user_id}/email"
             ]
           }
         }
@@ -1462,10 +1272,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-20 03:01:47.476423",
+      "discovered_at": "2025-08-20 12:51:44.079610",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-20 03:01:47.575403",
-  "total_endpoints": 16
+  "discovery_timestamp": "2025-08-20 12:51:44.125336",
+  "total_endpoints": 15
 }
