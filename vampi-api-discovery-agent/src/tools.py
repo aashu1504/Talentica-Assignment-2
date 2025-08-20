@@ -37,6 +37,9 @@ from models import (
 # Import discovery engine
 from discovery import VAmPIDiscoveryEngine, DiscoveryConfig
 
+# Import visualization module
+from visualization import APIVisualizer
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -327,6 +330,56 @@ class TechnicalWriterTool(BaseTool):
             
             # Generate markdown report
             self._generate_markdown_report(discovery_report)
+            
+            # Generate visual API maps
+            try:
+                print("🎨 Generating Visual API Maps...")
+                visualizer = APIVisualizer()
+                
+                # Convert discovery data back to EndpointMetadata objects for visualization
+                endpoints = []
+                for ep_data in discovery_data.get("discovery_data", {}).get("endpoints", []):
+                    # Create EndpointMetadata object from dict
+                    endpoint = EndpointMetadata(
+                        id=ep_data.get("id", ""),
+                        path=ep_data.get("path", ""),
+                        methods=ep_data.get("methods", ["GET"]),
+                        description=ep_data.get("description", ""),
+                        parameters=EndpointParameters(
+                            query_params=ep_data.get("parameters", {}).get("query_params", []),
+                            path_params=ep_data.get("parameters", {}).get("path_params", []),
+                            body_params=ep_data.get("parameters", {}).get("body_params", []),
+                            headers=ep_data.get("parameters", {}).get("headers", []),
+                            param_types=ep_data.get("parameters", {}).get("param_types", {}),
+                            validation_rules=ep_data.get("parameters", {}).get("validation_rules", {})
+                        ),
+                        authentication_required=ep_data.get("authentication_required", False),
+                        authentication_type=ep_data.get("authentication_type", "None"),
+                        risk_level=ep_data.get("risk_level", "Medium"),
+                        risk_factors=ep_data.get("risk_factors", []),
+                        response_types=ep_data.get("response_types", []),
+                        request_schema=ep_data.get("request_schema"),
+                        response_schemas=ep_data.get("response_schemas"),
+                        discovered_via=ep_data.get("discovered_via", "endpoint_scanning"),
+                        status_code=ep_data.get("status_code", 200)
+                    )
+                    endpoints.append(endpoint)
+                
+                # Generate all visualizations
+                visualizations = visualizer.generate_all_visualizations(endpoints)
+                
+                if visualizations:
+                    # Create visualization report
+                    viz_report_path = visualizer.create_visualization_report(endpoints)
+                    print(f"✅ Visual API maps generated successfully!")
+                    print(f"📊 Generated {len(visualizations)} visualizations")
+                    print(f"📝 Visualization report: {viz_report_path}")
+                else:
+                    print("⚠️ Visualization generation failed, continuing with text reports only")
+                    
+            except Exception as e:
+                print(f"⚠️ Error generating visualizations: {e}")
+                print("Continuing with text reports only...")
             
             # Don't cleanup temporary files immediately - let the main script handle it
             # self._cleanup_temp_files()
