@@ -9,9 +9,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-20T17:50:56.264331",
-    "discovery_end_time": "2025-08-20T17:50:56.264337",
-    "discovery_duration": 143.44669485092163,
+    "discovery_start_time": "2025-08-20T19:12:52.361331",
+    "discovery_end_time": "2025-08-20T19:12:52.361340",
+    "discovery_duration": 144.175687789917,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -530,10 +530,10 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "PUT",
-        "GET",
         "POST",
-        "DELETE"
+        "DELETE",
+        "PUT",
+        "GET"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -617,10 +617,10 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "PUT",
-        "GET",
         "POST",
-        "DELETE"
+        "DELETE",
+        "PUT",
+        "GET"
       ],
       "description": "Update users email",
       "parameters": {
@@ -721,10 +721,10 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "PUT",
-        "GET",
         "POST",
-        "DELETE"
+        "DELETE",
+        "PUT",
+        "GET"
       ],
       "description": "Update users password",
       "parameters": {
@@ -886,10 +886,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "PUT",
-        "GET",
         "POST",
-        "DELETE"
+        "DELETE",
+        "PUT",
+        "GET"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -1877,11 +1877,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T17:50:56.243900",
+    "discovered_at": "2025-08-20T19:12:52.315837",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_175307",
-  "generated_at": "2025-08-20T17:53:07.609585",
+  "report_id": "vampi_discovery_20250820_191335",
+  "generated_at": "2025-08-20T19:13:35.333842",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

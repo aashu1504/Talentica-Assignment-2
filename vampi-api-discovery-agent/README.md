@@ -34,7 +34,9 @@ vampi-api-discovery-agent/
 ├── tests/                      # Test suite
 │   └── test_discovery.py      # Discovery engine tests
 ├── docs/                       # Documentation
-│   └── discovery_report.md    # Discovery report template
+│   ├── discovery_report.md    # Discovery report template
+│   ├── API_SCHEMA.md          # API schema documentation
+│   └── ARCHITECTURE.md        # System architecture documentation
 └── venv/                      # Python virtual environment
 ```
 
@@ -220,6 +222,22 @@ The agent generates comprehensive output including:
   }
 }
 ```
+
+## Documentation
+
+The agent generates comprehensive output including:
+
+- **JSON Catalog**: Complete endpoint discovery results
+- **Markdown Report**: Human-readable discovery report
+- **Security Analysis**: Risk assessment and vulnerability summary
+- **API Structure**: Endpoint organization and relationships
+
+### Documentation Files
+
+- **`README.md`**: This comprehensive setup and usage guide
+- **`docs/API_SCHEMA.md`**: Detailed API schema documentation and data structures
+- **`docs/ARCHITECTURE.md`**: System architecture diagrams and design patterns
+- **`discovery_report.md`**: Generated discovery analysis report
 
 ## Testing
 

@@ -9,16 +9,20 @@ This project implements an API Discovery Agent using CrewAI to discover, catalog
 - [x] PROJECT_MANIFEST.md - This manifest file
 - [x] requirements.txt - Python dependencies
 - [x] .env - Environment configuration
-- [x] src/main.py - Main execution script
+- [x] .gitignore - Git ignore patterns
 - [x] src/agent.py - CrewAI agent implementation
 - [x] src/discovery.py - VAmPI endpoint discovery engine
 - [x] src/models.py - Data models and schemas
 - [x] src/utils.py - Utility functions
+- [x] src/tools.py - CrewAI tools implementation
+- [x] src/test_crew_agents.py - Main test script
+- [x] src/test_discovery.py - Discovery engine tests
+- [x] src/validate_vampi.py - VAmPI validation script
 - [x] tests/__init__.py - Test package initialization
 - [x] tests/test_discovery.py - Discovery engine tests
-- [x] tests/test_agent.py - Agent tests
 - [x] docs/README.md - Project documentation
 - [x] docs/API_SCHEMA.md - API output schema documentation
+- [x] docs/ARCHITECTURE.md - System architecture documentation
 
 ### Backed Up Files
 *No files were backed up during initial creation*
@@ -44,7 +48,8 @@ vampi-api-discovery-agent/
 │   └── test_agent.py
 └── docs/
     ├── README.md
-    └── API_SCHEMA.md
+    ├── API_SCHEMA.md
+    └── ARCHITECTURE.md
 ```
 
 ## Setup Commands
