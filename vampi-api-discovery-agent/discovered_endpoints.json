@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-20T22:20:37.130156",
-    "discovery_end_time": "2025-08-20T22:20:37.130158",
-    "discovery_duration": 143.98073410987854,
+    "discovery_start_time": "2025-08-21T00:16:44.584678",
+    "discovery_end_time": "2025-08-21T00:16:44.584685",
+    "discovery_duration": 143.0414261817932,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -32,7 +32,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -80,7 +85,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -136,7 +146,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -200,7 +215,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -272,7 +292,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -355,7 +380,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -456,7 +486,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -544,7 +579,12 @@
           "user_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {
           "user_id": "string"
         },
@@ -631,7 +671,12 @@
           "user_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {
           "user_id": "string"
         },
@@ -735,7 +780,12 @@
           "user_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {
           "user_id": "string"
         },
@@ -837,7 +887,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -900,7 +955,12 @@
           "book_title"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept",
+          "Authorization",
+          "X-API-Key"
+        ],
         "param_types": {
           "book_title": "string"
         },
@@ -995,7 +1055,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1026,7 +1089,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1061,7 +1129,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1095,7 +1168,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1126,7 +1202,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1161,7 +1242,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1196,7 +1282,12 @@
           "user_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1230,7 +1321,12 @@
           "book_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1265,7 +1361,12 @@
           "user_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1299,7 +1400,12 @@
           "book_id"
         ],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1331,7 +1437,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1366,7 +1477,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1401,7 +1517,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1436,7 +1557,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1467,7 +1593,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1498,7 +1629,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1531,7 +1667,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1565,7 +1706,12 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Authorization",
+          "X-API-Key",
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1598,7 +1744,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1627,7 +1776,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1656,7 +1808,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1685,7 +1840,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1714,7 +1872,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1743,7 +1904,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1774,7 +1938,10 @@
         "query_params": [],
         "path_params": [],
         "body_params": [],
-        "headers": [],
+        "headers": [
+          "Content-Type",
+          "Accept"
+        ],
         "param_types": {},
         "validation_rules": {}
       },
@@ -1879,11 +2046,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-20T22:20:37.111513",
+    "discovered_at": "2025-08-21T00:16:44.553371",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250820_222108",
-  "generated_at": "2025-08-20T22:21:08.712337",
+  "report_id": "vampi_discovery_20250821_001732",
+  "generated_at": "2025-08-21T00:17:32.688083",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

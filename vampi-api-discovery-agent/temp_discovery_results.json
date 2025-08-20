@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 95.58333333333333,
       "parameter_coverage": 80.0,
-      "discovery_start_time": "2025-08-20 22:20:37.130156",
-      "discovery_end_time": "2025-08-20 22:20:37.130158",
-      "discovery_duration": 143.98073410987854,
+      "discovery_start_time": "2025-08-21 00:16:44.584678",
+      "discovery_end_time": "2025-08-21 00:16:44.584685",
+      "discovery_duration": 143.0414261817932,
       "total_parameters": 8,
       "unique_parameters": 3
     },
@@ -33,7 +33,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -81,7 +86,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -137,7 +147,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -201,7 +216,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -273,7 +293,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -356,7 +381,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -457,7 +487,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -545,7 +580,12 @@
             "user_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {
             "user_id": "string"
           },
@@ -632,7 +672,12 @@
             "user_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {
             "user_id": "string"
           },
@@ -736,7 +781,12 @@
             "user_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {
             "user_id": "string"
           },
@@ -838,7 +888,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -901,7 +956,12 @@
             "book_title"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "X-API-Key"
+          ],
           "param_types": {
             "book_title": "string"
           },
@@ -996,7 +1056,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1009,7 +1072,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.028217077255249023,
+        "response_time": 0.019227981567382812,
         "error_messages": [],
         "deprecated": false
       },
@@ -1027,7 +1090,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1044,7 +1112,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.019305944442749023,
+        "response_time": 0.015522956848144531,
         "error_messages": [],
         "deprecated": false
       },
@@ -1062,7 +1130,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1078,7 +1151,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.014517068862915039,
+        "response_time": 0.009884119033813477,
         "error_messages": [],
         "deprecated": false
       },
@@ -1096,7 +1169,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1109,7 +1185,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.016058921813964844,
+        "response_time": 0.05965304374694824,
         "error_messages": [],
         "deprecated": false
       },
@@ -1127,7 +1203,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1144,7 +1225,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.010735750198364258,
+        "response_time": 0.015482187271118164,
         "error_messages": [],
         "deprecated": false
       },
@@ -1162,7 +1243,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1178,7 +1264,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01862311363220215,
+        "response_time": 0.017338037490844727,
         "error_messages": [],
         "deprecated": false
       },
@@ -1197,7 +1283,12 @@
             "user_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1214,7 +1305,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.011811017990112305,
+        "response_time": 0.0168001651763916,
         "error_messages": [],
         "deprecated": false
       },
@@ -1231,7 +1322,12 @@
             "book_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1247,7 +1343,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.147568941116333,
+        "response_time": 0.04908490180969238,
         "error_messages": [],
         "deprecated": false
       },
@@ -1266,7 +1362,12 @@
             "user_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1283,7 +1384,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01733112335205078,
+        "response_time": 0.030130863189697266,
         "error_messages": [],
         "deprecated": false
       },
@@ -1300,7 +1401,12 @@
             "book_id"
           ],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1316,7 +1422,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02872920036315918,
+        "response_time": 0.01817798614501953,
         "error_messages": [],
         "deprecated": false
       },
@@ -1332,7 +1438,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1351,7 +1462,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.017611980438232422,
+        "response_time": 0.03131604194641113,
         "error_messages": [],
         "deprecated": false
       },
@@ -1367,7 +1478,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1386,7 +1502,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.015597105026245117,
+        "response_time": 0.018662214279174805,
         "error_messages": [],
         "deprecated": false
       },
@@ -1402,7 +1518,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1421,7 +1542,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01818108558654785,
+        "response_time": 0.02814936637878418,
         "error_messages": [],
         "deprecated": false
       },
@@ -1437,7 +1558,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1452,7 +1578,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 401,
-        "response_time": 0.020174741744995117,
+        "response_time": 0.01830601692199707,
         "error_messages": [],
         "deprecated": false
       },
@@ -1468,7 +1594,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1483,7 +1614,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 401,
-        "response_time": 0.02141284942626953,
+        "response_time": 0.014561653137207031,
         "error_messages": [],
         "deprecated": false
       },
@@ -1499,7 +1630,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1516,7 +1652,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.017368078231811523,
+        "response_time": 0.014278888702392578,
         "error_messages": [],
         "deprecated": false
       },
@@ -1532,7 +1668,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1550,7 +1691,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01836085319519043,
+        "response_time": 0.017563819885253906,
         "error_messages": [],
         "deprecated": false
       },
@@ -1566,7 +1707,12 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Authorization",
+            "X-API-Key",
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1583,7 +1729,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.014868974685668945,
+        "response_time": 0.011101007461547852,
         "error_messages": [],
         "deprecated": false
       },
@@ -1599,7 +1745,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1612,7 +1761,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.019457101821899414,
+        "response_time": 0.013866186141967773,
         "error_messages": [],
         "deprecated": false
       },
@@ -1628,7 +1777,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1641,7 +1793,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.015384912490844727,
+        "response_time": 0.014822959899902344,
         "error_messages": [],
         "deprecated": false
       },
@@ -1657,7 +1809,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1670,7 +1825,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.011629104614257812,
+        "response_time": 0.03336906433105469,
         "error_messages": [],
         "deprecated": false
       },
@@ -1686,7 +1841,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1699,7 +1857,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.016808748245239258,
+        "response_time": 0.024387121200561523,
         "error_messages": [],
         "deprecated": false
       },
@@ -1715,7 +1873,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1728,7 +1889,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.018372774124145508,
+        "response_time": 0.01577281951904297,
         "error_messages": [],
         "deprecated": false
       },
@@ -1744,7 +1905,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1759,7 +1923,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 200,
-        "response_time": 0.13738489151000977,
+        "response_time": 0.10300397872924805,
         "error_messages": [],
         "deprecated": false
       },
@@ -1775,7 +1939,10 @@
           "query_params": [],
           "path_params": [],
           "body_params": [],
-          "headers": [],
+          "headers": [
+            "Content-Type",
+            "Accept"
+          ],
           "param_types": {},
           "validation_rules": {}
         },
@@ -1788,7 +1955,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 200,
-        "response_time": 0.20489788055419922,
+        "response_time": 0.21113872528076172,
         "error_messages": [],
         "deprecated": false
       }
@@ -1803,7 +1970,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 22:20:37.127519",
+        "discovered_at": "2025-08-21 00:16:44.573004",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -1834,7 +2001,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-20 22:20:37.127590",
+        "discovered_at": "2025-08-21 00:16:44.573046",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -1957,7 +2124,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2021,7 +2193,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2093,7 +2270,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2176,7 +2358,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2282,7 +2469,12 @@
                     "user_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {
                     "user_id": "string"
                   },
@@ -2369,7 +2561,12 @@
                     "user_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {
                     "user_id": "string"
                   },
@@ -2473,7 +2670,12 @@
                     "user_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {
                     "user_id": "string"
                   },
@@ -2573,7 +2775,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2592,7 +2799,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.017611980438232422,
+                "response_time": 0.03131604194641113,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2608,7 +2815,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2627,7 +2839,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.015597105026245117,
+                "response_time": 0.018662214279174805,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2643,7 +2855,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2662,13 +2879,13 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01818108558654785,
+                "response_time": 0.02814936637878418,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>}",
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
@@ -2687,7 +2904,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2750,7 +2972,12 @@
                     "book_title"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept",
+                    "Authorization",
+                    "X-API-Key"
+                  ],
                   "param_types": {
                     "book_title": "string"
                   },
@@ -2843,7 +3070,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2858,7 +3090,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 401,
-                "response_time": 0.020174741744995117,
+                "response_time": 0.01830601692199707,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2874,7 +3106,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2889,13 +3126,13 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 401,
-                "response_time": 0.02141284942626953,
+                "response_time": 0.014561653137207031,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>}",
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "api": {
@@ -2914,7 +3151,10 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2927,7 +3167,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.028217077255249023,
+                "response_time": 0.019227981567382812,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2945,7 +3185,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2962,7 +3207,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.019305944442749023,
+                "response_time": 0.015522956848144531,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2980,7 +3225,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -2996,7 +3246,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.014517068862915039,
+                "response_time": 0.009884119033813477,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3015,7 +3265,12 @@
                     "user_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3032,7 +3287,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.011811017990112305,
+                "response_time": 0.0168001651763916,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3049,7 +3304,12 @@
                     "book_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3065,14 +3325,14 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.147568941116333,
+                "response_time": 0.04908490180969238,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.LOW: 'Low'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>}",
+            "risk_levels": "{<RiskLevel.LOW: 'Low'>, <RiskLevel.CRITICAL: 'Critical'>}"
           },
           "v1": {
             "endpoints": [
@@ -3090,7 +3350,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3107,7 +3372,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.010735750198364258,
+                "response_time": 0.015482187271118164,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3125,7 +3390,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3141,7 +3411,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01862311363220215,
+                "response_time": 0.017338037490844727,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3160,7 +3430,12 @@
                     "user_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3177,7 +3452,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01733112335205078,
+                "response_time": 0.030130863189697266,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3194,7 +3469,12 @@
                     "book_id"
                   ],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3210,13 +3490,13 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.02872920036315918,
+                "response_time": 0.01817798614501953,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
-            "sub_resources": "{'users', 'books'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>}",
+            "sub_resources": "{'books', 'users'}",
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>}"
           },
           "admin": {
@@ -3233,7 +3513,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3251,7 +3536,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01836085319519043,
+                "response_time": 0.017563819885253906,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3267,7 +3552,12 @@
                   "query_params": [],
                   "path_params": [],
                   "body_params": [],
-                  "headers": [],
+                  "headers": [
+                    "Authorization",
+                    "X-API-Key",
+                    "Content-Type",
+                    "Accept"
+                  ],
                   "param_types": {},
                   "validation_rules": {}
                 },
@@ -3284,12 +3574,12 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.014868974685668945,
+                "response_time": 0.011101007461547852,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
-            "sub_resources": "{'users', 'books'}",
+            "sub_resources": "{'books', 'users'}",
             "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>}"
           }
@@ -3903,10 +4193,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-20 22:20:37.111513",
+      "discovered_at": "2025-08-21 00:16:44.553371",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-20 22:20:37.204061",
+  "discovery_timestamp": "2025-08-21 00:16:44.621704",
   "total_endpoints": 37
 }

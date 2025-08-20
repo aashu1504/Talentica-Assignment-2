@@ -247,8 +247,16 @@ class VAmPIDiscoveryEngine:
             query_string = str(response.url).split("?")[1]
             query_params = [param.split("=")[0] for param in query_string.split("&")]
         
-        # Extract headers from response
+        # Extract headers from response and add common API headers
         headers = []
+        
+        # Common API headers that are often required
+        common_headers = [
+            "Content-Type", "Accept", "Authorization", "X-API-Key", 
+            "X-Requested-With", "User-Agent", "Origin", "Referer"
+        ]
+        
+        # Add headers found in response
         if "content-type" in response.headers:
             headers.append("Content-Type")
         if "authorization" in response.headers:
@@ -259,6 +267,26 @@ class VAmPIDiscoveryEngine:
         # Enhanced security headers detection
         security_headers = self._detect_security_headers(response.headers)
         headers.extend(security_headers)
+        
+        # Add authentication-related headers based on endpoint characteristics
+        if self._requires_authentication(path, method):
+            if "Authorization" not in headers:
+                headers.append("Authorization")
+            if "X-API-Key" not in headers:
+                headers.append("X-API-Key")
+        
+        # Add content negotiation headers for endpoints that might need them
+        if method in ["POST", "PUT", "PATCH"]:
+            if "Content-Type" not in headers:
+                headers.append("Content-Type")
+            if "Accept" not in headers:
+                headers.append("Accept")
+        
+        # Always add essential headers for all endpoints
+        essential_headers = ["Content-Type", "Accept"]
+        for header in essential_headers:
+            if header not in headers:
+                headers.append(header)
         
         # Try to extract body parameters from response with type inference
         body_params = []
@@ -324,6 +352,44 @@ class VAmPIDiscoveryEngine:
                 security_headers.append(header_display)
         
         return security_headers
+    
+    def _requires_authentication(self, path: str, method: str) -> bool:
+        """
+        Determine if an endpoint requires authentication based on path and method.
+        
+        Args:
+            path: Endpoint path
+            method: HTTP method
+            
+        Returns:
+            True if authentication is likely required, False otherwise
+        """
+        # Endpoints that typically require authentication
+        auth_required_paths = [
+            "/users/v1", "/users/v1/{user_id}", "/users/v1/{user_id}/email", 
+            "/users/v1/{user_id}/password", "/me", "/admin", "/admin/users", 
+            "/admin/books", "/api/v1/users", "/api/v1/books", "/v1/users", "/v1/books"
+        ]
+        
+        # Methods that typically require authentication
+        auth_required_methods = ["PUT", "DELETE", "PATCH"]
+        
+        # Check if path matches any auth-required patterns
+        for auth_path in auth_required_paths:
+            if self._paths_match(path, auth_path):
+                return True
+        
+        # Check if method requires authentication
+        if method in auth_required_methods:
+            return True
+        
+        # Check for sensitive operations
+        sensitive_operations = ["password", "email", "admin", "user", "book"]
+        path_lower = path.lower()
+        if any(op in path_lower for op in sensitive_operations):
+            return True
+        
+        return False
     
     def _detect_deprecated_endpoint(self, response: httpx.Response) -> bool:
         """
@@ -542,11 +608,33 @@ class VAmPIDiscoveryEngine:
             parsed_url = urlparse(str(response.url))
             query_params = [param.split('=')[0] for param in parsed_url.query.split('&') if param]
         
+        # Enhanced header detection for all endpoints
+        headers = []
+        
+        # Common API headers that are often required
+        common_headers = [
+            "Content-Type", "Accept", "Authorization", "X-API-Key", 
+            "X-Requested-With", "User-Agent", "Origin", "Referer"
+        ]
+        
+        # Add authentication-related headers based on endpoint characteristics
+        if self._requires_authentication(path, "GET"):  # Default to GET method
+            if "Authorization" not in headers:
+                headers.append("Authorization")
+            if "X-API-Key" not in headers:
+                headers.append("X-API-Key")
+        
+        # Add content negotiation headers
+        if "Content-Type" not in headers:
+            headers.append("Content-Type")
+        if "Accept" not in headers:
+            headers.append("Accept")
+        
         return EndpointParameters(
             path_params=path_params,
             query_params=query_params,
             body_params=[],
-            headers=[],
+            headers=headers,
             param_types={}
         )
     
@@ -1580,6 +1668,12 @@ class VAmPIDiscoveryEngine:
             elif param_in == 'body' or param_in == 'requestBody':
                 body_params.append(param_name)
         
+        # Add common headers if not already present
+        common_headers = ["Content-Type", "Accept", "Authorization", "X-API-Key"]
+        for header in common_headers:
+            if header not in headers:
+                headers.append(header)
+        
         return EndpointParameters(
             query_params=query_params,
             path_params=path_params,
@@ -1864,6 +1958,12 @@ class VAmPIDiscoveryEngine:
             if isinstance(header, dict):
                 header_name = header.get('key', '')
                 headers.append(header_name)
+        
+        # Add common headers if not already present
+        common_headers = ["Content-Type", "Accept", "Authorization", "X-API-Key"]
+        for header in common_headers:
+            if header not in headers:
+                headers.append(header)
         
         # Extract body parameters
         body = request.get('body', {})
