@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-21 23:31:50
+**Generated:** 2025-08-22 00:14:36
 
 ## Configuration
 
@@ -96,7 +96,7 @@
 
 ### /users/v1/{user_id}
 
-- **Methods:** POST, DELETE, PUT, GET
+- **Methods:** DELETE, PUT, POST, GET
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -108,7 +108,7 @@
 
 ### /users/v1/{user_id}/email
 
-- **Methods:** POST, DELETE, PUT, GET
+- **Methods:** DELETE, PUT, POST, GET
 - **Description:** Update users email
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -120,7 +120,7 @@
 
 ### /users/v1/{user_id}/password
 
-- **Methods:** POST, DELETE, PUT, GET
+- **Methods:** DELETE, PUT, POST, GET
 - **Description:** Update users password
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -143,7 +143,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** POST, DELETE, PUT, GET
+- **Methods:** DELETE, PUT, GET, POST
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -431,6 +431,14 @@
 - **Response Types:** Unknown
 
 **Parameters:**
+
+## Authentication Mechanisms
+
+### Bearer Authentication
+
+- **Type:** Bearer
+- **Description:** Standard Bearer authentication mechanism
+- **Endpoints Using:** DOC002, DOC003, DOC006, DOC007, DOC009, DOC010, DOC011, DOC013, EP021, EP022, EP023, EP024, EP025, EP026, EP027, EP028, EP029, EP031, EP032
 
 ## API Structure
 

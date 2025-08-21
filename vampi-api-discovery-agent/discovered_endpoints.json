@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-21T23:31:19.346941",
-    "discovery_end_time": "2025-08-21T23:31:19.346951",
-    "discovery_duration": 145.49795293807983,
+    "discovery_start_time": "2025-08-22T00:13:13.183365",
+    "discovery_end_time": "2025-08-22T00:13:13.183373",
+    "discovery_duration": 144.26327800750732,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -578,9 +578,9 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "POST",
         "DELETE",
         "PUT",
+        "POST",
         "GET"
       ],
       "description": "Retrieves user by username",
@@ -670,9 +670,9 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "POST",
         "DELETE",
         "PUT",
+        "POST",
         "GET"
       ],
       "description": "Update users email",
@@ -779,9 +779,9 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "POST",
         "DELETE",
         "PUT",
+        "POST",
         "GET"
       ],
       "description": "Update users password",
@@ -954,10 +954,10 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "POST",
         "DELETE",
         "PUT",
-        "GET"
+        "GET",
+        "POST"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -2004,7 +2004,68 @@
       "deprecated": false
     }
   ],
-  "authentication_mechanisms": [],
+  "authentication_mechanisms": [
+    {
+      "type": "Bearer",
+      "name": "Bearer Authentication",
+      "description": "Standard Bearer authentication mechanism",
+      "config": {
+        "token_location": "header",
+        "header_name": "Authorization",
+        "endpoints": [
+          "/users/v1",
+          "/users/v1/_debug",
+          "/me",
+          "/users/v1/{user_id}",
+          "/users/v1/{user_id}/email",
+          "/users/v1/{user_id}/password",
+          "/books/v1",
+          "/books/v1/{book_title}",
+          "/api/v1/users/{user_id}",
+          "/api/v1/books/{book_id}",
+          "/v1/users/{user_id}",
+          "/v1/books/{book_id}",
+          "/users/v1/me",
+          "/users/v1/profile",
+          "/users/v1/settings",
+          "/books/v1/search",
+          "/books/v1/categories",
+          "/admin/users",
+          "/admin/books"
+        ]
+      },
+      "security_strength": "high",
+      "vulnerabilities": [
+        "Token validation",
+        "Secure transmission",
+        "Token replay"
+      ],
+      "implementation_details": "Used by 19 endpoints. Token location: header, Header: Authorization",
+      "documentation_url": null,
+      "discovered_at": "2025-08-22T00:14:36.572078",
+      "endpoints_using": [
+        "DOC002",
+        "DOC003",
+        "DOC006",
+        "DOC007",
+        "DOC009",
+        "DOC010",
+        "DOC011",
+        "DOC013",
+        "EP021",
+        "EP022",
+        "EP023",
+        "EP024",
+        "EP025",
+        "EP026",
+        "EP027",
+        "EP028",
+        "EP029",
+        "EP031",
+        "EP032"
+      ]
+    }
+  ],
   "api_structure": {
     "base_url": "http://localhost:5000",
     "version": "v1",
@@ -2091,11 +2152,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-21T23:31:19.315719",
+    "discovered_at": "2025-08-22T00:13:13.134918",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250821_233150",
-  "generated_at": "2025-08-21T23:31:50.192376",
+  "report_id": "vampi_discovery_20250822_001436",
+  "generated_at": "2025-08-22T00:14:36.572156",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

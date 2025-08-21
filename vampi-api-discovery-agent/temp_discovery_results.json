@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 95.58333333333333,
       "parameter_coverage": 80.0,
-      "discovery_start_time": "2025-08-21 23:31:19.346941",
-      "discovery_end_time": "2025-08-21 23:31:19.346951",
-      "discovery_duration": 145.49795293807983,
+      "discovery_start_time": "2025-08-22 00:13:13.183365",
+      "discovery_end_time": "2025-08-22 00:13:13.183373",
+      "discovery_duration": 144.26327800750732,
       "total_parameters": 8,
       "unique_parameters": 3
     },
@@ -579,9 +579,9 @@
         "id": "DOC007",
         "path": "/users/v1/{user_id}",
         "methods": [
-          "POST",
           "DELETE",
           "PUT",
+          "POST",
           "GET"
         ],
         "description": "Retrieves user by username",
@@ -671,9 +671,9 @@
         "id": "DOC009",
         "path": "/users/v1/{user_id}/email",
         "methods": [
-          "POST",
           "DELETE",
           "PUT",
+          "POST",
           "GET"
         ],
         "description": "Update users email",
@@ -780,9 +780,9 @@
         "id": "DOC010",
         "path": "/users/v1/{user_id}/password",
         "methods": [
-          "POST",
           "DELETE",
           "PUT",
+          "POST",
           "GET"
         ],
         "description": "Update users password",
@@ -955,10 +955,10 @@
         "id": "DOC013",
         "path": "/books/v1/{book_title}",
         "methods": [
-          "POST",
           "DELETE",
           "PUT",
-          "GET"
+          "GET",
+          "POST"
         ],
         "description": "Retrieves book by title along with secret",
         "parameters": {
@@ -1087,7 +1087,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.017180919647216797,
+        "response_time": 0.025069236755371094,
         "error_messages": [],
         "deprecated": false
       },
@@ -1127,7 +1127,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.033293962478637695,
+        "response_time": 0.012676715850830078,
         "error_messages": [],
         "deprecated": false
       },
@@ -1166,7 +1166,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.023346900939941406,
+        "response_time": 0.020654678344726562,
         "error_messages": [],
         "deprecated": false
       },
@@ -1204,7 +1204,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.024245023727416992,
+        "response_time": 0.029989957809448242,
         "error_messages": [],
         "deprecated": false
       },
@@ -1244,7 +1244,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.013921022415161133,
+        "response_time": 0.010580062866210938,
         "error_messages": [],
         "deprecated": false
       },
@@ -1283,7 +1283,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.013837099075317383,
+        "response_time": 0.01595592498779297,
         "error_messages": [],
         "deprecated": false
       },
@@ -1324,7 +1324,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.03022599220275879,
+        "response_time": 0.02221202850341797,
         "error_messages": [],
         "deprecated": false
       },
@@ -1362,7 +1362,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.014115095138549805,
+        "response_time": 0.022629976272583008,
         "error_messages": [],
         "deprecated": false
       },
@@ -1403,7 +1403,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.0209808349609375,
+        "response_time": 0.016398191452026367,
         "error_messages": [],
         "deprecated": false
       },
@@ -1441,7 +1441,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01556396484375,
+        "response_time": 0.024878978729248047,
         "error_messages": [],
         "deprecated": false
       },
@@ -1481,7 +1481,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02533102035522461,
+        "response_time": 0.03919577598571777,
         "error_messages": [],
         "deprecated": false
       },
@@ -1521,7 +1521,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.015639066696166992,
+        "response_time": 0.01879119873046875,
         "error_messages": [],
         "deprecated": false
       },
@@ -1561,7 +1561,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.01596379280090332,
+        "response_time": 0.035041093826293945,
         "error_messages": [],
         "deprecated": false
       },
@@ -1597,7 +1597,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 401,
-        "response_time": 0.020543813705444336,
+        "response_time": 0.020934104919433594,
         "error_messages": [],
         "deprecated": false
       },
@@ -1633,7 +1633,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 401,
-        "response_time": 0.017979145050048828,
+        "response_time": 0.01720285415649414,
         "error_messages": [],
         "deprecated": false
       },
@@ -1671,7 +1671,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.030670881271362305,
+        "response_time": 0.019403696060180664,
         "error_messages": [],
         "deprecated": false
       },
@@ -1710,7 +1710,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.011439085006713867,
+        "response_time": 0.03264212608337402,
         "error_messages": [],
         "deprecated": false
       },
@@ -1748,7 +1748,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02268385887145996,
+        "response_time": 0.02094292640686035,
         "error_messages": [],
         "deprecated": false
       },
@@ -1784,7 +1784,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02454400062561035,
+        "response_time": 0.028410911560058594,
         "error_messages": [],
         "deprecated": false
       },
@@ -1820,7 +1820,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02090287208557129,
+        "response_time": 0.006821870803833008,
         "error_messages": [],
         "deprecated": false
       },
@@ -1856,7 +1856,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02601313591003418,
+        "response_time": 0.01671290397644043,
         "error_messages": [],
         "deprecated": false
       },
@@ -1892,7 +1892,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.024571895599365234,
+        "response_time": 0.01510310173034668,
         "error_messages": [],
         "deprecated": false
       },
@@ -1928,7 +1928,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 404,
-        "response_time": 0.02583026885986328,
+        "response_time": 0.011516809463500977,
         "error_messages": [],
         "deprecated": false
       },
@@ -1965,7 +1965,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 200,
-        "response_time": 0.1915721893310547,
+        "response_time": 0.11975717544555664,
         "error_messages": [],
         "deprecated": false
       },
@@ -2000,7 +2000,7 @@
         "response_schemas": null,
         "discovered_via": "endpoint_scanning",
         "status_code": 200,
-        "response_time": 0.26701903343200684,
+        "response_time": 0.2659032344818115,
         "error_messages": [],
         "deprecated": false
       }
@@ -2015,7 +2015,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-21 23:31:19.336564",
+        "discovered_at": "2025-08-22 00:13:13.154865",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -2046,7 +2046,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-21 23:31:19.336754",
+        "discovered_at": "2025-08-22 00:13:13.154972",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -2502,9 +2502,9 @@
                 "id": "DOC007",
                 "path": "/users/v1/{user_id}",
                 "methods": [
-                  "POST",
                   "DELETE",
                   "PUT",
+                  "POST",
                   "GET"
                 ],
                 "description": "Retrieves user by username",
@@ -2594,9 +2594,9 @@
                 "id": "DOC009",
                 "path": "/users/v1/{user_id}/email",
                 "methods": [
-                  "POST",
                   "DELETE",
                   "PUT",
+                  "POST",
                   "GET"
                 ],
                 "description": "Update users email",
@@ -2703,9 +2703,9 @@
                 "id": "DOC010",
                 "path": "/users/v1/{user_id}/password",
                 "methods": [
-                  "POST",
                   "DELETE",
                   "PUT",
+                  "POST",
                   "GET"
                 ],
                 "description": "Update users password",
@@ -2844,7 +2844,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.02533102035522461,
+                "response_time": 0.03919577598571777,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2884,7 +2884,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.015639066696166992,
+                "response_time": 0.01879119873046875,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -2924,14 +2924,14 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01596379280090332,
+                "response_time": 0.035041093826293945,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
             "endpoints": [
@@ -3005,10 +3005,10 @@
                 "id": "DOC013",
                 "path": "/books/v1/{book_title}",
                 "methods": [
-                  "POST",
                   "DELETE",
                   "PUT",
-                  "GET"
+                  "GET",
+                  "POST"
                 ],
                 "description": "Retrieves book by title along with secret",
                 "parameters": {
@@ -3135,7 +3135,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 401,
-                "response_time": 0.020543813705444336,
+                "response_time": 0.020934104919433594,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3171,14 +3171,14 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 401,
-                "response_time": 0.017979145050048828,
+                "response_time": 0.01720285415649414,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "api": {
             "endpoints": [
@@ -3216,7 +3216,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.017180919647216797,
+                "response_time": 0.025069236755371094,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3256,7 +3256,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.033293962478637695,
+                "response_time": 0.012676715850830078,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3295,7 +3295,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.023346900939941406,
+                "response_time": 0.020654678344726562,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3336,7 +3336,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.03022599220275879,
+                "response_time": 0.02221202850341797,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3374,14 +3374,14 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.014115095138549805,
+                "response_time": 0.022629976272583008,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
-            "risk_levels": "{<RiskLevel.LOW: 'Low'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.LOW: 'Low'>}"
           },
           "v1": {
             "endpoints": [
@@ -3421,7 +3421,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.013921022415161133,
+                "response_time": 0.010580062866210938,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3460,7 +3460,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.013837099075317383,
+                "response_time": 0.01595592498779297,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3501,7 +3501,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.0209808349609375,
+                "response_time": 0.016398191452026367,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3539,13 +3539,13 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.01556396484375,
+                "response_time": 0.024878978729248047,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
-            "sub_resources": "{'books', 'users'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>}",
+            "sub_resources": "{'users', 'books'}",
+            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>}"
           },
           "admin": {
@@ -3585,7 +3585,7 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.011439085006713867,
+                "response_time": 0.03264212608337402,
                 "error_messages": [],
                 "deprecated": false
               },
@@ -3623,13 +3623,13 @@
                 "response_schemas": null,
                 "discovered_via": "endpoint_scanning",
                 "status_code": 404,
-                "response_time": 0.02268385887145996,
+                "response_time": 0.02094292640686035,
                 "error_messages": [],
                 "deprecated": false
               }
             ],
-            "sub_resources": "{'books', 'users'}",
-            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>}",
+            "sub_resources": "{'users', 'books'}",
+            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>}"
           }
         },
@@ -4242,10 +4242,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-21 23:31:19.315719",
+      "discovered_at": "2025-08-22 00:13:13.134918",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-21 23:31:19.473602",
+  "discovery_timestamp": "2025-08-22 00:13:13.270139",
   "total_endpoints": 37
 }

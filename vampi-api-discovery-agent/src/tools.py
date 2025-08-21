@@ -509,10 +509,91 @@ class TechnicalWriterTool(BaseTool):
                 discovery_method=api_data.get("discovery_method", "endpoint_scanning")
             )
             
+            # Create authentication mechanisms based on discovered endpoints
+            auth_mechanisms = []
+            auth_type_counts = {}
+            
+            # Debug logging
+            print(f"🔍 Analyzing {len(endpoints)} endpoints for authentication types...")
+            
+            # Count authentication types
+            for endpoint in endpoints:
+                auth_type = endpoint.authentication_type
+                print(f"  Endpoint {endpoint.id}: {endpoint.path} -> auth_type: {auth_type}")
+                if auth_type and auth_type != "None":
+                    if auth_type not in auth_type_counts:
+                        auth_type_counts[auth_type] = []
+                    auth_type_counts[auth_type].append(endpoint.id)
+            
+            print(f"📊 Found authentication types: {list(auth_type_counts.keys())}")
+            print(f"📊 Auth type counts: {auth_type_counts}")
+            
+            # Create AuthenticationMechanism objects
+            for auth_type, endpoint_ids in auth_type_counts.items():
+                # Determine security strength based on auth type
+                security_strength = "medium"
+                vulnerabilities = []
+                token_location = "header"
+                header_name = "Authorization"
+                
+                if auth_type == "JWT":
+                    security_strength = "high"
+                    vulnerabilities = ["Token expiration", "Secret key management", "JWT signature validation"]
+                    token_location = "header"
+                    header_name = "Authorization"
+                elif auth_type == "Bearer":
+                    security_strength = "high"
+                    vulnerabilities = ["Token validation", "Secure transmission", "Token replay"]
+                    token_location = "header"
+                    header_name = "Authorization"
+                elif auth_type == "API_Key":
+                    security_strength = "medium"
+                    vulnerabilities = ["Key exposure", "Key rotation", "Key enumeration"]
+                    token_location = "header"
+                    header_name = "X-API-Key"
+                elif auth_type == "Basic":
+                    security_strength = "low"
+                    vulnerabilities = ["Credential exposure", "No encryption", "Base64 encoding"]
+                    token_location = "header"
+                    header_name = "Authorization"
+                elif auth_type == "Session":
+                    security_strength = "medium"
+                    vulnerabilities = ["Session hijacking", "CSRF attacks", "Session fixation"]
+                    token_location = "cookie"
+                    header_name = "Cookie"
+                elif auth_type == "OAuth2":
+                    security_strength = "high"
+                    vulnerabilities = ["Token validation", "Scope validation", "Redirect URI validation"]
+                    token_location = "header"
+                    header_name = "Authorization"
+                
+                # Get endpoint paths for better readability
+                endpoint_paths = []
+                for endpoint in endpoints:
+                    if endpoint.id in endpoint_ids:
+                        endpoint_paths.append(endpoint.path)
+                
+                auth_mechanism = AuthenticationMechanism(
+                    type=auth_type,
+                    name=f"{auth_type} Authentication",
+                    description=f"Standard {auth_type} authentication mechanism",
+                    security_strength=security_strength,
+                    vulnerabilities=vulnerabilities,
+                    implementation_details=f"Used by {len(endpoint_ids)} endpoints. Token location: {token_location}, Header: {header_name}",
+                    endpoints_using=endpoint_ids,
+                    config={
+                        "token_location": token_location,
+                        "header_name": header_name,
+                        "endpoints": endpoint_paths
+                    }
+                )
+                auth_mechanisms.append(auth_mechanism)
+            
             # Create DiscoveryReport
             report = DiscoveryReport(
                 endpoints=endpoints,
                 discovery_summary=summary,
+                authentication_mechanisms=auth_mechanisms,
                 api_structure=api_structure,
                 report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
                 notes=f"Technical Analysis: Generated from discovery data with validation metrics"
