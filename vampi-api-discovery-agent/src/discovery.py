@@ -1181,7 +1181,7 @@ class VAmPIDiscoveryEngine:
             discovery_method="endpoint_scanning",
             title="VAmPI API",
             description="VAmPI API discovered through endpoint scanning",
-            base_path="/",
+            base_path="/users/v1",  # Primary API section for VAmPI
             schemes=["http", "https"],
             host=urlparse(self.config.base_url).hostname,
             port=urlparse(self.config.base_url).port or 80,

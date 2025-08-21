@@ -183,7 +183,9 @@ class APIStructure(BaseModel):
     description: Optional[str] = Field(None, description="API description")
     
     # Organization
-    base_path: Optional[str] = Field(None, description="Base path for all endpoints")
+    base_paths: List[str] = Field(default_factory=list, description="List of base paths for different API sections")
+    versions: List[str] = Field(default_factory=list, description="API versions discovered")
+    common_patterns: List[str] = Field(default_factory=list, description="Common API design patterns identified")
     schemes: List[str] = Field(default_factory=list, description="Supported schemes (http, https)")
     host: Optional[str] = Field(None, description="API host")
     port: Optional[int] = Field(None, description="API port")

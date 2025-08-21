@@ -492,12 +492,62 @@ class TechnicalWriterTool(BaseTool):
             
             # Create APIStructure
             api_data = discovery_data.get("discovery_data", {}).get("api_structure", {})
+            
+            # Analyze endpoints to determine base paths, versions, and patterns
+            base_paths = []
+            versions = []
+            common_patterns = []
+            
+            # Extract base paths from endpoint paths
+            for endpoint in endpoints:
+                path = endpoint.path
+                if path.startswith('/'):
+                    # Extract base path (e.g., /users/v1 -> /users/v1)
+                    parts = path.split('/')
+                    if len(parts) >= 3:  # Has at least /section/version format
+                        base_path = f"/{parts[1]}/{parts[2]}"
+                        if base_path not in base_paths:
+                            base_paths.append(base_path)
+                    elif len(parts) == 2:  # Has /section format
+                        base_path = f"/{parts[1]}"
+                        if base_path not in base_paths:
+                            base_paths.append(base_path)
+            
+            # Extract versions from paths (only add unique versions)
+            for path in base_paths:
+                if '/v1' in path and 'v1' not in versions:
+                    versions.append('v1')
+                elif '/v2' in path and 'v2' not in versions:
+                    versions.append('v2')
+                elif '/v3' in path and 'v3' not in versions:
+                    versions.append('v3')
+            
+            # Determine common patterns based on endpoint characteristics
+            if endpoints:
+                common_patterns.append("REST")
+                common_patterns.append("JSON_responses")
+                
+                # Check for other patterns
+                has_authentication = any(ep.authentication_required for ep in endpoints)
+                if has_authentication:
+                    common_patterns.append("Authentication_required")
+                
+                has_parameters = any(ep.parameters.path_params or ep.parameters.query_params or ep.parameters.body_params for ep in endpoints)
+                if has_parameters:
+                    common_patterns.append("Parameterized_endpoints")
+                
+                has_crud = any(method in ['GET', 'POST', 'PUT', 'DELETE'] for ep in endpoints for method in ep.methods)
+                if has_crud:
+                    common_patterns.append("CRUD_operations")
+            
             api_structure = APIStructure(
                 base_url=api_data.get("base_url", ""),
                 version=api_data.get("version"),
                 title=api_data.get("title", "VAmPI API"),
                 description=api_data.get("description", "VAmPI API discovered through endpoint scanning"),
-                base_path=api_data.get("base_path"),
+                base_paths=base_paths,
+                versions=versions,
+                common_patterns=common_patterns,
                 schemes=api_data.get("schemes", []),
                 host=api_data.get("host"),
                 port=api_data.get("port"),

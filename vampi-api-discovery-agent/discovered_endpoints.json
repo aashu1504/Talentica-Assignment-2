@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-22T00:13:13.183365",
-    "discovery_end_time": "2025-08-22T00:13:13.183373",
-    "discovery_duration": 144.26327800750732,
+    "discovery_start_time": "2025-08-22T00:56:48.453244",
+    "discovery_end_time": "2025-08-22T00:56:48.453251",
+    "discovery_duration": 142.99298691749573,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -578,10 +578,10 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "DELETE",
         "PUT",
-        "POST",
-        "GET"
+        "GET",
+        "DELETE",
+        "POST"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -670,10 +670,10 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "DELETE",
         "PUT",
-        "POST",
-        "GET"
+        "GET",
+        "DELETE",
+        "POST"
       ],
       "description": "Update users email",
       "parameters": {
@@ -779,10 +779,10 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "DELETE",
         "PUT",
-        "POST",
-        "GET"
+        "GET",
+        "DELETE",
+        "POST"
       ],
       "description": "Update users password",
       "parameters": {
@@ -954,9 +954,9 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "DELETE",
         "PUT",
         "GET",
+        "DELETE",
         "POST"
       ],
       "description": "Retrieves book by title along with secret",
@@ -2042,7 +2042,7 @@
       ],
       "implementation_details": "Used by 19 endpoints. Token location: header, Header: Authorization",
       "documentation_url": null,
-      "discovered_at": "2025-08-22T00:14:36.572078",
+      "discovered_at": "2025-08-22T00:57:26.838197",
       "endpoints_using": [
         "DOC002",
         "DOC003",
@@ -2071,7 +2071,37 @@
     "version": "v1",
     "title": "VAmPI API",
     "description": "VAmPI API discovered through endpoint scanning",
-    "base_path": "/",
+    "base_paths": [
+      "/createdb",
+      "/",
+      "/users/v1",
+      "/me",
+      "/books/v1",
+      "/api/v1",
+      "/v1",
+      "/v1/users",
+      "/v1/books",
+      "/admin",
+      "/admin/users",
+      "/admin/books",
+      "/health",
+      "/status",
+      "/info",
+      "/docs",
+      "/swagger",
+      "/openapi.json",
+      "/openapi.yaml"
+    ],
+    "versions": [
+      "v1"
+    ],
+    "common_patterns": [
+      "REST",
+      "JSON_responses",
+      "Authentication_required",
+      "Parameterized_endpoints",
+      "CRUD_operations"
+    ],
     "schemes": [
       "http",
       "https"
@@ -2152,11 +2182,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-22T00:13:13.134918",
+    "discovered_at": "2025-08-22T00:56:48.427986",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250822_001436",
-  "generated_at": "2025-08-22T00:14:36.572156",
+  "report_id": "vampi_discovery_20250822_005726",
+  "generated_at": "2025-08-22T00:57:26.838391",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
