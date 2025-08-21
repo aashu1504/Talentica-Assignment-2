@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 95.58333333333333,
     "parameter_coverage": 80.0,
-    "discovery_start_time": "2025-08-21T00:16:44.584678",
-    "discovery_end_time": "2025-08-21T00:16:44.584685",
-    "discovery_duration": 143.0414261817932,
+    "discovery_start_time": "2025-08-21T23:31:19.346941",
+    "discovery_end_time": "2025-08-21T23:31:19.346951",
+    "discovery_duration": 145.49795293807983,
     "total_parameters": 8,
     "unique_parameters": 3
   },
@@ -44,7 +44,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "basic_functionality"
+      ],
       "response_types": [
         "application/json"
       ],
@@ -97,7 +101,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "basic_functionality"
+      ],
       "response_types": [
         "application/json"
       ],
@@ -498,7 +506,10 @@
       "authentication_required": true,
       "authentication_type": "Bearer",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "read_only_operation",
+        "standard_api_operation"
+      ],
       "response_types": [
         "application/json"
       ],
@@ -568,9 +579,9 @@
       "path": "/users/v1/{user_id}",
       "methods": [
         "POST",
+        "DELETE",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -660,9 +671,9 @@
       "path": "/users/v1/{user_id}/email",
       "methods": [
         "POST",
+        "DELETE",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Update users email",
       "parameters": {
@@ -769,9 +780,9 @@
       "path": "/users/v1/{user_id}/password",
       "methods": [
         "POST",
+        "DELETE",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Update users password",
       "parameters": {
@@ -944,9 +955,9 @@
       "path": "/books/v1/{book_title}",
       "methods": [
         "POST",
+        "DELETE",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -1065,7 +1076,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "standard_api_operation"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1178,7 +1193,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "standard_api_operation"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1754,7 +1773,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "system_monitoring"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1786,7 +1809,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "system_monitoring"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1818,7 +1845,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "standard_api_operation"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1850,7 +1881,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "documentation_access"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1882,7 +1917,11 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "public_endpoint",
+        "read_only_operation",
+        "documentation_access"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -1914,7 +1953,10 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "read_only_operation",
+        "documentation_access"
+      ],
       "response_types": [
         "application/json"
       ],
@@ -1948,7 +1990,10 @@
       "authentication_required": false,
       "authentication_type": "None",
       "risk_level": "Low",
-      "risk_factors": [],
+      "risk_factors": [
+        "read_only_operation",
+        "documentation_access"
+      ],
       "response_types": [],
       "request_schema": null,
       "response_schemas": null,
@@ -2046,11 +2091,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-21T00:16:44.553371",
+    "discovered_at": "2025-08-21T23:31:19.315719",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250821_001732",
-  "generated_at": "2025-08-21T00:17:32.688083",
+  "report_id": "vampi_discovery_20250821_233150",
+  "generated_at": "2025-08-21T23:31:50.192376",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

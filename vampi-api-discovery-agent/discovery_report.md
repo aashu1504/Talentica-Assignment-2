@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-21 00:17:32
+**Generated:** 2025-08-21 23:31:50
 
 ## Configuration
 
@@ -23,7 +23,7 @@
 - **Description:** Creates and populates the database with dummy data
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, basic_functionality
 - **Response Types:** application/json
 
 **Parameters:**
@@ -34,7 +34,7 @@
 - **Description:** VAmPI home
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, basic_functionality
 - **Response Types:** application/json
 
 **Parameters:**
@@ -89,14 +89,14 @@
 - **Description:** Retrieves currently logged in user
 - **Authentication Required:** Yes
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** read_only_operation, standard_api_operation
 - **Response Types:** application/json
 
 **Parameters:**
 
 ### /users/v1/{user_id}
 
-- **Methods:** POST, PUT, GET, DELETE
+- **Methods:** POST, DELETE, PUT, GET
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -108,7 +108,7 @@
 
 ### /users/v1/{user_id}/email
 
-- **Methods:** POST, PUT, GET, DELETE
+- **Methods:** POST, DELETE, PUT, GET
 - **Description:** Update users email
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -120,7 +120,7 @@
 
 ### /users/v1/{user_id}/password
 
-- **Methods:** POST, PUT, GET, DELETE
+- **Methods:** POST, DELETE, PUT, GET
 - **Description:** Update users password
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -143,7 +143,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** POST, PUT, GET, DELETE
+- **Methods:** POST, DELETE, PUT, GET
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -159,7 +159,7 @@
 - **Description:** VAmPI retrieve data endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -192,7 +192,7 @@
 - **Description:** VAmPI retrieve data endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -361,7 +361,7 @@
 - **Description:** VAmPI health and status endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, system_monitoring
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -372,7 +372,7 @@
 - **Description:** VAmPI health and status endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, system_monitoring
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -383,7 +383,7 @@
 - **Description:** VAmPI health and status endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -394,7 +394,7 @@
 - **Description:** VAmPI documentation endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, documentation_access
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -405,7 +405,7 @@
 - **Description:** VAmPI documentation endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** public_endpoint, read_only_operation, documentation_access
 - **Response Types:** Unknown
 
 **Parameters:**
@@ -416,7 +416,7 @@
 - **Description:** VAmPI retrieve data endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** read_only_operation, documentation_access
 - **Response Types:** application/json
 
 **Parameters:**
@@ -427,7 +427,7 @@
 - **Description:** VAmPI retrieve data endpoint
 - **Authentication Required:** No
 - **Risk Level:** Low
-- **Risk Factors:** None
+- **Risk Factors:** read_only_operation, documentation_access
 - **Response Types:** Unknown
 
 **Parameters:**

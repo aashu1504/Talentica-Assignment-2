@@ -180,6 +180,36 @@ class VAmPIDiscoveryEngine:
             elif base_risk == RiskLevel.HIGH:
                 base_risk = RiskLevel.CRITICAL
         
+        # Add context for low-risk endpoints
+        if base_risk == RiskLevel.LOW:
+            if not auth_required:
+                risk_factors.append("public_endpoint")
+            if method == "GET":
+                risk_factors.append("read_only_operation")
+            if "health" in path_lower or "status" in path_lower:
+                risk_factors.append("system_monitoring")
+            elif "docs" in path_lower or "swagger" in path_lower or "openapi" in path_lower:
+                risk_factors.append("documentation_access")
+            elif path == "/" or path == "/createdb":
+                risk_factors.append("basic_functionality")
+            else:
+                risk_factors.append("standard_api_operation")
+        
+        # Add context for medium-risk endpoints
+        elif base_risk == RiskLevel.MEDIUM:
+            if not risk_factors:  # If no specific factors were added
+                risk_factors.append("moderate_risk_operation")
+        
+        # Add context for high-risk endpoints
+        elif base_risk == RiskLevel.HIGH:
+            if not risk_factors:  # If no specific factors were added
+                risk_factors.append("high_risk_operation")
+        
+        # Add context for critical-risk endpoints
+        elif base_risk == RiskLevel.CRITICAL:
+            if not risk_factors:  # If no specific factors were added
+                risk_factors.append("critical_risk_operation")
+        
         return base_risk, risk_factors
     
     def _detect_authentication_type(self, response: httpx.Response, path: str) -> Tuple[AuthenticationType, bool]:
