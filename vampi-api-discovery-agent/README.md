@@ -23,6 +23,7 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 - **✅ Visual API Mapping**: Generate graphical representations of API structure
 - **✅ Pluggable Risk Assessment**: Modular and extensible risk assessment architecture
 - **✅ False Positive Filtering**: Advanced validation to eliminate false positives
+- **✅ Comprehensive Logging**: Datewise logging system with performance tracking and error monitoring
 
 ## Recent Improvements (v2.0)
 
@@ -48,6 +49,13 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 - **Plugin System**: Runtime loading of risk assessment strategies
 - **Priority-Based Execution**: Configurable risk assessment priorities
 - **Custom Risk Rules**: Extensible risk assessment framework
+
+### **📊 Comprehensive Logging System**
+- **Datewise Organization**: Separate log files for each date with structured data
+- **Performance Tracking**: Comprehensive metrics collection and analysis
+- **Error Monitoring**: Detailed error tracking with context and stack traces
+- **Run History**: Complete audit trail of all agent operations
+- **Analysis Tools**: Built-in log analysis and reporting capabilities
 
 ## Generic API Discovery
 
@@ -100,6 +108,7 @@ vampi-api-discovery-agent/
 │   ├── utils.py               # Utility functions
 │   ├── visualization.py       # Visual API mapping generation
 │   ├── config_loader.py       # Configuration management
+│   ├── logger.py              # Comprehensive logging system
 │   └── risk_assessment/       # Pluggable risk assessment system
 │       ├── base.py            # Base risk assessor interface
 │       ├── factory.py         # Risk assessor factory
@@ -111,14 +120,16 @@ vampi-api-discovery-agent/
 │   └── risk_assessors/        # Custom risk assessment plugins
 ├── scripts/                    # Utility scripts
 │   ├── manage_config.py       # Configuration management
-│   └── demo_risk_assessment.py # Risk assessment demo
+│   ├── demo_risk_assessment.py # Risk assessment demo
+│   └── analyze_logs.py        # Log analysis and reporting
 ├── tests/                      # Test suite
 │   └── test_discovery.py      # Discovery engine tests
 ├── docs/                       # Documentation
 │   ├── discovery_report.md    # Discovery report template
 │   ├── API_SCHEMA.md          # API schema documentation
 │   ├── ARCHITECTURE.md        # System architecture documentation
-│   └── GENERIC_DISCOVERY.md   # Generic discovery documentation
+│   ├── GENERIC_DISCOVERY.md   # Generic discovery documentation
+│   └── LOGGING_SYSTEM.md      # Comprehensive logging system
 ├── visualizations/             # Generated visual API maps
 └── venv/                      # Python virtual environment
 ```
@@ -180,6 +191,21 @@ python3 src/test_crew_agents.py
 
 # Run discovery engine directly
 python3 -c "from src.discovery import VAmPIDiscoveryEngine; print('Engine ready')"
+```
+
+### Log Analysis
+```bash
+# View today's summary
+python3 scripts/analyze_logs.py
+
+# View all information for today
+python3 scripts/analyze_logs.py --all
+
+# View specific date
+python3 scripts/analyze_logs.py --date 2025-08-22
+
+# Clean up old logs (keep last 30 days)
+python3 scripts/analyze_logs.py --cleanup 30
 ```
 
 ### Configuration Management

@@ -40,6 +40,9 @@ from discovery import VAmPIDiscoveryEngine, DiscoveryConfig
 # Import visualization module
 from visualization import APIVisualizer
 
+# Import logging system
+from logger import agent_logger, log_agent_run
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,6 +56,7 @@ class APIDiscoveryTool(BaseTool):
     base_url: str = Field(..., description="Base URL for VAmPI API")
     api_key: str = Field(..., description="Google API key for Gemini LLM")
     
+    @log_agent_run
     def _run(self) -> str:
         """Execute the API discovery tool."""
         try:

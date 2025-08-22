@@ -44,6 +44,7 @@ from utils import (
     calculate_success_rate, is_valid_url, normalize_parameter_format
 )
 from config_loader import ConfigLoader, DEFAULT_CONFIG
+from logger import agent_logger
 
 
 class VAmPIDiscoveryEngine:
@@ -806,133 +807,161 @@ class VAmPIDiscoveryEngine:
         Returns:
             APIDiscoveryResult with discovered endpoints
         """
+        start_time = time.time()
+        run_id = f"discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        
+        # Log discovery start
+        agent_logger.log_run_start(run_id, {
+            "base_url": self.config.base_url,
+            "method": "discover_endpoints"
+        })
+        
         self.logger.info("Starting VAmPI endpoint discovery...")
         self.logger.info(f"Target VAmPI endpoints to discover:")
         self.logger.info("User Management: GET /users/v1, POST /users/v1/register, POST /users/v1/login, GET /users/v1/{username}, DELETE /users/v1/{username}, PUT /users/v1/{username}/email, PUT /users/v1/{username}/password")
         self.logger.info("Book Management: GET /books/v1, POST /books/v1, GET /books/v1/{book_title}")
         self.logger.info("Other: GET /, GET /createdb")
-        start_time = time.time()
         
-        # Reset state
-        self.discovered_endpoints.clear()
-        self.auth_mechanisms.clear()
-        
-        # Start with documentation-based discovery
-        self.logger.info("🔍 Starting documentation-based discovery...")
-        doc_endpoints = await self._parse_openapi_documentation()
-        postman_endpoints = await self._parse_postman_collection()
-        endpoints = doc_endpoints + postman_endpoints
-        
-        self.logger.info(f"📚 Documentation parsing: {len(endpoints)} endpoints")
-        
-        # Discover endpoints using VAmPI-specific endpoint testing
-        self.logger.info("🎯 Starting active endpoint scanning...")
-        active_endpoints = await self._test_vampi_specific_endpoints()
-        endpoints.extend(active_endpoints)
-        
-        # Also try common paths as fallback
-        common_endpoints = await self._scan_common_paths()
-        endpoints.extend(common_endpoints)
-        
-        # Discover endpoints using pattern-based scanning as additional fallback
-        pattern_endpoints = await self._pattern_based_discovery()
-        endpoints.extend(pattern_endpoints)
-        
-        # Enhanced endpoint discovery for maximum coverage
-        enhanced_endpoints = await self._enhanced_endpoint_discovery()
-        endpoints.extend(enhanced_endpoints)
-        
-        total_active = len(active_endpoints + common_endpoints + pattern_endpoints + enhanced_endpoints)
-        self.logger.info(f"🚀 Active scanning: {total_active} additional endpoints")
-        
-        # Remove duplicates and merge methods
-        unique_endpoints = self._merge_endpoint_methods(endpoints)
-        
-        # Apply parameter format normalization and deduplication
-        unique_endpoints = self._deduplicate_and_normalize_endpoints(unique_endpoints)
-        
-        # IMPLEMENTATION: Validate and filter endpoints to remove false positives
-        self.logger.info("🔍 Validating and filtering endpoints to remove false positives...")
-        validated_endpoints = self._validate_and_filter_endpoints(unique_endpoints)
-        self.logger.info(f"✅ Endpoint validation complete: {len(unique_endpoints)} -> {len(validated_endpoints)} endpoints")
-        
-        # Use validated endpoints for all subsequent analysis
-        unique_endpoints = validated_endpoints
-        
-        # Analyze API structure
-        api_structure = self._analyze_api_structure(unique_endpoints)
-        
-        # Analyze endpoint relationships and dependencies
-        endpoint_relationships = self._analyze_endpoint_relationships(unique_endpoints)
-        
-        # Analyze API compliance with security standards
-        api_compliance = self._analyze_api_compliance(unique_endpoints)
-        
-        # Detect authentication mechanisms
-        auth_mechanisms = self._detect_auth_mechanisms(unique_endpoints)
-        
-        # Calculate scan duration
-        scan_duration = time.time() - start_time
-        
-        # Calculate authentication counts
-        authenticated_count = len([ep for ep in unique_endpoints if ep.authentication_required])
-        public_count = len([ep for ep in unique_endpoints if not ep.authentication_required])
-        
-        # Calculate risk distribution
-        high_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.HIGH])
-        medium_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.MEDIUM])
-        low_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.LOW])
-        
-        # Validate discovery accuracy and completeness
-        accuracy_metrics = self._validate_discovery_accuracy(unique_endpoints)
-        completeness_metrics = self._assess_discovery_completeness(unique_endpoints)
-        
-        # Calculate coverage using validation metrics
-        discovery_coverage = completeness_metrics["overall_completeness"]
-        
-        # Extract parameter information from completeness metrics
-        total_discovered_params = completeness_metrics.get("parameter_coverage", {}).get("discovered_count", 0)
-        
-        # Create discovery summary with validation metrics
-        summary = DiscoverySummary(
-            total_endpoints=len(unique_endpoints),
-            authenticated_endpoints=authenticated_count,
-            public_endpoints=public_count,
-            high_risk_endpoints=high_risk_count,
-            medium_risk_endpoints=medium_risk_count,
-            low_risk_endpoints=low_risk_count,
-            discovery_coverage=discovery_coverage,
-            parameter_coverage=completeness_metrics.get("parameter_coverage", {}).get("coverage_percentage", 0.0),
-            discovery_start_time=datetime.now(),
-            discovery_end_time=datetime.now(),
-            discovery_duration=scan_duration,
-            total_parameters=total_discovered_params,
-            unique_parameters=len(set(param for ep in unique_endpoints for param in ep.parameters.path_params + ep.parameters.query_params + ep.parameters.body_params))
-        )
-        
-        # Create result with validation metrics
-        result = APIDiscoveryResult(
-            discovery_summary=summary,
-            endpoints=unique_endpoints,
-            authentication_mechanisms=auth_mechanisms,
-            api_structure=api_structure,
-            validation_metrics={
-                "accuracy": accuracy_metrics,
-                "completeness": completeness_metrics
+        try:
+            # Reset state
+            self.discovered_endpoints.clear()
+            self.auth_mechanisms.clear()
+            
+            # Start with documentation-based discovery
+            self.logger.info("🔍 Starting documentation-based discovery...")
+            doc_endpoints = await self._parse_openapi_documentation()
+            postman_endpoints = await self._parse_postman_collection()
+            endpoints = doc_endpoints + postman_endpoints
+            
+            self.logger.info(f"📚 Documentation parsing: {len(endpoints)} endpoints")
+            
+            # Discover endpoints using VAmPI-specific endpoint testing
+            self.logger.info("🎯 Starting active endpoint scanning...")
+            active_endpoints = await self._test_vampi_specific_endpoints()
+            endpoints.extend(active_endpoints)
+            
+            # Also try common paths as fallback
+            common_endpoints = await self._scan_common_paths()
+            endpoints.extend(common_endpoints)
+            
+            # Discover endpoints using pattern-based scanning as additional fallback
+            pattern_endpoints = await self._pattern_based_discovery()
+            endpoints.extend(pattern_endpoints)
+            
+            # Enhanced endpoint discovery for maximum coverage
+            enhanced_endpoints = await self._enhanced_endpoint_discovery()
+            endpoints.extend(enhanced_endpoints)
+            
+            total_active = len(active_endpoints + common_endpoints + pattern_endpoints + enhanced_endpoints)
+            self.logger.info(f"🚀 Active scanning: {total_active} additional endpoints")
+            
+            # Remove duplicates and merge methods
+            unique_endpoints = self._merge_endpoint_methods(endpoints)
+            
+            # Apply parameter format normalization and deduplication
+            unique_endpoints = self._deduplicate_and_normalize_endpoints(unique_endpoints)
+            
+            # IMPLEMENTATION: Validate and filter endpoints to remove false positives
+            self.logger.info("🔍 Validating and filtering endpoints to remove false positives...")
+            validated_endpoints = self._validate_and_filter_endpoints(unique_endpoints)
+            self.logger.info(f"✅ Endpoint validation complete: {len(unique_endpoints)} -> {len(validated_endpoints)} endpoints")
+            
+            # Use validated endpoints for all subsequent analysis
+            unique_endpoints = validated_endpoints
+            
+            # Analyze API structure
+            api_structure = self._analyze_api_structure(unique_endpoints)
+            
+            # Analyze endpoint relationships and dependencies
+            endpoint_relationships = self._analyze_endpoint_relationships(unique_endpoints)
+            
+            # Analyze API compliance with security standards
+            api_compliance = self._analyze_api_compliance(unique_endpoints)
+            
+            # Detect authentication mechanisms
+            auth_mechanisms = self._detect_auth_mechanisms(unique_endpoints)
+            
+            # Calculate scan duration
+            scan_duration = time.time() - start_time
+            
+            # Calculate authentication counts
+            authenticated_count = len([ep for ep in unique_endpoints if ep.authentication_required])
+            public_count = len([ep for ep in unique_endpoints if not ep.authentication_required])
+            
+            # Calculate risk distribution
+            high_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.HIGH])
+            medium_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.MEDIUM])
+            low_risk_count = len([ep for ep in unique_endpoints if ep.risk_level == RiskLevel.LOW])
+            
+            # Validate discovery accuracy and completeness
+            accuracy_metrics = self._validate_discovery_accuracy(unique_endpoints)
+            completeness_metrics = self._assess_discovery_completeness(unique_endpoints)
+            
+            # Calculate coverage using validation metrics
+            discovery_coverage = completeness_metrics["overall_completeness"]
+            
+            # Extract parameter information from completeness metrics
+            total_discovered_params = completeness_metrics.get("parameter_coverage", {}).get("discovered_count", 0)
+            
+            # Create discovery summary with validation metrics
+            summary = DiscoverySummary(
+                total_endpoints=len(unique_endpoints),
+                authenticated_endpoints=authenticated_count,
+                public_endpoints=public_count,
+                high_risk_endpoints=high_risk_count,
+                medium_risk_endpoints=medium_risk_count,
+                low_risk_endpoints=low_risk_count,
+                discovery_coverage=discovery_coverage,
+                parameter_coverage=completeness_metrics.get("parameter_coverage", {}).get("coverage_percentage", 0.0),
+                discovery_start_time=datetime.now(),
+                discovery_end_time=datetime.now(),
+                discovery_duration=scan_duration,
+                total_parameters=total_discovered_params,
+                unique_parameters=len(set(param for ep in unique_endpoints for param in ep.parameters.path_params + ep.parameters.query_params + ep.parameters.body_params))
+            )
+            
+            # Create result with validation metrics
+            result = APIDiscoveryResult(
+                discovery_summary=summary,
+                endpoints=unique_endpoints,
+                authentication_mechanisms=auth_mechanisms,
+                api_structure=api_structure,
+                validation_metrics={
+                    "accuracy": accuracy_metrics,
+                    "completeness": completeness_metrics
+                }
+            )
+            
+            self.logger.info(f"Discovery completed. Found {len(unique_endpoints)} endpoints in {scan_duration:.2f}s")
+            
+            # Log discovery completion
+            performance_metrics = {
+                "total_duration": scan_duration,
+                "total_endpoints": len(unique_endpoints),
+                "discovery_coverage": discovery_coverage,
+                "parameter_coverage": completeness_metrics.get("parameter_coverage", {}).get("coverage_percentage", 0.0)
             }
-        )
-        
-        self.logger.info(f"Discovery completed. Found {len(unique_endpoints)} endpoints in {scan_duration:.2f}s")
-        
-        # Log discovered endpoints summary
-        if unique_endpoints:
-            self.logger.info("Discovered endpoints:")
-            for endpoint in unique_endpoints:
-                self.logger.info(f"  {', '.join(endpoint.methods)} {endpoint.path} - {endpoint.description}")
-        else:
-            self.logger.warning("No endpoints discovered!")
-        
-        return result
+            agent_logger.log_run_complete(run_id, result, performance_metrics)
+            
+            # Log discovered endpoints summary
+            if unique_endpoints:
+                self.logger.info("Discovered endpoints:")
+                for endpoint in unique_endpoints:
+                    self.logger.info(f"  {', '.join(endpoint.methods)} {endpoint.path} - {endpoint.description}")
+            else:
+                self.logger.warning("No endpoints discovered!")
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"❌ Discovery failed: {e}")
+            # Log error
+            agent_logger.log_run_error(run_id, e, {
+                "base_url": self.config.base_url,
+                "method": "discover_endpoints",
+                "step": "discovery_execution"
+            })
+            raise
     
     async def _scan_common_paths(self) -> List[EndpointMetadata]:
         """
