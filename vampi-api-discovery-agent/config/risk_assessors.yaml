@@ -1,0 +1,99 @@
+# Risk Assessment Configuration
+# This file configures the pluggable risk assessment modules
+
+# Risk Assessor Modules Configuration
+risk_assessors:
+  user_management:
+    class: "src.risk_assessment.modules.UserManagementRiskAssessor"
+    enabled: true
+    priority: 10
+    config:
+      strict_mode: true
+      log_violations: true
+  
+  data_exposure:
+    class: "src.risk_assessment.modules.DataExposureRiskAssessor"
+    enabled: true
+    priority: 9
+    config:
+      sensitive_patterns: ["password", "token", "secret", "key"]
+      max_response_size: 1000
+  
+  authentication:
+    class: "src.risk_assessment.modules.AuthenticationRiskAssessor"
+    enabled: true
+    priority: 8
+    config:
+      require_https: true
+      check_rate_limiting: true
+  
+  admin_access:
+    class: "src.risk_assessment.modules.AdminAccessRiskAssessor"
+    enabled: true
+    priority: 7
+    config:
+      strict_auth_check: true
+      ip_whitelist_enabled: false
+  
+  file_operations:
+    class: "src.risk_assessment.modules.FileOperationsRiskAssessor"
+    enabled: true
+    priority: 6
+    config:
+      max_file_size: 10000000  # 10MB
+      allowed_extensions: ["jpg", "png", "pdf", "txt"]
+  
+  database_operations:
+    class: "src.risk_assessment.modules.DatabaseOperationsRiskAssessor"
+    enabled: true
+    priority: 5
+    config:
+      check_sql_injection: true
+      require_parameterization: true
+
+# Plugin Discovery Settings
+plugin_discovery:
+  enabled: true
+  plugin_directories:
+    - "plugins/risk_assessors"
+    - "custom/risk_assessors"
+  
+  auto_load: true
+  reload_on_change: false
+
+# Risk Assessment Settings
+assessment_settings:
+  # Scoring thresholds
+  critical_threshold: 8.0
+  high_threshold: 6.0
+  medium_threshold: 4.0
+  low_threshold: 2.0
+  
+  # Confidence thresholds
+  min_confidence: 0.7
+  high_confidence: 0.9
+  
+  # Execution settings
+  max_assessors_per_endpoint: 10
+  timeout_per_assessor: 5.0  # seconds
+  
+  # Output settings
+  include_recommendations: true
+  include_confidence_scores: true
+  include_risk_factors: true
+  
+  # Logging
+  log_assessments: true
+  log_errors: true
+  log_performance: false
+
+# Custom Risk Rules (Optional)
+custom_rules:
+  # Example custom rule
+  custom_rule_1:
+    name: "Custom Business Logic Rule"
+    description: "Custom risk assessment for business-specific endpoints"
+    patterns: ["/business/", "/custom/"]
+    risk_score: 5.0
+    factors: ["Business logic endpoint", "Custom implementation"]
+    recommendations: ["Review business logic", "Add validation"] 

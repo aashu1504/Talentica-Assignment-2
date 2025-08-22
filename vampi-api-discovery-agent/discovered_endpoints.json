@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 92.45454545454544,
     "parameter_coverage": 75.0,
-    "discovery_start_time": "2025-08-22T17:27:18.339364",
-    "discovery_end_time": "2025-08-22T17:27:18.339368",
-    "discovery_duration": 155.96838998794556,
+    "discovery_start_time": "2025-08-22T18:43:47.064139",
+    "discovery_end_time": "2025-08-22T18:43:47.064146",
+    "discovery_duration": 157.04813313484192,
     "total_parameters": 6,
     "unique_parameters": 2
   },
@@ -578,9 +578,9 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
+        "GET",
         "POST",
         "PUT",
-        "GET",
         "DELETE"
       ],
       "description": "Retrieves user by username",
@@ -670,10 +670,10 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
+        "DELETE",
         "POST",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Update users email",
       "parameters": {
@@ -779,10 +779,10 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
+        "DELETE",
         "POST",
         "PUT",
-        "GET",
-        "DELETE"
+        "GET"
       ],
       "description": "Update users password",
       "parameters": {
@@ -954,9 +954,9 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
+        "GET",
         "POST",
         "PUT",
-        "GET",
         "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
@@ -2199,7 +2199,7 @@
       ],
       "implementation_details": "Used by 21 endpoints. Token location: header, Header: Authorization",
       "documentation_url": null,
-      "discovered_at": "2025-08-22T17:28:30.792100",
+      "discovered_at": "2025-08-22T18:44:34.750841",
       "endpoints_using": [
         "DOC002",
         "DOC003",
@@ -2380,11 +2380,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-22T17:27:18.318903",
+    "discovered_at": "2025-08-22T18:43:47.037300",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250822_172830",
-  "generated_at": "2025-08-22T17:28:30.792426",
+  "report_id": "vampi_discovery_20250822_184434",
+  "generated_at": "2025-08-22T18:44:34.751097",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
