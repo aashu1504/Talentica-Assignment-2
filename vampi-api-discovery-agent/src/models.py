@@ -293,6 +293,12 @@ class DiscoveryReport(BaseModel):
     tags: List[str] = Field(default_factory=list, description="Tags for report categorization")
     notes: Optional[str] = Field(None, description="Additional notes about the discovery")
     
+    # Validation metrics
+    validation_metrics: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Validation metrics including accuracy and completeness scores"
+    )
+    
     class Config:
         """Pydantic configuration"""
         json_encoders = {

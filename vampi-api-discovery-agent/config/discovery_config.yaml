@@ -1,0 +1,99 @@
+# VAmPI API Discovery Configuration
+# This file contains configurable paths, patterns, and settings for API discovery
+
+# Common API paths to scan
+common_paths:
+  - "/users/v1"
+  - "/users/v1/register"
+  - "/users/v1/login"
+  - "/users/v1/_debug"
+  - "/users/v1/{user_id}"
+  - "/users/v1/{user_id}/email"
+  - "/users/v1/{user_id}/password"
+  - "/books/v1"
+  - "/books/v1/{book_title}"
+  - "/"
+  - "/createdb"
+  - "/api/v1"
+  - "/api/v1/users"
+  - "/api/v1/books"
+  - "/v1"
+  - "/v1/users"
+  - "/v1/books"
+
+# HTTP methods to test
+http_methods:
+  - "GET"
+  - "POST"
+  - "PUT"
+  - "DELETE"
+
+# Risk assessment patterns
+risk_patterns:
+  user_management:
+    - "/users"
+    - "/auth"
+    - "/register"
+    - "/login"
+  data_exposure:
+    - "/users"
+    - "/books"
+    - "/admin"
+  authentication_bypass:
+    - "/auth"
+    - "/login"
+    - "/register"
+  admin_access:
+    - "/admin"
+  file_operations:
+    - "/upload"
+    - "/download"
+    - "/files"
+  database_operations:
+    - "/query"
+    - "/sql"
+    - "/db"
+
+# Pattern-based discovery templates
+pattern_templates:
+  - "/users/v1/{username}"
+  - "/users/v1/{username}/email"
+  - "/users/v1/{username}/password"
+  - "/books/v1/{book_title}"
+  - "/users/v1/{user_id}"
+  - "/users/v1/{user_id}/email"
+  - "/users/v1/{user_id}/password"
+  - "/api/v1/users/{user_id}"
+  - "/api/v1/books/{book_id}"
+  - "/v1/users/{user_id}"
+  - "/v1/books/{book_id}"
+
+# Sample values for parameter testing
+sample_values:
+  username: "name1"
+  user_id: "1"
+  book_title: "bookTitle77"
+  book_id: "1"
+
+# Enhanced discovery patterns
+enhanced_patterns:
+  - "/admin"
+  - "/health"
+  - "/status"
+  - "/info"
+  - "/docs"
+  - "/swagger"
+  - "/openapi.json"
+  - "/openapi.yaml"
+  - "/metrics"
+  - "/config"
+  - "/settings"
+  - "/profile"
+  - "/search"
+  - "/categories"
+  - "/orders"
+  - "/payments"
+  - "/notifications"
+  - "/reviews"
+  - "/cart"
+  - "/reports" 

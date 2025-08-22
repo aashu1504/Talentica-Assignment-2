@@ -26,7 +26,7 @@ This report contains visual representations of the VAmPI API structure discovere
 **Description:** Provides a comprehensive overview of the API structure organized by functionality.
 
 ## Summary
-- **Total Endpoints Visualized:** 37
+- **Total Endpoints Visualized:** 42
 - **Risk Levels Represented:** 3
 - **Authentication Types:** 2
 - **HTTP Methods:** 4

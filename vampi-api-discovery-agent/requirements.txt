@@ -6,7 +6,7 @@ pytest
 google-generativeai
 requests
 python-dotenv
-pyyaml
+pyyaml>=6.0
 urllib3
 matplotlib>=3.5.0
 networkx>=2.8.0
