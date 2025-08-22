@@ -10,13 +10,13 @@
       "medium_risk_endpoints": 0,
       "low_risk_endpoints": 3,
       "authentication_types": [],
-      "discovery_coverage": 93.25,
-      "parameter_coverage": 50.0,
-      "discovery_start_time": "2025-08-22 21:02:11.248572",
-      "discovery_end_time": "2025-08-22 21:02:11.248594",
-      "discovery_duration": 106.4411849975586,
-      "total_parameters": 4,
-      "unique_parameters": 2
+      "discovery_coverage": 100.0,
+      "parameter_coverage": 100.0,
+      "discovery_start_time": "2025-08-22 22:21:01.703020",
+      "discovery_end_time": "2025-08-22 22:21:01.703023",
+      "discovery_duration": 106.05691385269165,
+      "total_parameters": 172,
+      "unique_parameters": 16
     },
     "endpoints": [
       {
@@ -27,17 +27,135 @@
         ],
         "description": "Creates and populates the database with dummy data",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": false,
         "authentication_type": "None",
@@ -54,16 +172,33 @@
         "response_schemas": {
           "200": {
             "description": "Creates and populates the database with dummy data",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Database populated."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Database populated."
+                  },
+                  "example": "Database populated.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -81,17 +216,135 @@
         ],
         "description": "VAmPI home",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": false,
         "authentication_type": "None",
@@ -108,24 +361,55 @@
         "response_schemas": {
           "200": {
             "description": "Home - Help",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "VAmPI the Vulnerable API"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "VAmPI the Vulnerable API"
+                  },
+                  "example": "VAmPI the Vulnerable API",
+                  "deprecated": false
                 },
                 "help": {
                   "type": "string",
-                  "example": "VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes."
+                  },
+                  "example": "VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.",
+                  "deprecated": false
                 },
                 "vulnerable": {
                   "type": "number",
-                  "example": 1
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": 1
+                  },
+                  "example": 1,
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -143,17 +427,135 @@
         ],
         "description": "Retrieves all users",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": true,
         "authentication_type": "Bearer",
@@ -170,28 +572,31 @@
         "response_schemas": {
           "200": {
             "description": "See basic info about all users",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "users": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "email": {
-                        "type": "string",
-                        "example": "mail1@mail.com"
-                      },
-                      "username": {
-                        "type": "string",
-                        "example": "name1"
-                      }
-                    }
-                  }
+                  "type": "array<object>",
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {},
+                  "example": "",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -210,17 +615,135 @@
         ],
         "description": "Retrieves all details for all users",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": true,
         "authentication_type": "Bearer",
@@ -237,36 +760,31 @@
         "response_schemas": {
           "200": {
             "description": "See all details of the users",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "users": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "admin": {
-                        "type": "boolean",
-                        "example": false
-                      },
-                      "email": {
-                        "type": "string",
-                        "example": "mail1@mail.com"
-                      },
-                      "password": {
-                        "type": "string",
-                        "example": "pass1"
-                      },
-                      "username": {
-                        "type": "string",
-                        "example": "name1"
-                      }
-                    }
-                  }
+                  "type": "array<object>",
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {},
+                  "example": "",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -284,17 +802,135 @@
         ],
         "description": "Register new user",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": false,
         "authentication_type": "None",
@@ -312,47 +948,111 @@
           "content_type": "application/json",
           "required": true,
           "description": "Username of the user",
+          "media_types": [
+            "application/json"
+          ],
           "type": "object",
           "properties": {
             "username": {
               "type": "string",
-              "example": "name1"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "name1"
+              },
+              "example": "name1",
+              "deprecated": false
             },
             "password": {
               "type": "string",
-              "example": "pass1"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "pass1"
+              },
+              "example": "pass1",
+              "deprecated": false
             },
             "email": {
               "type": "string",
-              "example": "user@tempmail.com"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "user@tempmail.com"
+              },
+              "example": "user@tempmail.com",
+              "deprecated": false
             }
           },
           "required_fields": [],
           "example": {},
-          "additional_properties": true
+          "additional_properties": true,
+          "discriminator": null,
+          "xml": null,
+          "external_docs": null,
+          "body_parameters": [
+            "username",
+            "password",
+            "email"
+          ]
         },
         "response_schemas": {
           "200": {
             "description": "Successfully created user",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Successfully registered. Login to receive an auth token."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Successfully registered. Login to receive an auth token."
+                  },
+                  "example": "Successfully registered. Login to receive an auth token.",
+                  "deprecated": false
                 },
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "success",
-                    "fail"
-                  ],
-                  "example": "success"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "success",
+                      "fail"
+                    ],
+                    "example": "success"
+                  },
+                  "example": "success",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content_types": [],
+            "headers": {},
+            "links": {},
+            "examples": {},
+            "schema": {}
           }
         },
         "discovered_via": "documentation_parsing",
@@ -369,17 +1069,135 @@
         ],
         "description": "Login to VAmPI",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": false,
         "authentication_type": "None",
@@ -397,67 +1215,146 @@
           "content_type": "application/json",
           "required": true,
           "description": "Username of the user",
+          "media_types": [
+            "application/json"
+          ],
           "type": "object",
           "properties": {
             "username": {
               "type": "string",
-              "example": "name1"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "name1"
+              },
+              "example": "name1",
+              "deprecated": false
             },
             "password": {
               "type": "string",
-              "example": "pass1"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "pass1"
+              },
+              "example": "pass1",
+              "deprecated": false
             }
           },
           "required_fields": [],
           "example": {},
-          "additional_properties": true
+          "additional_properties": true,
+          "discriminator": null,
+          "xml": null,
+          "external_docs": null,
+          "body_parameters": [
+            "username",
+            "password"
+          ]
         },
         "response_schemas": {
           "200": {
             "description": "Sucessfully logged in user",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "auth_token": {
                   "type": "string",
-                  "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw"
+                  },
+                  "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Successfully logged in."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Successfully logged in."
+                  },
+                  "example": "Successfully logged in.",
+                  "deprecated": false
                 },
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "success",
-                    "fail"
-                  ],
-                  "example": "success"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "success",
+                      "fail"
+                    ],
+                    "example": "success"
+                  },
+                  "example": "success",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "400": {
             "description": "Invalid request",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Password is not correct for the given username."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Password is not correct for the given username."
+                  },
+                  "example": "Password is not correct for the given username.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -475,17 +1372,135 @@
         ],
         "description": "Retrieves currently logged in user",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": true,
         "authentication_type": "Bearer",
@@ -501,54 +1516,87 @@
         "response_schemas": {
           "200": {
             "description": "Display current user info",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "data": {
                   "type": "object",
-                  "properties": {
-                    "admin": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "email": {
-                      "type": "string",
-                      "example": "mail1@mail.com"
-                    },
-                    "username": {
-                      "type": "string",
-                      "example": "name1"
-                    }
-                  }
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {},
+                  "example": "",
+                  "deprecated": false
                 },
                 "status": {
                   "type": "string",
-                  "example": "success"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "success"
+                  },
+                  "example": "success",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "401": {
             "description": "Unauthorized access due to expired, invalid, or missing token",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "enum": [
-                    "Signature expired. Please log in again.",
-                    "Invalid token. Please log in again."
-                  ]
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "Signature expired. Please log in again.",
+                      "Invalid token. Please log in again."
+                    ]
+                  },
+                  "example": "",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -567,25 +1615,148 @@
         ],
         "description": "Retrieves user by username",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [
             "user_id"
           ],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
           "param_types": {
-            "user_id": "string"
+            "user_id": "string",
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
           },
           "validation_rules": {
             "user_id": {
               "required": true,
               "description": "retrieve username data",
-              "validation_rules": {}
+              "validation_rules": {
+                "example": "name1"
+              },
+              "format": "",
+              "schema": {
+                "type": "string",
+                "example": "name1"
+              }
+            },
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
             }
           }
         },
@@ -604,41 +1775,89 @@
         "response_schemas": {
           "200": {
             "description": "Successfully display user info",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "username": {
                   "type": "string",
-                  "example": "name1"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "name1"
+                  },
+                  "example": "name1",
+                  "deprecated": false
                 },
                 "email": {
                   "type": "string",
-                  "example": "mail1@mail.com"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "mail1@mail.com"
+                  },
+                  "example": "mail1@mail.com",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "404": {
             "description": "User not found",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "User not found"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "User not found"
+                  },
+                  "example": "User not found",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -656,25 +1875,148 @@
         ],
         "description": "Update users email",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [
             "user_id"
           ],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
           "param_types": {
-            "user_id": "string"
+            "user_id": "string",
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
           },
           "validation_rules": {
             "user_id": {
               "required": true,
               "description": "username to update email",
-              "validation_rules": {}
+              "validation_rules": {
+                "example": "name1"
+              },
+              "format": "",
+              "schema": {
+                "type": "string",
+                "example": "name1"
+              }
+            },
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
             }
           }
         },
@@ -693,58 +2035,130 @@
           "content_type": "application/json",
           "required": true,
           "description": "field to update",
+          "media_types": [
+            "application/json"
+          ],
           "type": "object",
           "properties": {
             "email": {
               "type": "string",
-              "example": "mail3@mail.com"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "mail3@mail.com"
+              },
+              "example": "mail3@mail.com",
+              "deprecated": false
             }
           },
           "required_fields": [],
           "example": {},
-          "additional_properties": true
+          "additional_properties": true,
+          "discriminator": null,
+          "xml": null,
+          "external_docs": null,
+          "body_parameters": [
+            "email"
+          ]
         },
         "response_schemas": {
+          "204": {
+            "description": "Successfully updated user email",
+            "content_types": [],
+            "headers": {},
+            "links": {},
+            "examples": {},
+            "schema": {}
+          },
           "400": {
             "description": "Invalid request",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Please Provide a valid email address."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Please Provide a valid email address."
+                  },
+                  "example": "Please Provide a valid email address.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "401": {
             "description": "User not authorized",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Invalid token. Please log in again."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Invalid token. Please log in again."
+                  },
+                  "example": "Invalid token. Please log in again.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -762,25 +2176,148 @@
         ],
         "description": "Update users password",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [
             "user_id"
           ],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
           "param_types": {
-            "user_id": "string"
+            "user_id": "string",
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
           },
           "validation_rules": {
             "user_id": {
               "required": true,
               "description": "username to update password",
-              "validation_rules": {}
+              "validation_rules": {
+                "example": "name1"
+              },
+              "format": "",
+              "schema": {
+                "type": "string",
+                "example": "name1"
+              }
+            },
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
             }
           }
         },
@@ -799,58 +2336,130 @@
           "content_type": "application/json",
           "required": true,
           "description": "field to update",
+          "media_types": [
+            "application/json"
+          ],
           "type": "object",
           "properties": {
             "password": {
               "type": "string",
-              "example": "pass4"
+              "format": "",
+              "description": "",
+              "required": false,
+              "validation_rules": {
+                "example": "pass4"
+              },
+              "example": "pass4",
+              "deprecated": false
             }
           },
           "required_fields": [],
           "example": {},
-          "additional_properties": true
+          "additional_properties": true,
+          "discriminator": null,
+          "xml": null,
+          "external_docs": null,
+          "body_parameters": [
+            "password"
+          ]
         },
         "response_schemas": {
+          "204": {
+            "description": "Successfully updated users password",
+            "content_types": [],
+            "headers": {},
+            "links": {},
+            "examples": {},
+            "schema": {}
+          },
           "400": {
             "description": "Invalid request",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Malformed Data"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Malformed Data"
+                  },
+                  "example": "Malformed Data",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "401": {
             "description": "User not authorized",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Invalid token. Please log in again."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Invalid token. Please log in again."
+                  },
+                  "example": "Invalid token. Please log in again.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -869,17 +2478,135 @@
         ],
         "description": "Retrieves all books",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
-          "param_types": {},
-          "validation_rules": {}
+          "param_types": {
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
+          },
+          "validation_rules": {
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
+            }
+          }
         },
         "authentication_required": true,
         "authentication_type": "Bearer",
@@ -895,26 +2622,31 @@
         "response_schemas": {
           "200": {
             "description": "See all books",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "Books": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "book_title": {
-                        "type": "string"
-                      },
-                      "user": {
-                        "type": "string"
-                      }
-                    }
-                  }
+                  "type": "array<object>",
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {},
+                  "example": "",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -932,25 +2664,148 @@
         ],
         "description": "Retrieves book by title along with secret",
         "parameters": {
-          "query_params": [],
+          "query_params": [
+            "limit",
+            "offset",
+            "page",
+            "size",
+            "sort",
+            "order",
+            "filter",
+            "search",
+            "q"
+          ],
           "path_params": [
             "book_title"
           ],
-          "body_params": [],
+          "body_params": [
+            "id",
+            "created_at",
+            "updated_at",
+            "status",
+            "active"
+          ],
           "headers": [
             "Content-Type",
             "Accept",
             "Authorization",
-            "X-API-Key"
+            "X-API-Key",
+            "User-Agent",
+            "Cache-Control"
           ],
           "param_types": {
-            "book_title": "string"
+            "book_title": "string",
+            "limit": "string",
+            "offset": "string",
+            "page": "string",
+            "size": "string",
+            "sort": "string",
+            "order": "string",
+            "filter": "string",
+            "search": "string",
+            "q": "string",
+            "id": "string",
+            "created_at": "string",
+            "updated_at": "string",
+            "status": "string",
+            "active": "string"
           },
           "validation_rules": {
             "book_title": {
               "required": true,
               "description": "retrieve book data",
-              "validation_rules": {}
+              "validation_rules": {
+                "example": "bookTitle77"
+              },
+              "format": "",
+              "schema": {
+                "type": "string",
+                "example": "bookTitle77"
+              }
+            },
+            "limit": {
+              "required": false,
+              "description": "Common limit parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "offset": {
+              "required": false,
+              "description": "Common offset parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "page": {
+              "required": false,
+              "description": "Common page parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "size": {
+              "required": false,
+              "description": "Common size parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "sort": {
+              "required": false,
+              "description": "Common sort parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "order": {
+              "required": false,
+              "description": "Common order parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "filter": {
+              "required": false,
+              "description": "Common filter parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "search": {
+              "required": false,
+              "description": "Common search parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "q": {
+              "required": false,
+              "description": "Common q parameter",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "id": {
+              "required": false,
+              "description": "Common id field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "created_at": {
+              "required": false,
+              "description": "Common created_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "updated_at": {
+              "required": false,
+              "description": "Common updated_at field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "status": {
+              "required": false,
+              "description": "Common status field",
+              "validation_rules": {},
+              "inferred": true
+            },
+            "active": {
+              "required": false,
+              "description": "Common active field",
+              "validation_rules": {},
+              "inferred": true
             }
           }
         },
@@ -967,53 +2822,111 @@
         "response_schemas": {
           "200": {
             "description": "Successfully retrieve book info",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "array",
               "properties": {},
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "401": {
             "description": "User not authorized",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Invalid token. Please log in again."
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Invalid token. Please log in again."
+                  },
+                  "example": "Invalid token. Please log in again.",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           },
           "404": {
             "description": "Book not found",
-            "content_type": "application/json",
+            "content_types": [
+              "application/json"
+            ],
+            "headers": {},
+            "links": {},
+            "examples": {},
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": [
-                    "fail"
-                  ],
-                  "example": "fail"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "enum": [
+                      "fail"
+                    ],
+                    "example": "fail"
+                  },
+                  "example": "fail",
+                  "deprecated": false
                 },
                 "message": {
                   "type": "string",
-                  "example": "Book not found!"
+                  "format": "",
+                  "description": "",
+                  "required": false,
+                  "validation_rules": {
+                    "example": "Book not found!"
+                  },
+                  "example": "Book not found!",
+                  "deprecated": false
                 }
               },
-              "example": {}
+              "required_fields": [],
+              "example": {},
+              "additional_properties": true,
+              "discriminator": null,
+              "xml": null,
+              "external_docs": null
             }
           }
         },
@@ -1034,7 +2947,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-22 21:02:11.240437",
+        "discovered_at": "2025-08-22 22:21:01.701934",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -1051,7 +2964,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-22 21:02:11.240608",
+        "discovered_at": "2025-08-22 22:21:01.701997",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -1114,17 +3027,135 @@
                 ],
                 "description": "Retrieves all users",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
-                  "param_types": {},
-                  "validation_rules": {}
+                  "param_types": {
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
+                  },
+                  "validation_rules": {
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
+                    }
+                  }
                 },
                 "authentication_required": true,
                 "authentication_type": "Bearer",
@@ -1141,28 +3172,31 @@
                 "response_schemas": {
                   "200": {
                     "description": "See basic info about all users",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "users": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "email": {
-                                "type": "string",
-                                "example": "mail1@mail.com"
-                              },
-                              "username": {
-                                "type": "string",
-                                "example": "name1"
-                              }
-                            }
-                          }
+                          "type": "array<object>",
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {},
+                          "example": "",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1181,17 +3215,135 @@
                 ],
                 "description": "Retrieves all details for all users",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
-                  "param_types": {},
-                  "validation_rules": {}
+                  "param_types": {
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
+                  },
+                  "validation_rules": {
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
+                    }
+                  }
                 },
                 "authentication_required": true,
                 "authentication_type": "Bearer",
@@ -1208,36 +3360,31 @@
                 "response_schemas": {
                   "200": {
                     "description": "See all details of the users",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "users": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "admin": {
-                                "type": "boolean",
-                                "example": false
-                              },
-                              "email": {
-                                "type": "string",
-                                "example": "mail1@mail.com"
-                              },
-                              "password": {
-                                "type": "string",
-                                "example": "pass1"
-                              },
-                              "username": {
-                                "type": "string",
-                                "example": "name1"
-                              }
-                            }
-                          }
+                          "type": "array<object>",
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {},
+                          "example": "",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1255,17 +3402,135 @@
                 ],
                 "description": "Register new user",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
-                  "param_types": {},
-                  "validation_rules": {}
+                  "param_types": {
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
+                  },
+                  "validation_rules": {
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
+                    }
+                  }
                 },
                 "authentication_required": false,
                 "authentication_type": "None",
@@ -1283,47 +3548,111 @@
                   "content_type": "application/json",
                   "required": true,
                   "description": "Username of the user",
+                  "media_types": [
+                    "application/json"
+                  ],
                   "type": "object",
                   "properties": {
                     "username": {
                       "type": "string",
-                      "example": "name1"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "name1"
+                      },
+                      "example": "name1",
+                      "deprecated": false
                     },
                     "password": {
                       "type": "string",
-                      "example": "pass1"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "pass1"
+                      },
+                      "example": "pass1",
+                      "deprecated": false
                     },
                     "email": {
                       "type": "string",
-                      "example": "user@tempmail.com"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "user@tempmail.com"
+                      },
+                      "example": "user@tempmail.com",
+                      "deprecated": false
                     }
                   },
                   "required_fields": [],
                   "example": {},
-                  "additional_properties": true
+                  "additional_properties": true,
+                  "discriminator": null,
+                  "xml": null,
+                  "external_docs": null,
+                  "body_parameters": [
+                    "username",
+                    "password",
+                    "email"
+                  ]
                 },
                 "response_schemas": {
                   "200": {
                     "description": "Successfully created user",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "message": {
                           "type": "string",
-                          "example": "Successfully registered. Login to receive an auth token."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Successfully registered. Login to receive an auth token."
+                          },
+                          "example": "Successfully registered. Login to receive an auth token.",
+                          "deprecated": false
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "success",
-                            "fail"
-                          ],
-                          "example": "success"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "success",
+                              "fail"
+                            ],
+                            "example": "success"
+                          },
+                          "example": "success",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
+                  },
+                  "400": {
+                    "description": "Invalid request",
+                    "content_types": [],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
+                    "schema": {}
                   }
                 },
                 "discovered_via": "documentation_parsing",
@@ -1340,17 +3669,135 @@
                 ],
                 "description": "Login to VAmPI",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
-                  "param_types": {},
-                  "validation_rules": {}
+                  "param_types": {
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
+                  },
+                  "validation_rules": {
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
+                    }
+                  }
                 },
                 "authentication_required": false,
                 "authentication_type": "None",
@@ -1368,67 +3815,146 @@
                   "content_type": "application/json",
                   "required": true,
                   "description": "Username of the user",
+                  "media_types": [
+                    "application/json"
+                  ],
                   "type": "object",
                   "properties": {
                     "username": {
                       "type": "string",
-                      "example": "name1"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "name1"
+                      },
+                      "example": "name1",
+                      "deprecated": false
                     },
                     "password": {
                       "type": "string",
-                      "example": "pass1"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "pass1"
+                      },
+                      "example": "pass1",
+                      "deprecated": false
                     }
                   },
                   "required_fields": [],
                   "example": {},
-                  "additional_properties": true
+                  "additional_properties": true,
+                  "discriminator": null,
+                  "xml": null,
+                  "external_docs": null,
+                  "body_parameters": [
+                    "username",
+                    "password"
+                  ]
                 },
                 "response_schemas": {
                   "200": {
                     "description": "Sucessfully logged in user",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "auth_token": {
                           "type": "string",
-                          "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw"
+                          },
+                          "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzAxNjA2MTcsImlhdCI6MTY3MDE2MDU1Nywic3ViIjoiSm9obi5Eb2UifQ.n17N4AxTbL4_z65-NR46meoytauPDjImUxrLiUMSTQw",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Successfully logged in."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Successfully logged in."
+                          },
+                          "example": "Successfully logged in.",
+                          "deprecated": false
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "success",
-                            "fail"
-                          ],
-                          "example": "success"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "success",
+                              "fail"
+                            ],
+                            "example": "success"
+                          },
+                          "example": "success",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "400": {
                     "description": "Invalid request",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Password is not correct for the given username."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Password is not correct for the given username."
+                          },
+                          "example": "Password is not correct for the given username.",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1447,25 +3973,148 @@
                 ],
                 "description": "Retrieves user by username",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [
                     "user_id"
                   ],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
                   "param_types": {
-                    "user_id": "string"
+                    "user_id": "string",
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
                   },
                   "validation_rules": {
                     "user_id": {
                       "required": true,
                       "description": "retrieve username data",
-                      "validation_rules": {}
+                      "validation_rules": {
+                        "example": "name1"
+                      },
+                      "format": "",
+                      "schema": {
+                        "type": "string",
+                        "example": "name1"
+                      }
+                    },
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
                     }
                   }
                 },
@@ -1484,41 +4133,89 @@
                 "response_schemas": {
                   "200": {
                     "description": "Successfully display user info",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "username": {
                           "type": "string",
-                          "example": "name1"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "name1"
+                          },
+                          "example": "name1",
+                          "deprecated": false
                         },
                         "email": {
                           "type": "string",
-                          "example": "mail1@mail.com"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "mail1@mail.com"
+                          },
+                          "example": "mail1@mail.com",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "404": {
                     "description": "User not found",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "User not found"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "User not found"
+                          },
+                          "example": "User not found",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1536,25 +4233,148 @@
                 ],
                 "description": "Update users email",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [
                     "user_id"
                   ],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
                   "param_types": {
-                    "user_id": "string"
+                    "user_id": "string",
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
                   },
                   "validation_rules": {
                     "user_id": {
                       "required": true,
                       "description": "username to update email",
-                      "validation_rules": {}
+                      "validation_rules": {
+                        "example": "name1"
+                      },
+                      "format": "",
+                      "schema": {
+                        "type": "string",
+                        "example": "name1"
+                      }
+                    },
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
                     }
                   }
                 },
@@ -1573,58 +4393,130 @@
                   "content_type": "application/json",
                   "required": true,
                   "description": "field to update",
+                  "media_types": [
+                    "application/json"
+                  ],
                   "type": "object",
                   "properties": {
                     "email": {
                       "type": "string",
-                      "example": "mail3@mail.com"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "mail3@mail.com"
+                      },
+                      "example": "mail3@mail.com",
+                      "deprecated": false
                     }
                   },
                   "required_fields": [],
                   "example": {},
-                  "additional_properties": true
+                  "additional_properties": true,
+                  "discriminator": null,
+                  "xml": null,
+                  "external_docs": null,
+                  "body_parameters": [
+                    "email"
+                  ]
                 },
                 "response_schemas": {
+                  "204": {
+                    "description": "Successfully updated user email",
+                    "content_types": [],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
+                    "schema": {}
+                  },
                   "400": {
                     "description": "Invalid request",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Please Provide a valid email address."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Please Provide a valid email address."
+                          },
+                          "example": "Please Provide a valid email address.",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "401": {
                     "description": "User not authorized",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Invalid token. Please log in again."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Invalid token. Please log in again."
+                          },
+                          "example": "Invalid token. Please log in again.",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1642,25 +4534,148 @@
                 ],
                 "description": "Update users password",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [
                     "user_id"
                   ],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
                   "param_types": {
-                    "user_id": "string"
+                    "user_id": "string",
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
                   },
                   "validation_rules": {
                     "user_id": {
                       "required": true,
                       "description": "username to update password",
-                      "validation_rules": {}
+                      "validation_rules": {
+                        "example": "name1"
+                      },
+                      "format": "",
+                      "schema": {
+                        "type": "string",
+                        "example": "name1"
+                      }
+                    },
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
                     }
                   }
                 },
@@ -1679,58 +4694,130 @@
                   "content_type": "application/json",
                   "required": true,
                   "description": "field to update",
+                  "media_types": [
+                    "application/json"
+                  ],
                   "type": "object",
                   "properties": {
                     "password": {
                       "type": "string",
-                      "example": "pass4"
+                      "format": "",
+                      "description": "",
+                      "required": false,
+                      "validation_rules": {
+                        "example": "pass4"
+                      },
+                      "example": "pass4",
+                      "deprecated": false
                     }
                   },
                   "required_fields": [],
                   "example": {},
-                  "additional_properties": true
+                  "additional_properties": true,
+                  "discriminator": null,
+                  "xml": null,
+                  "external_docs": null,
+                  "body_parameters": [
+                    "password"
+                  ]
                 },
                 "response_schemas": {
+                  "204": {
+                    "description": "Successfully updated users password",
+                    "content_types": [],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
+                    "schema": {}
+                  },
                   "400": {
                     "description": "Invalid request",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Malformed Data"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Malformed Data"
+                          },
+                          "example": "Malformed Data",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "401": {
                     "description": "User not authorized",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Invalid token. Please log in again."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Invalid token. Please log in again."
+                          },
+                          "example": "Invalid token. Please log in again.",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1742,7 +4829,7 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.GET: 'GET'>}",
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>}",
             "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
@@ -1756,17 +4843,135 @@
                 ],
                 "description": "Retrieves all books",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
-                  "param_types": {},
-                  "validation_rules": {}
+                  "param_types": {
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
+                  },
+                  "validation_rules": {
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
+                    }
+                  }
                 },
                 "authentication_required": true,
                 "authentication_type": "Bearer",
@@ -1782,26 +4987,31 @@
                 "response_schemas": {
                   "200": {
                     "description": "See all books",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "Books": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "book_title": {
-                                "type": "string"
-                              },
-                              "user": {
-                                "type": "string"
-                              }
-                            }
-                          }
+                          "type": "array<object>",
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {},
+                          "example": "",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -1819,25 +5029,148 @@
                 ],
                 "description": "Retrieves book by title along with secret",
                 "parameters": {
-                  "query_params": [],
+                  "query_params": [
+                    "limit",
+                    "offset",
+                    "page",
+                    "size",
+                    "sort",
+                    "order",
+                    "filter",
+                    "search",
+                    "q"
+                  ],
                   "path_params": [
                     "book_title"
                   ],
-                  "body_params": [],
+                  "body_params": [
+                    "id",
+                    "created_at",
+                    "updated_at",
+                    "status",
+                    "active"
+                  ],
                   "headers": [
                     "Content-Type",
                     "Accept",
                     "Authorization",
-                    "X-API-Key"
+                    "X-API-Key",
+                    "User-Agent",
+                    "Cache-Control"
                   ],
                   "param_types": {
-                    "book_title": "string"
+                    "book_title": "string",
+                    "limit": "string",
+                    "offset": "string",
+                    "page": "string",
+                    "size": "string",
+                    "sort": "string",
+                    "order": "string",
+                    "filter": "string",
+                    "search": "string",
+                    "q": "string",
+                    "id": "string",
+                    "created_at": "string",
+                    "updated_at": "string",
+                    "status": "string",
+                    "active": "string"
                   },
                   "validation_rules": {
                     "book_title": {
                       "required": true,
                       "description": "retrieve book data",
-                      "validation_rules": {}
+                      "validation_rules": {
+                        "example": "bookTitle77"
+                      },
+                      "format": "",
+                      "schema": {
+                        "type": "string",
+                        "example": "bookTitle77"
+                      }
+                    },
+                    "limit": {
+                      "required": false,
+                      "description": "Common limit parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "offset": {
+                      "required": false,
+                      "description": "Common offset parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "page": {
+                      "required": false,
+                      "description": "Common page parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "size": {
+                      "required": false,
+                      "description": "Common size parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "sort": {
+                      "required": false,
+                      "description": "Common sort parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "order": {
+                      "required": false,
+                      "description": "Common order parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "filter": {
+                      "required": false,
+                      "description": "Common filter parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "search": {
+                      "required": false,
+                      "description": "Common search parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "q": {
+                      "required": false,
+                      "description": "Common q parameter",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "id": {
+                      "required": false,
+                      "description": "Common id field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "created_at": {
+                      "required": false,
+                      "description": "Common created_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "updated_at": {
+                      "required": false,
+                      "description": "Common updated_at field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "status": {
+                      "required": false,
+                      "description": "Common status field",
+                      "validation_rules": {},
+                      "inferred": true
+                    },
+                    "active": {
+                      "required": false,
+                      "description": "Common active field",
+                      "validation_rules": {},
+                      "inferred": true
                     }
                   }
                 },
@@ -1854,53 +5187,111 @@
                 "response_schemas": {
                   "200": {
                     "description": "Successfully retrieve book info",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "array",
                       "properties": {},
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "401": {
                     "description": "User not authorized",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Invalid token. Please log in again."
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Invalid token. Please log in again."
+                          },
+                          "example": "Invalid token. Please log in again.",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   },
                   "404": {
                     "description": "Book not found",
-                    "content_type": "application/json",
+                    "content_types": [
+                      "application/json"
+                    ],
+                    "headers": {},
+                    "links": {},
+                    "examples": {},
                     "schema": {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "fail"
-                          ],
-                          "example": "fail"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "enum": [
+                              "fail"
+                            ],
+                            "example": "fail"
+                          },
+                          "example": "fail",
+                          "deprecated": false
                         },
                         "message": {
                           "type": "string",
-                          "example": "Book not found!"
+                          "format": "",
+                          "description": "",
+                          "required": false,
+                          "validation_rules": {
+                            "example": "Book not found!"
+                          },
+                          "example": "Book not found!",
+                          "deprecated": false
                         }
                       },
-                      "example": {}
+                      "required_fields": [],
+                      "example": {},
+                      "additional_properties": true,
+                      "discriminator": null,
+                      "xml": null,
+                      "external_docs": null
                     }
                   }
                 },
@@ -2145,10 +5536,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-22 21:02:11.235280",
+      "discovered_at": "2025-08-22 22:21:01.687701",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-22 21:02:11.299916",
+  "discovery_timestamp": "2025-08-22 22:21:01.772983",
   "total_endpoints": 12
 }

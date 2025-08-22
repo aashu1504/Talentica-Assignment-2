@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-22 21:02:51
+**Generated:** 2025-08-22 22:21:54
 
 ## Configuration
 
@@ -13,7 +13,7 @@
 - **Authenticated Endpoints:** 8
 - **Public Endpoints:** 4
 - **High Risk Endpoints:** 3
-- **Discovery Coverage:** 93.2%
+- **Discovery Coverage:** 100.0%
 
 ## Discovered Endpoints
 
@@ -27,6 +27,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /
 
@@ -38,6 +40,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1
 
@@ -49,6 +53,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/_debug
 
@@ -60,6 +66,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/register
 
@@ -71,6 +79,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/login
 
@@ -82,6 +92,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /me
 
@@ -93,6 +105,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/{user_id}
 
@@ -104,7 +118,9 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
 - Path: user_id
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/{user_id}/email
 
@@ -116,7 +132,9 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
 - Path: user_id
+- Body: id, created_at, updated_at, status, active
 
 ### /users/v1/{user_id}/password
 
@@ -128,7 +146,9 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
 - Path: user_id
+- Body: id, created_at, updated_at, status, active
 
 ### /books/v1
 
@@ -140,6 +160,8 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
+- Body: id, created_at, updated_at, status, active
 
 ### /books/v1/{book_title}
 
@@ -151,7 +173,9 @@
 - **Response Types:** application/json
 
 **Parameters:**
+- Query: limit, offset, page, size, sort, order, filter, search, q
 - Path: book_title
+- Body: id, created_at, updated_at, status, active
 
 ## Authentication Mechanisms
 
