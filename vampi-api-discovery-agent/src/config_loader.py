@@ -16,8 +16,11 @@ from dataclasses import dataclass
 class DiscoveryConfig:
     """Configuration data class for discovery settings."""
     
-    # Common API paths to scan
+    # Common API paths to scan (framework-specific)
     common_paths: List[str]
+    
+    # Universal API patterns (framework-agnostic)
+    universal_patterns: Dict[str, List[str]]
     
     # HTTP methods to test
     http_methods: List[str]
@@ -74,6 +77,7 @@ class ConfigLoader:
             # Validate and create config object
             self.config = DiscoveryConfig(
                 common_paths=config_data.get('common_paths', []),
+                universal_patterns=config_data.get('universal_patterns', {}),
                 http_methods=config_data.get('http_methods', []),
                 risk_patterns=config_data.get('risk_patterns', {}),
                 pattern_templates=config_data.get('pattern_templates', []),
@@ -199,6 +203,7 @@ class ConfigLoader:
         
         export_data = {
             'common_paths': self.config.common_paths,
+            'universal_patterns': self.config.universal_patterns,
             'http_methods': self.config.http_methods,
             'risk_patterns': self.config.risk_patterns,
             'pattern_templates': self.config.pattern_templates,
@@ -220,6 +225,10 @@ DEFAULT_CONFIG = DiscoveryConfig(
         "/api",
         "/v1"
     ],
+    universal_patterns={
+        "graphql": ["/graphql", "/graphql/*"],
+        "soap": ["/soap", "/soap/*"]
+    },
     http_methods=["GET", "POST", "PUT", "DELETE"],
     risk_patterns={
         "general": ["/admin", "/config", "/settings"],

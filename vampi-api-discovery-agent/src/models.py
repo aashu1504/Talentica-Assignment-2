@@ -382,14 +382,18 @@ class DiscoveryReport(BaseModel):
 
 
 class APIDiscoveryResult(BaseModel):
-    """Main model for API discovery results."""
-    discovery_summary: DiscoverySummary = Field(..., description="Discovery summary information")
+    """Complete result of API discovery process."""
     endpoints: List[EndpointMetadata] = Field(..., description="List of discovered endpoints")
-    authentication_mechanisms: List[AuthenticationMechanism] = Field(..., description="Authentication mechanisms")
-    api_structure: APIStructure = Field(..., description="API structure analysis")
-    validation_metrics: Optional[Dict[str, Any]] = Field(None, description="Discovery accuracy and completeness metrics")
-    security_insights: Optional[Dict[str, Any]] = Field(None, description="Additional security insights")
-    recommendations: Optional[List[str]] = Field(None, description="Security recommendations")
+    discovery_summary: DiscoverySummary = Field(..., description="Summary of discovery results")
+    api_structure: APIStructure = Field(..., description="Overall API structure")
+    authentication_mechanisms: List[AuthenticationMechanism] = Field(
+        default_factory=list,
+        description="List of authentication mechanisms"
+    )
+    framework_info: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Framework detection information and technology stack details"
+    )
 
 
 class DiscoveryConfig(BaseModel):

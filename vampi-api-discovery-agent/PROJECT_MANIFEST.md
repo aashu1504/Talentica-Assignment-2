@@ -23,6 +23,14 @@ This project implements an API Discovery Agent using CrewAI to discover, catalog
 - [x] docs/README.md - Project documentation
 - [x] docs/API_SCHEMA.md - API output schema documentation
 - [x] docs/ARCHITECTURE.md - System architecture documentation
+- [x] src/visualization.py - API visualization and mapping module
+- [x] config/discovery_config.yaml - Configurable discovery patterns and settings
+- [x] src/config_loader.py - Configuration management and loading
+- [x] scripts/manage_config.py - Configuration management utilities
+- [x] config/README.md - Configuration system documentation
+- [x] src/generic_discovery.py - Framework-agnostic API discovery engine
+- [x] test_generic_discovery.py - Test script for generic discovery
+- [x] docs/GENERIC_DISCOVERY.md - Generic discovery documentation
 
 ### Backed Up Files
 *No files were backed up during initial creation*

@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 92.45454545454544,
     "parameter_coverage": 75.0,
-    "discovery_start_time": "2025-08-22T13:06:14.811164",
-    "discovery_end_time": "2025-08-22T13:06:14.811180",
-    "discovery_duration": 152.03627014160156,
+    "discovery_start_time": "2025-08-22T17:27:18.339364",
+    "discovery_end_time": "2025-08-22T17:27:18.339368",
+    "discovery_duration": 155.96838998794556,
     "total_parameters": 6,
     "unique_parameters": 2
   },
@@ -579,8 +579,8 @@
       "path": "/users/v1/{user_id}",
       "methods": [
         "POST",
-        "GET",
         "PUT",
+        "GET",
         "DELETE"
       ],
       "description": "Retrieves user by username",
@@ -671,8 +671,8 @@
       "path": "/users/v1/{user_id}/email",
       "methods": [
         "POST",
-        "GET",
         "PUT",
+        "GET",
         "DELETE"
       ],
       "description": "Update users email",
@@ -780,8 +780,8 @@
       "path": "/users/v1/{user_id}/password",
       "methods": [
         "POST",
-        "GET",
         "PUT",
+        "GET",
         "DELETE"
       ],
       "description": "Update users password",
@@ -955,8 +955,8 @@
       "path": "/books/v1/{book_title}",
       "methods": [
         "POST",
-        "GET",
         "PUT",
+        "GET",
         "DELETE"
       ],
       "description": "Retrieves book by title along with secret",
@@ -2199,7 +2199,7 @@
       ],
       "implementation_details": "Used by 21 endpoints. Token location: header, Header: Authorization",
       "documentation_url": null,
-      "discovered_at": "2025-08-22T13:06:55.772573",
+      "discovered_at": "2025-08-22T17:28:30.792100",
       "endpoints_using": [
         "DOC002",
         "DOC003",
@@ -2380,11 +2380,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-22T13:06:14.780043",
+    "discovered_at": "2025-08-22T17:27:18.318903",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250822_130655",
-  "generated_at": "2025-08-22T13:06:55.772760",
+  "report_id": "vampi_discovery_20250822_172830",
+  "generated_at": "2025-08-22T17:28:30.792426",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],

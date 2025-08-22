@@ -1,7 +1,7 @@
 # VAmPI API Discovery Configuration
 # This file contains configurable paths, patterns, and settings for API discovery
 
-# Common API paths to scan
+# Common API paths to scan (VAmPI-specific)
 common_paths:
   - "/users/v1"
   - "/users/v1/register"
@@ -20,6 +20,111 @@ common_paths:
   - "/v1"
   - "/v1/users"
   - "/v1/books"
+
+# Universal API patterns (framework-agnostic)
+universal_patterns:
+  common_resources:
+    - "/users"
+    - "/user"
+    - "/accounts"
+    - "/account"
+    - "/products"
+    - "/product"
+    - "/items"
+    - "/item"
+    - "/orders"
+    - "/order"
+    - "/bookings"
+    - "/booking"
+    - "/payments"
+    - "/payment"
+    - "/invoices"
+    - "/invoice"
+    - "/files"
+    - "/file"
+    - "/documents"
+    - "/document"
+    - "/images"
+    - "/image"
+    - "/media"
+    - "/uploads"
+  
+  authentication:
+    - "/auth"
+    - "/login"
+    - "/logout"
+    - "/register"
+    - "/signup"
+    - "/signin"
+    - "/signout"
+    - "/password"
+    - "/reset"
+    - "/verify"
+    - "/token"
+    - "/refresh"
+    - "/session"
+    - "/oauth"
+    - "/sso"
+  
+  administration:
+    - "/admin"
+    - "/administrator"
+    - "/management"
+    - "/manage"
+    - "/settings"
+    - "/config"
+    - "/configuration"
+    - "/system"
+    - "/dashboard"
+    - "/control"
+    - "/superuser"
+    - "/root"
+  
+  documentation:
+    - "/docs"
+    - "/documentation"
+    - "/api"
+    - "/swagger"
+    - "/openapi"
+    - "/redoc"
+    - "/help"
+    - "/guide"
+    - "/reference"
+    - "/schema"
+    - "/spec"
+    - "/specification"
+  
+  system:
+    - "/health"
+    - "/status"
+    - "/ping"
+    - "/ready"
+    - "/live"
+    - "/metrics"
+    - "/monitoring"
+    - "/logs"
+    - "/debug"
+    - "/info"
+    - "/version"
+    - "/about"
+    - "/contact"
+    - "/support"
+  
+  data_operations:
+    - "/search"
+    - "/query"
+    - "/filter"
+    - "/sort"
+    - "/page"
+    - "/export"
+    - "/import"
+    - "/sync"
+    - "/backup"
+    - "/restore"
+    - "/archive"
+    - "/trash"
+    - "/deleted"
+    - "/history"
 
 # HTTP methods to test
 http_methods:

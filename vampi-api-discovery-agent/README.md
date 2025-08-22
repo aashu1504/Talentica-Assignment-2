@@ -11,11 +11,47 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 ## Features
 
 - **Automated Endpoint Discovery**: Systematic scanning of VAmPI API endpoints
+- **Generic API Discovery**: Framework-agnostic discovery for any REST API
+- **Framework Detection**: Automatic detection of Flask, Django, FastAPI, Express, Spring, ASP.NET
 - **Security Risk Assessment**: Automated risk categorization and vulnerability identification
 - **Authentication Analysis**: Detection and analysis of authentication mechanisms
 - **Comprehensive Reporting**: Detailed JSON and markdown reports
 - **Configurable Scanning**: Customizable timeouts, rate limiting, and discovery parameters
 - **Async Processing**: High-performance asynchronous HTTP scanning
+- **Universal Patterns**: Common API patterns that work across different frameworks
+
+## Generic API Discovery
+
+The project now includes a **Generic API Discovery Engine** that can work with any REST API, not just VAmPI. This enhancement makes the discovery agent truly universal and reusable across different projects.
+
+### **Key Capabilities**
+
+- **Framework-Agnostic**: Works with Flask, Django, FastAPI, Express, Spring, ASP.NET, and more
+- **Universal Patterns**: Discovers common endpoints like `/users`, `/products`, `/admin`, `/docs`, `/health`
+- **Intelligent Detection**: Automatically identifies the underlying framework and technology stack
+- **Configurable Patterns**: Easy to extend with new API patterns and frameworks
+
+### **Usage Example**
+
+```python
+from generic_discovery import GenericAPIDiscoveryEngine
+from models import DiscoveryConfig
+
+# Configure for any API
+config = DiscoveryConfig(
+    base_url="https://api.example.com",
+    timeout=30.0,
+    user_agent="Generic-Discovery-Agent/1.0"
+)
+
+# Run discovery
+async with GenericAPIDiscoveryEngine(config) as engine:
+    result = await engine.discover_endpoints()
+    print(f"Framework: {result.framework_info['detected_framework']}")
+    print(f"Endpoints: {len(result.endpoints)}")
+```
+
+For detailed documentation, see [docs/GENERIC_DISCOVERY.md](docs/GENERIC_DISCOVERY.md).
 
 ## Project Structure
 
