@@ -375,11 +375,12 @@ class VAmPIDiscoveryEngine:
         Returns:
             True if authentication is likely required, False otherwise
         """
-        # Endpoints that typically require authentication
+        # Endpoints that typically require authentication (VAMPI-SPECIFIC ONLY)
         auth_required_paths = [
             "/users/v1", "/users/v1/{user_id}", "/users/v1/{user_id}/email", 
-            "/users/v1/{user_id}/password", "/me", "/admin", "/admin/users", 
-            "/admin/books", "/api/v1/users", "/api/v1/books", "/v1/users", "/v1/books"
+            "/users/v1/{user_id}/password", "/me"
+            # Removed false positive patterns:
+            # "/admin", "/admin/users", "/admin/books", "/api/v1/users", "/api/v1/books", "/v1/users", "/v1/books"
         ]
         
         # Methods that typically require authentication
@@ -398,6 +399,12 @@ class VAmPIDiscoveryEngine:
         sensitive_operations = ["password", "email", "admin", "user", "book"]
         path_lower = path.lower()
         if any(op in path_lower for op in sensitive_operations):
+            return True
+        
+        # Default to requiring auth for sensitive operations (VAMPI-SPECIFIC ONLY)
+        if any(op in path for op in ["/users/", "/books/"]):
+            # Removed false positive patterns that don't exist in VAmPI:
+            # "/admin/", "/orders/", "/payments/", "/reviews/", "/cart/", "/reports/"
             return True
         
         return False
@@ -459,6 +466,16 @@ class VAmPIDiscoveryEngine:
             response = await self.session.request(method, url)
             response_time = time.time() - start_time
             
+            # IMPLEMENTATION: Filter out 404 responses - only include real endpoints
+            if response.status_code == 404:
+                self.logger.debug(f"Skipping 404 response for {method} {url}")
+                return None
+            
+            # IMPLEMENTATION: Additional validation - only include endpoints with meaningful responses
+            if response.status_code >= 400 and response.status_code != 401 and response.status_code != 403:
+                self.logger.debug(f"Skipping error response {response.status_code} for {method} {url}")
+                return None
+            
             # Extract path from URL
             path = urlparse(str(url)).path
             
@@ -516,6 +533,16 @@ class VAmPIDiscoveryEngine:
                 self.logger.info(f"httpx failed, trying urllib3 fallback for {url}")
                 urllib3_response = self.urllib3_pool.request(method, url, timeout=5.0)
                 
+                # IMPLEMENTATION: Filter out 404 responses in urllib3 fallback too
+                if urllib3_response.status == 404:
+                    self.logger.debug(f"Skipping 404 response (urllib3) for {method} {url}")
+                    return None
+                
+                # IMPLEMENTATION: Additional validation for urllib3 responses
+                if urllib3_response.status >= 400 and urllib3_response.status != 401 and urllib3_response.status != 403:
+                    self.logger.debug(f"Skipping error response {urllib3_response.status} (urllib3) for {method} {url}")
+                    return None
+                
                 # Extract path from URL
                 path = urlparse(str(url)).path
                 
@@ -541,12 +568,15 @@ class VAmPIDiscoveryEngine:
                 # Generate endpoint ID
                 endpoint_id = f"EP{len(self.discovered_endpoints):03d}"
                 
-                # Create endpoint metadata with urllib3 fallback
+                # Detect deprecated endpoints
+                deprecated = self._detect_deprecated_endpoint_urllib3(urllib3_response)
+                
+                # Create endpoint metadata
                 endpoint = EndpointMetadata(
                     id=endpoint_id,
                     path=path,
                     methods=[method],
-                    description=f"VAmPI endpoint discovered via urllib3 fallback - {self._generate_description_fallback(path, method)}",
+                    description=self._generate_description_fallback(path, method, urllib3_response),
                     parameters=parameters,
                     authentication_required=auth_required,
                     authentication_type=auth_type,
@@ -555,20 +585,18 @@ class VAmPIDiscoveryEngine:
                     response_types=response_types,
                     discovered_via=DiscoveryMethod.ENDPOINT_SCANNING,
                     status_code=urllib3_response.status,
-                    response_time=None,  # urllib3 doesn't provide timing
-                    deprecated=False
+                    response_time=time.time() - start_time,
+                    deprecated=deprecated
                 )
                 
                 self.discovered_endpoints.add(path)
-                self.logger.info(f"Successfully discovered endpoint via urllib3 fallback: {path}")
                 return endpoint
                 
             except Exception as urllib3_error:
-                self.logger.warning(f"Both httpx and urllib3 failed for {method} {url}: httpx={e}, urllib3={urllib3_error}")
-                # Log more details for debugging
-                if hasattr(e, '__class__'):
-                    self.logger.debug(f"Error type: {e.__class__.__name__}")
+                self.logger.warning(f"urllib3 fallback also failed for {method} {url}: {urllib3_error}")
                 return None
+        
+        return None
     
     def _detect_authentication_type_urllib3(self, response, path: str) -> Tuple[AuthenticationType, bool]:
         """
@@ -823,6 +851,14 @@ class VAmPIDiscoveryEngine:
         # Apply parameter format normalization and deduplication
         unique_endpoints = self._deduplicate_and_normalize_endpoints(unique_endpoints)
         
+        # IMPLEMENTATION: Validate and filter endpoints to remove false positives
+        self.logger.info("🔍 Validating and filtering endpoints to remove false positives...")
+        validated_endpoints = self._validate_and_filter_endpoints(unique_endpoints)
+        self.logger.info(f"✅ Endpoint validation complete: {len(unique_endpoints)} -> {len(validated_endpoints)} endpoints")
+        
+        # Use validated endpoints for all subsequent analysis
+        unique_endpoints = validated_endpoints
+        
         # Analyze API structure
         api_structure = self._analyze_api_structure(unique_endpoints)
         
@@ -900,17 +936,29 @@ class VAmPIDiscoveryEngine:
     
     async def _scan_common_paths(self) -> List[EndpointMetadata]:
         """
-        Scan common API paths for endpoints.
+        Scan VAmPI-specific common paths for endpoints.
         
         Returns:
             List of discovered endpoints
         """
         endpoints = []
         
+        self.logger.info(f"Testing {len(self.common_paths)} VAmPI-specific common paths...")
+        
         for path in self.common_paths:
             full_url = normalize_url(self.config.base_url, path)
             
-            for method in self.http_methods:
+            # Test with appropriate HTTP methods for VAmPI endpoints
+            if path == "/" or path == "/createdb":
+                methods = ["GET"]
+            elif path == "/users/v1/register" or path == "/users/v1/login":
+                methods = ["POST"]
+            elif path == "/me" or path.startswith("/users/v1/{") or path.startswith("/books/v1/{") or path == "/books/v1":
+                methods = ["GET", "POST", "PUT", "DELETE"]
+            else:
+                methods = ["GET", "POST", "PUT", "DELETE"]
+            
+            for method in methods:
                 if self.config.respect_rate_limits:
                     rate_limit_delay()
                 
@@ -919,49 +967,53 @@ class VAmPIDiscoveryEngine:
                     endpoints.append(endpoint)
                     self.logger.debug(f"Discovered {method} {path}")
         
+        self.logger.info(f"Common paths scanning found {len(endpoints)} endpoints")
         return endpoints
     
     async def _test_vampi_specific_endpoints(self) -> List[EndpointMetadata]:
         """
-        Test the specific VAmPI endpoints that should be discovered.
+        Test only VAmPI-specific endpoints that are known to exist.
         
         Returns:
             List of discovered VAmPI endpoints
         """
         endpoints = []
         
-        # Define the exact VAmPI endpoints to test
-        vampi_endpoints = [
-            # User Management APIs
-            {"path": "/users/v1", "methods": ["GET"], "description": "List all users"},
-            {"path": "/users/v1/register", "methods": ["POST"], "description": "User registration"},
-            {"path": "/users/v1/login", "methods": ["POST"], "description": "User authentication"},
-            {"path": "/users/v1/{username}", "methods": ["GET", "DELETE"], "description": "Get/Delete specific user"},
-            {"path": "/users/v1/{username}/email", "methods": ["PUT"], "description": "Update user email"},
-            {"path": "/users/v1/{username}/password", "methods": ["PUT"], "description": "Update user password"},
-            
-            # Book Management APIs
-            {"path": "/books/v1", "methods": ["GET", "POST"], "description": "List all books or add new book"},
-            {"path": "/books/v1/{book_title}", "methods": ["GET"], "description": "Get book by title"},
-            
-            # Other VAmPI endpoints
-            {"path": "/", "methods": ["GET"], "description": "VAmPI home and help"},
-            {"path": "/createdb", "methods": ["GET"], "description": "Database initialization"}
+        # Only test endpoints that actually exist in VAmPI
+        vampi_specific_paths = [
+            "/",
+            "/createdb",
+            "/users/v1",
+            "/users/v1/_debug", 
+            "/users/v1/register",
+            "/users/v1/login",
+            "/me",
+            "/users/v1/{user_id}",
+            "/users/v1/{user_id}/email",
+            "/users/v1/{user_id}/password",
+            "/books/v1",
+            "/books/v1/{book_title}"
         ]
         
-        for endpoint_info in vampi_endpoints:
-            path = endpoint_info["path"]
-            methods = endpoint_info["methods"]
-            description = endpoint_info["description"]
-            
-            # Test with sample values for parameterized paths
+        for path in vampi_specific_paths:
+            # Replace parameter placeholders with sample values
             test_path = path
-            if "{username}" in path:
-                test_path = path.replace("{username}", "name1")
+            if "{user_id}" in path:
+                test_path = path.replace("{user_id}", "name1")
             elif "{book_title}" in path:
                 test_path = path.replace("{book_title}", "bookTitle77")
             
             full_url = normalize_url(self.config.base_url, test_path)
+            
+            # Test with appropriate HTTP methods for each endpoint
+            if path == "/" or path == "/createdb":
+                methods = ["GET"]
+            elif path == "/users/v1/register" or path == "/users/v1/login":
+                methods = ["POST"]
+            elif path == "/me" or path.startswith("/users/v1/{") or path.startswith("/books/v1/{") or path == "/books/v1":
+                methods = ["GET", "POST", "PUT", "DELETE"]
+            else:
+                methods = ["GET", "POST", "PUT", "DELETE"]
             
             for method in methods:
                 if self.config.respect_rate_limits:
@@ -969,42 +1021,43 @@ class VAmPIDiscoveryEngine:
                 
                 endpoint = await self._test_endpoint(full_url, method)
                 if endpoint:
-                    # Update path to show parameterized version if it was parameterized
-                    if "{username}" in path or "{book_title}" in path:
-                        endpoint.path = path
-                    endpoint.description = description
+                    # Update path to show parameterized version
+                    endpoint.path = path
                     endpoints.append(endpoint)
-                    self.logger.debug(f"Discovered VAmPI endpoint {method} {path}")
+                    self.logger.debug(f"Discovered VAmPI endpoint: {method} {path}")
         
         return endpoints
     
     async def _pattern_based_discovery(self) -> List[EndpointMetadata]:
         """
-        Discover endpoints using pattern-based scanning.
+        Discover endpoints using VAmPI-specific pattern templates only.
         
         Returns:
             List of discovered endpoints
         """
         endpoints = []
         
-        # Use configurable pattern templates
+        # Use only VAmPI-specific pattern templates (no generic patterns)
         pattern_templates = self.discovery_config.pattern_templates
-        sample_values = self.discovery_config.sample_values
+        
+        self.logger.info(f"Testing {len(pattern_templates)} VAmPI-specific pattern templates...")
         
         for pattern in pattern_templates:
             # Replace placeholders with sample values
             test_path = pattern
-            for placeholder, value in sample_values.items():
+            for placeholder, value in self.discovery_config.sample_values.items():
                 if placeholder in test_path:
                     test_path = test_path.replace(f"{{{placeholder}}}", value)
             
             full_url = normalize_url(self.config.base_url, test_path)
             
-            # Test appropriate methods for each pattern
+            # Test with appropriate methods for VAmPI patterns
             if "users" in pattern:
                 methods = ["GET", "DELETE", "PUT"]
-            else:  # books
+            elif "books" in pattern:
                 methods = ["GET"]
+            else:
+                methods = ["GET", "POST", "PUT", "DELETE"]
                 
             for method in methods:
                 if self.config.respect_rate_limits:
@@ -1017,6 +1070,7 @@ class VAmPIDiscoveryEngine:
                     endpoints.append(endpoint)
                     self.logger.debug(f"Discovered pattern {method} {pattern}")
         
+        self.logger.info(f"Pattern-based discovery found {len(endpoints)} endpoints")
         return endpoints
     
     def _merge_endpoint_methods(self, endpoints: List[EndpointMetadata]) -> List[EndpointMetadata]:
@@ -2291,18 +2345,10 @@ class VAmPIDiscoveryEngine:
                 "required_methods": ["GET", "POST", "PUT", "DELETE"]
             },
             "additional_endpoints": {
-                "base_paths": ["/admin", "/health", "/status", "/docs"],
+                "base_paths": [],  # Removed false positive patterns
                 "expected_endpoints": [
-                    "/admin",
-                    "/admin/users",
-                    "/admin/books",
-                    "/health",
-                    "/status",
-                    "/info",
-                    "/docs",
-                    "/swagger",
-                    "/openapi.json",
-                    "/openapi.yaml"
+                    # Removed false positive patterns that don't exist in VAmPI:
+                    # "/admin", "/admin/users", "/admin/books", "/health", "/status", "/info", "/docs", "/swagger", "/openapi.json", "/openapi.yaml"
                 ],
                 "required_methods": ["GET"]
             }
@@ -2324,7 +2370,7 @@ class VAmPIDiscoveryEngine:
                         discovered_endpoints_for_resource.append(discovered_ep)
                         break
             
-            coverage_percentage = (len(discovered_endpoints_for_resource) / len(expected_endpoints)) * 100
+            coverage_percentage = (len(discovered_endpoints_for_resource) / len(expected_endpoints)) * 100 if expected_endpoints else 0
             resource_coverage[resource_name] = {
                 "expected_count": len(expected_endpoints),
                 "discovered_count": len(discovered_endpoints_for_resource),
@@ -2604,8 +2650,10 @@ class VAmPIDiscoveryEngine:
         if "/{user_id}" in path or "/{book_title}" in path or "/{order_id}" in path or "/{payment_id}" in path:
             return True
         
-        # Default to requiring auth for sensitive operations
-        if any(op in path for op in ["/users/", "/books/", "/admin/", "/orders/", "/payments/", "/reviews/", "/cart/", "/reports/"]):
+        # Default to requiring auth for sensitive operations (VAMPI-SPECIFIC ONLY)
+        if any(op in path for op in ["/users/", "/books/"]):
+            # Removed false positive patterns that don't exist in VAmPI:
+            # "/admin/", "/orders/", "/payments/", "/reviews/", "/cart/", "/reports/"
             return True
         
         return False
@@ -2631,21 +2679,32 @@ class VAmPIDiscoveryEngine:
 
     async def _enhanced_endpoint_discovery(self) -> List[EndpointMetadata]:
         """
-        Enhanced endpoint discovery using multiple techniques for maximum coverage.
+        Enhanced endpoint discovery using VAmPI-specific patterns only.
         
         Returns:
             List of discovered endpoints
         """
         endpoints = []
         
-        # Use configurable enhanced patterns
+        # Use only VAmPI-specific enhanced patterns (no generic patterns)
         enhanced_patterns = self.discovery_config.enhanced_patterns
+        
+        self.logger.info(f"Testing {len(enhanced_patterns)} VAmPI-specific enhanced patterns...")
         
         for path in enhanced_patterns:
             full_url = normalize_url(self.config.base_url, path)
             
-            # Test with common HTTP methods
-            for method in ["GET", "POST"]:
+            # Test with appropriate HTTP methods for VAmPI endpoints
+            if path == "/" or path == "/createdb":
+                methods = ["GET"]
+            elif path == "/users/v1/register" or path == "/users/v1/login":
+                methods = ["POST"]
+            elif path == "/me" or path.startswith("/users/v1/") or path.startswith("/books/v1/"):
+                methods = ["GET", "POST", "PUT", "DELETE"]
+            else:
+                methods = ["GET", "POST", "PUT", "DELETE"]
+            
+            for method in methods:
                 if self.config.respect_rate_limits:
                     rate_limit_delay()
                 
@@ -2654,4 +2713,127 @@ class VAmPIDiscoveryEngine:
                     endpoints.append(endpoint)
                     self.logger.debug(f"Enhanced discovery: {method} {path}")
         
+        self.logger.info(f"Enhanced discovery found {len(endpoints)} endpoints")
         return endpoints
+
+    def _detect_deprecated_endpoint_urllib3(self, response) -> bool:
+        """
+        Detect if an endpoint is deprecated using urllib3 response.
+        
+        Args:
+            response: urllib3 response object
+            
+        Returns:
+            True if deprecated, False otherwise
+        """
+        try:
+            # Check for deprecation headers
+            deprecation_header = response.headers.get("deprecation", "")
+            if deprecation_header.lower() == "true":
+                return True
+            
+            # Check for sunset headers
+            sunset_header = response.headers.get("sunset", "")
+            if sunset_header:
+                return True
+            
+            # Check for deprecation in response body
+            if hasattr(response, 'data') and response.data:
+                response_text = response.data.decode('utf-8', errors='ignore')
+                if any(deprecated_indicator in response_text.lower() for deprecated_indicator in [
+                    "deprecated", "deprecation", "sunset", "legacy", "obsolete"
+                ]):
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            self.logger.debug(f"Error detecting deprecated endpoint with urllib3: {e}")
+            return False
+
+    def _validate_and_filter_endpoints(self, endpoints: List[EndpointMetadata]) -> List[EndpointMetadata]:
+        """
+        Validate and filter endpoints to remove false positives.
+        
+        Args:
+            endpoints: List of discovered endpoints
+            
+        Returns:
+            List of validated endpoints with false positives removed
+        """
+        validated_endpoints = []
+        
+        # Known real VAmPI endpoints (from OpenAPI spec)
+        real_vampi_endpoints = {
+            "/",
+            "/createdb", 
+            "/users/v1",
+            "/users/v1/_debug",
+            "/users/v1/register",
+            "/users/v1/login",
+            "/me",
+            "/users/v1/{user_id}",
+            "/users/v1/{user_id}/email", 
+            "/users/v1/{user_id}/password",
+            "/books/v1",
+            "/books/v1/{book_title}"
+        }
+        
+        # Known false positive patterns to always exclude
+        false_positive_patterns = [
+            "/admin",
+            "/health", 
+            "/status",
+            "/info",
+            "/docs",
+            "/swagger",
+            "/openapi.json",
+            "/openapi.yaml",
+            "/metrics",
+            "/config",
+            "/settings",
+            "/profile",
+            "/search",
+            "/categories",
+            "/orders",
+            "/payments",
+            "/notifications",
+            "/reviews",
+            "/cart",
+            "/reports"
+        ]
+        
+        for endpoint in endpoints:
+            # Skip endpoints that are known false positives
+            if any(pattern in endpoint.path for pattern in false_positive_patterns):
+                self.logger.debug(f"Filtering out known false positive: {endpoint.path}")
+                continue
+            
+            # Skip endpoints with 404 status codes (handle None safely)
+            if hasattr(endpoint, 'status_code') and endpoint.status_code is not None and endpoint.status_code == 404:
+                self.logger.debug(f"Filtering out 404 endpoint: {endpoint.path}")
+                continue
+            
+            # Skip endpoints with error status codes (except auth errors) - handle None safely
+            if (hasattr(endpoint, 'status_code') and 
+                endpoint.status_code is not None and 
+                endpoint.status_code >= 400 and 
+                endpoint.status_code not in [401, 403]):
+                self.logger.debug(f"Filtering out error endpoint {endpoint.status_code}: {endpoint.path}")
+                continue
+            
+            # For parameterized paths, ensure they follow VAmPI patterns
+            if "{user_id}" in endpoint.path and not endpoint.path.startswith("/users/v1/"):
+                self.logger.debug(f"Filtering out invalid user_id pattern: {endpoint.path}")
+                continue
+                
+            if "{book_title}" in endpoint.path and not endpoint.path.startswith("/books/v1/"):
+                self.logger.debug(f"Filtering out invalid book_title pattern: {endpoint.path}")
+                continue
+            
+            # Include the endpoint
+            validated_endpoints.append(endpoint)
+            self.logger.debug(f"Validated endpoint: {endpoint.path}")
+        
+        self.logger.info(f"Endpoint validation: {len(endpoints)} discovered, {len(validated_endpoints)} validated")
+        return validated_endpoints

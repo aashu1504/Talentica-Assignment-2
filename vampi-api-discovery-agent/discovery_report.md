@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-22 18:44:34
+**Generated:** 2025-08-22 21:02:51
 
 ## Configuration
 
@@ -9,17 +9,17 @@
 
 ## Executive Summary
 
-- **Total Endpoints Discovered:** 42
-- **Authenticated Endpoints:** 21
-- **Public Endpoints:** 21
+- **Total Endpoints Discovered:** 12
+- **Authenticated Endpoints:** 8
+- **Public Endpoints:** 4
 - **High Risk Endpoints:** 3
-- **Discovery Coverage:** 92.5%
+- **Discovery Coverage:** 93.2%
 
 ## Discovered Endpoints
 
 ### /createdb
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET
 - **Description:** Creates and populates the database with dummy data
 - **Authentication Required:** No
 - **Risk Level:** Low
@@ -30,7 +30,7 @@
 
 ### /
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET
 - **Description:** VAmPI home
 - **Authentication Required:** No
 - **Risk Level:** Low
@@ -41,7 +41,7 @@
 
 ### /users/v1
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET
 - **Description:** Retrieves all users
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -52,7 +52,7 @@
 
 ### /users/v1/_debug
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET, DELETE
 - **Description:** Retrieves all details for all users
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -63,7 +63,7 @@
 
 ### /users/v1/register
 
-- **Methods:** POST, GET, PUT, DELETE
+- **Methods:** POST
 - **Description:** Register new user
 - **Authentication Required:** No
 - **Risk Level:** Critical
@@ -74,7 +74,7 @@
 
 ### /users/v1/login
 
-- **Methods:** POST, GET, PUT, DELETE
+- **Methods:** POST
 - **Description:** Login to VAmPI
 - **Authentication Required:** No
 - **Risk Level:** Critical
@@ -96,7 +96,7 @@
 
 ### /users/v1/{user_id}
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET, DELETE
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -108,7 +108,7 @@
 
 ### /users/v1/{user_id}/email
 
-- **Methods:** DELETE, POST, PUT, GET
+- **Methods:** PUT
 - **Description:** Update users email
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -120,7 +120,7 @@
 
 ### /users/v1/{user_id}/password
 
-- **Methods:** DELETE, POST, PUT, GET
+- **Methods:** PUT
 - **Description:** Update users password
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -132,7 +132,7 @@
 
 ### /books/v1
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET, POST
 - **Description:** Retrieves all books
 - **Authentication Required:** Yes
 - **Risk Level:** Critical
@@ -143,7 +143,7 @@
 
 ### /books/v1/{book_title}
 
-- **Methods:** GET, POST, PUT, DELETE
+- **Methods:** GET
 - **Description:** Retrieves book by title along with secret
 - **Authentication Required:** Yes
 - **Risk Level:** High
@@ -153,343 +153,13 @@
 **Parameters:**
 - Path: book_title
 
-### /api/v1
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /api/v1/users
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Critical
-- **Risk Factors:** user_management, data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /api/v1/books
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Critical
-- **Risk Factors:** data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /v1
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /v1/users
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Critical
-- **Risk Factors:** user_management, data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /v1/books
-
-- **Methods:** GET, POST, PUT, DELETE
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Critical
-- **Risk Factors:** data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /api/v1/users/{user_id}
-
-- **Methods:** GET, DELETE, PUT
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Critical
-- **Risk Factors:** user_management, data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /api/v1/books/{book_id}
-
-- **Methods:** GET
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Critical
-- **Risk Factors:** data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /v1/users/{user_id}
-
-- **Methods:** GET, DELETE, PUT
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Critical
-- **Risk Factors:** user_management, data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /v1/books/{book_id}
-
-- **Methods:** GET
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Critical
-- **Risk Factors:** data_exposure, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /admin
-
-- **Methods:** GET, POST
-- **Description:** VAmPI administrative endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Critical
-- **Risk Factors:** data_exposure, admin_access, no_authentication
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /health
-
-- **Methods:** GET, POST
-- **Description:** VAmPI health and status endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, system_monitoring
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /status
-
-- **Methods:** GET, POST
-- **Description:** VAmPI health and status endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, system_monitoring
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /info
-
-- **Methods:** GET, POST
-- **Description:** VAmPI health and status endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /docs
-
-- **Methods:** GET, POST
-- **Description:** VAmPI documentation endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, documentation_access
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /swagger
-
-- **Methods:** GET, POST
-- **Description:** VAmPI documentation endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, documentation_access
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /openapi.json
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** read_only_operation, documentation_access
-- **Response Types:** application/json
-
-**Parameters:**
-
-### /openapi.yaml
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** read_only_operation, documentation_access
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /metrics
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /config
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /settings
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /profile
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /search
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /categories
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** No
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /orders
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /payments
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /notifications
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /reviews
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /cart
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
-### /reports
-
-- **Methods:** GET, POST
-- **Description:** VAmPI retrieve data endpoint
-- **Authentication Required:** Yes
-- **Risk Level:** Low
-- **Risk Factors:** public_endpoint, read_only_operation, standard_api_operation
-- **Response Types:** Unknown
-
-**Parameters:**
-
 ## Authentication Mechanisms
 
 ### Bearer Authentication
 
 - **Type:** Bearer
 - **Description:** Standard Bearer authentication mechanism
-- **Endpoints Using:** DOC002, DOC003, DOC006, DOC007, DOC009, DOC010, DOC011, DOC013, EP024, EP025, EP026, EP027, EP028, EP038, EP039, EP042, EP043, EP044, EP045, EP046, EP047
+- **Endpoints Using:** DOC002, DOC003, DOC006, DOC007, DOC009, DOC010, DOC011, DOC013
 
 ## API Structure
 

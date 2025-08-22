@@ -1,7 +1,7 @@
 # VAmPI API Discovery Configuration
 # This file contains configurable paths, patterns, and settings for API discovery
 
-# Common API paths to scan (VAmPI-specific)
+# Common API paths to scan (VAMPI-SPECIFIC ONLY)
 common_paths:
   - "/users/v1"
   - "/users/v1/register"
@@ -14,40 +14,25 @@ common_paths:
   - "/books/v1/{book_title}"
   - "/"
   - "/createdb"
-  - "/api/v1"
-  - "/api/v1/users"
-  - "/api/v1/books"
-  - "/v1"
-  - "/v1/users"
-  - "/v1/books"
+  - "/me"
+  # Remove API version variations that don't exist in VAmPI
+  # - "/api/v1"                    # ❌ Not in VAmPI
+  # - "/api/v1/users"              # ❌ Not in VAmPI
+  # - "/api/v1/books"              # ❌ Not in VAmPI
+  # - "/v1"                        # ❌ Not in VAmPI
+  # - "/v1/users"                  # ❌ Not in VAmPI
+  # - "/v1/books"                  # ❌ Not in VAmPI
 
-# Universal API patterns (framework-agnostic)
+# Universal API patterns (VAMPI-FOCUSED, conservative approach)
 universal_patterns:
   common_resources:
     - "/users"
     - "/user"
-    - "/accounts"
-    - "/account"
-    - "/products"
-    - "/product"
-    - "/items"
-    - "/item"
-    - "/orders"
-    - "/order"
-    - "/bookings"
-    - "/booking"
-    - "/payments"
-    - "/payment"
-    - "/invoices"
-    - "/invoice"
-    - "/files"
-    - "/file"
-    - "/documents"
-    - "/document"
-    - "/images"
-    - "/image"
-    - "/media"
-    - "/uploads"
+    - "/books"
+    - "/book"
+    - "/auth"
+    - "/login"
+    - "/register"
   
   authentication:
     - "/auth"
@@ -56,19 +41,12 @@ universal_patterns:
     - "/register"
     - "/signup"
     - "/signin"
-    - "/signout"
     - "/password"
-    - "/reset"
-    - "/verify"
     - "/token"
-    - "/refresh"
     - "/session"
-    - "/oauth"
-    - "/sso"
   
   administration:
     - "/admin"
-    - "/administrator"
     - "/management"
     - "/manage"
     - "/settings"
@@ -76,9 +54,6 @@ universal_patterns:
     - "/configuration"
     - "/system"
     - "/dashboard"
-    - "/control"
-    - "/superuser"
-    - "/root"
   
   documentation:
     - "/docs"
@@ -86,7 +61,6 @@ universal_patterns:
     - "/api"
     - "/swagger"
     - "/openapi"
-    - "/redoc"
     - "/help"
     - "/guide"
     - "/reference"
@@ -159,19 +133,18 @@ risk_patterns:
     - "/sql"
     - "/db"
 
-# Pattern-based discovery templates
+# Pattern-based discovery templates - VAMPI-SPECIFIC ONLY
 pattern_templates:
-  - "/users/v1/{username}"
-  - "/users/v1/{username}/email"
-  - "/users/v1/{username}/password"
-  - "/books/v1/{book_title}"
+  # Only include patterns that actually exist in VAmPI
   - "/users/v1/{user_id}"
   - "/users/v1/{user_id}/email"
   - "/users/v1/{user_id}/password"
-  - "/api/v1/users/{user_id}"
-  - "/api/v1/books/{book_id}"
-  - "/v1/users/{user_id}"
-  - "/v1/books/{book_id}"
+  - "/books/v1/{book_title}"
+  # Remove generic API version variations that don't exist in VAmPI
+  # - "/api/v1/users/{user_id}"    # ❌ Not in VAmPI
+  # - "/api/v1/books/{book_id}"    # ❌ Not in VAmPI
+  # - "/v1/users/{user_id}"        # ❌ Not in VAmPI
+  # - "/v1/books/{book_id}"        # ❌ Not in VAmPI
 
 # Sample values for parameter testing
 sample_values:
@@ -180,25 +153,14 @@ sample_values:
   book_title: "bookTitle77"
   book_id: "1"
 
-# Enhanced discovery patterns
+# Enhanced discovery patterns - VAMPI-SPECIFIC ONLY (no generic patterns)
 enhanced_patterns:
-  - "/admin"
-  - "/health"
-  - "/status"
-  - "/info"
-  - "/docs"
-  - "/swagger"
-  - "/openapi.json"
-  - "/openapi.yaml"
-  - "/metrics"
-  - "/config"
-  - "/settings"
-  - "/profile"
-  - "/search"
-  - "/categories"
-  - "/orders"
-  - "/payments"
-  - "/notifications"
-  - "/reviews"
-  - "/cart"
-  - "/reports" 
+  # Only include patterns that actually exist in VAmPI
+  - "/users/v1"
+  - "/users/v1/register"
+  - "/users/v1/login"
+  - "/users/v1/_debug"
+  - "/books/v1"
+  - "/"
+  - "/createdb"
+  - "/me" 

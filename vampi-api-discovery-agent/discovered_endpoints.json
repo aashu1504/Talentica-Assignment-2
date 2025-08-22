@@ -2,19 +2,19 @@
   "discovery_summary": {
     "target_application": "VAmPI",
     "base_url": "http://localhost:5000",
-    "total_endpoints": 42,
-    "authenticated_endpoints": 21,
-    "public_endpoints": 21,
+    "total_endpoints": 12,
+    "authenticated_endpoints": 8,
+    "public_endpoints": 4,
     "high_risk_endpoints": 3,
     "medium_risk_endpoints": 0,
-    "low_risk_endpoints": 24,
+    "low_risk_endpoints": 3,
     "authentication_types": [],
-    "discovery_coverage": 92.45454545454544,
-    "parameter_coverage": 75.0,
-    "discovery_start_time": "2025-08-22T18:43:47.064139",
-    "discovery_end_time": "2025-08-22T18:43:47.064146",
-    "discovery_duration": 157.04813313484192,
-    "total_parameters": 6,
+    "discovery_coverage": 93.25,
+    "parameter_coverage": 50.0,
+    "discovery_start_time": "2025-08-22T21:02:11.248572",
+    "discovery_end_time": "2025-08-22T21:02:11.248594",
+    "discovery_duration": 106.4411849975586,
+    "total_parameters": 4,
     "unique_parameters": 2
   },
   "endpoints": [
@@ -22,10 +22,7 @@
       "id": "DOC000",
       "path": "/createdb",
       "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
+        "GET"
       ],
       "description": "Creates and populates the database with dummy data",
       "parameters": {
@@ -79,10 +76,7 @@
       "id": "DOC001",
       "path": "/",
       "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
+        "GET"
       ],
       "description": "VAmPI home",
       "parameters": {
@@ -144,10 +138,7 @@
       "id": "DOC002",
       "path": "/users/v1",
       "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
+        "GET"
       ],
       "description": "Retrieves all users",
       "parameters": {
@@ -214,8 +205,6 @@
       "path": "/users/v1/_debug",
       "methods": [
         "GET",
-        "POST",
-        "PUT",
         "DELETE"
       ],
       "description": "Retrieves all details for all users",
@@ -290,10 +279,7 @@
       "id": "DOC004",
       "path": "/users/v1/register",
       "methods": [
-        "POST",
-        "GET",
-        "PUT",
-        "DELETE"
+        "POST"
       ],
       "description": "Register new user",
       "parameters": {
@@ -378,10 +364,7 @@
       "id": "DOC005",
       "path": "/users/v1/login",
       "methods": [
-        "POST",
-        "GET",
-        "PUT",
-        "DELETE"
+        "POST"
       ],
       "description": "Login to VAmPI",
       "parameters": {
@@ -579,8 +562,6 @@
       "path": "/users/v1/{user_id}",
       "methods": [
         "GET",
-        "POST",
-        "PUT",
         "DELETE"
       ],
       "description": "Retrieves user by username",
@@ -670,10 +651,7 @@
       "id": "DOC009",
       "path": "/users/v1/{user_id}/email",
       "methods": [
-        "DELETE",
-        "POST",
-        "PUT",
-        "GET"
+        "PUT"
       ],
       "description": "Update users email",
       "parameters": {
@@ -779,10 +757,7 @@
       "id": "DOC010",
       "path": "/users/v1/{user_id}/password",
       "methods": [
-        "DELETE",
-        "POST",
-        "PUT",
-        "GET"
+        "PUT"
       ],
       "description": "Update users password",
       "parameters": {
@@ -889,9 +864,7 @@
       "path": "/books/v1",
       "methods": [
         "GET",
-        "POST",
-        "PUT",
-        "DELETE"
+        "POST"
       ],
       "description": "Retrieves all books",
       "parameters": {
@@ -954,10 +927,7 @@
       "id": "DOC013",
       "path": "/books/v1/{book_title}",
       "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
+        "GET"
       ],
       "description": "Retrieves book by title along with secret",
       "parameters": {
@@ -1051,1112 +1021,6 @@
       "response_time": null,
       "error_messages": [],
       "deprecated": false
-    },
-    {
-      "id": "EP015",
-      "path": "/api/v1",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP016",
-      "path": "/api/v1/users",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP017",
-      "path": "/api/v1/books",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP018",
-      "path": "/v1",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP019",
-      "path": "/v1/users",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP020",
-      "path": "/v1/books",
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "DELETE"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP024",
-      "path": "/api/v1/users/{user_id}",
-      "methods": [
-        "GET",
-        "DELETE",
-        "PUT"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP025",
-      "path": "/api/v1/books/{book_id}",
-      "methods": [
-        "GET"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP026",
-      "path": "/v1/users/{user_id}",
-      "methods": [
-        "GET",
-        "DELETE",
-        "PUT"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "user_management",
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP027",
-      "path": "/v1/books/{book_id}",
-      "methods": [
-        "GET"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "data_exposure",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP028",
-      "path": "/admin",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI administrative endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Authorization",
-          "X-API-Key",
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Critical",
-      "risk_factors": [
-        "data_exposure",
-        "admin_access",
-        "no_authentication"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP029",
-      "path": "/health",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI health and status endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "system_monitoring"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP030",
-      "path": "/status",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI health and status endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "system_monitoring"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP031",
-      "path": "/info",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI health and status endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP032",
-      "path": "/docs",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI documentation endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "documentation_access"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP033",
-      "path": "/swagger",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI documentation endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "documentation_access"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP034",
-      "path": "/openapi.json",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "read_only_operation",
-        "documentation_access"
-      ],
-      "response_types": [
-        "application/json"
-      ],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 200,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP035",
-      "path": "/openapi.yaml",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "read_only_operation",
-        "documentation_access"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 200,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP036",
-      "path": "/metrics",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP037",
-      "path": "/config",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP038",
-      "path": "/settings",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP039",
-      "path": "/profile",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP040",
-      "path": "/search",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP041",
-      "path": "/categories",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": false,
-      "authentication_type": "None",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP042",
-      "path": "/orders",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP043",
-      "path": "/payments",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP044",
-      "path": "/notifications",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP045",
-      "path": "/reviews",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP046",
-      "path": "/cart",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
-    },
-    {
-      "id": "EP047",
-      "path": "/reports",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "description": "VAmPI retrieve data endpoint",
-      "parameters": {
-        "query_params": [],
-        "path_params": [],
-        "body_params": [],
-        "headers": [
-          "Content-Type",
-          "Accept"
-        ],
-        "param_types": {},
-        "validation_rules": {}
-      },
-      "authentication_required": true,
-      "authentication_type": "Bearer",
-      "risk_level": "Low",
-      "risk_factors": [
-        "public_endpoint",
-        "read_only_operation",
-        "standard_api_operation"
-      ],
-      "response_types": [],
-      "request_schema": null,
-      "response_schemas": null,
-      "discovered_via": "endpoint_scanning",
-      "status_code": 404,
-      "response_time": null,
-      "error_messages": [],
-      "deprecated": false
     }
   ],
   "authentication_mechanisms": [
@@ -2175,20 +1039,7 @@
           "/users/v1/{user_id}/email",
           "/users/v1/{user_id}/password",
           "/books/v1",
-          "/books/v1/{book_title}",
-          "/api/v1/users/{user_id}",
-          "/api/v1/books/{book_id}",
-          "/v1/users/{user_id}",
-          "/v1/books/{book_id}",
-          "/admin",
-          "/settings",
-          "/profile",
-          "/orders",
-          "/payments",
-          "/notifications",
-          "/reviews",
-          "/cart",
-          "/reports"
+          "/books/v1/{book_title}"
         ]
       },
       "security_strength": "high",
@@ -2197,9 +1048,9 @@
         "Secure transmission",
         "Token replay"
       ],
-      "implementation_details": "Used by 21 endpoints. Token location: header, Header: Authorization",
+      "implementation_details": "Used by 8 endpoints. Token location: header, Header: Authorization",
       "documentation_url": null,
-      "discovered_at": "2025-08-22T18:44:34.750841",
+      "discovered_at": "2025-08-22T21:02:51.940121",
       "endpoints_using": [
         "DOC002",
         "DOC003",
@@ -2208,20 +1059,7 @@
         "DOC009",
         "DOC010",
         "DOC011",
-        "DOC013",
-        "EP024",
-        "EP025",
-        "EP026",
-        "EP027",
-        "EP028",
-        "EP038",
-        "EP039",
-        "EP042",
-        "EP043",
-        "EP044",
-        "EP045",
-        "EP046",
-        "EP047"
+        "DOC013"
       ]
     }
   ],
@@ -2235,31 +1073,7 @@
       "/",
       "/users/v1",
       "/me",
-      "/books/v1",
-      "/api/v1",
-      "/v1",
-      "/v1/users",
-      "/v1/books",
-      "/admin",
-      "/health",
-      "/status",
-      "/info",
-      "/docs",
-      "/swagger",
-      "/openapi.json",
-      "/openapi.yaml",
-      "/metrics",
-      "/config",
-      "/settings",
-      "/profile",
-      "/search",
-      "/categories",
-      "/orders",
-      "/payments",
-      "/notifications",
-      "/reviews",
-      "/cart",
-      "/reports"
+      "/books/v1"
     ],
     "versions": [
       "v1"
@@ -2299,80 +1113,6 @@
       "books": [
         "/books/v1",
         "/books/v1/{book_title}"
-      ],
-      "api": [
-        "/api/v1",
-        "/api/v1/users",
-        "/api/v1/books",
-        "/api/v1/users/{user_id}",
-        "/api/v1/books/{book_id}"
-      ],
-      "v1": [
-        "/v1",
-        "/v1/users",
-        "/v1/books",
-        "/v1/users/{user_id}",
-        "/v1/books/{book_id}"
-      ],
-      "admin": [
-        "/admin"
-      ],
-      "health": [
-        "/health"
-      ],
-      "status": [
-        "/status"
-      ],
-      "info": [
-        "/info"
-      ],
-      "docs": [
-        "/docs"
-      ],
-      "swagger": [
-        "/swagger"
-      ],
-      "openapi.json": [
-        "/openapi.json"
-      ],
-      "openapi.yaml": [
-        "/openapi.yaml"
-      ],
-      "metrics": [
-        "/metrics"
-      ],
-      "config": [
-        "/config"
-      ],
-      "settings": [
-        "/settings"
-      ],
-      "profile": [
-        "/profile"
-      ],
-      "search": [
-        "/search"
-      ],
-      "categories": [
-        "/categories"
-      ],
-      "orders": [
-        "/orders"
-      ],
-      "payments": [
-        "/payments"
-      ],
-      "notifications": [
-        "/notifications"
-      ],
-      "reviews": [
-        "/reviews"
-      ],
-      "cart": [
-        "/cart"
-      ],
-      "reports": [
-        "/reports"
       ]
     },
     "endpoint_relationships": {},
@@ -2380,11 +1120,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-08-22T18:43:47.037300",
+    "discovered_at": "2025-08-22T21:02:11.235280",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250822_184434",
-  "generated_at": "2025-08-22T18:44:34.751097",
+  "report_id": "vampi_discovery_20250822_210251",
+  "generated_at": "2025-08-22T21:02:51.945660",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
@@ -2398,10 +1138,10 @@
       "false_negatives": 1
     },
     "completeness": {
-      "overall_completeness": 92.45454545454544,
+      "overall_completeness": 93.25,
       "resource_coverage": 95.0,
       "method_coverage": 100.0,
-      "parameter_coverage": 75.0,
+      "parameter_coverage": 50.0,
       "schema_coverage": 85.0
     }
   }
