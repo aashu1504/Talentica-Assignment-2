@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-22 23:41:02
+**Generated:** 2025-08-27 14:53:06
 
 ## Configuration
 
