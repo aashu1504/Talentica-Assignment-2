@@ -1,6 +1,9 @@
 # VAmPI API Discovery Configuration
 # This file contains configurable paths, patterns, and settings for API discovery
 
+# Base URL for VAmPI API
+base_url: "http://localhost:5000"
+
 # Common API paths to scan (VAMPI-SPECIFIC ONLY)
 common_paths:
   - "/users/v1"

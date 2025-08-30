@@ -1,23 +1,344 @@
 {
-  "discovery_summary": {
-    "target_application": "VAmPI",
-    "base_url": "http://localhost:5000",
-    "total_endpoints": 12,
-    "authenticated_endpoints": 8,
-    "public_endpoints": 4,
-    "high_risk_endpoints": 3,
-    "medium_risk_endpoints": 0,
-    "low_risk_endpoints": 3,
-    "authentication_types": [],
-    "discovery_coverage": 100.0,
-    "parameter_coverage": 100.0,
-    "discovery_start_time": "2025-08-31T03:04:27.502553",
-    "discovery_end_time": "2025-08-31T03:04:27.502564",
-    "discovery_duration": 105.57477498054504,
-    "total_parameters": 172,
-    "unique_parameters": 16
-  },
-  "endpoints": [
+  "validation_timestamp": "2025-08-31T03:05:03.901213",
+  "base_url": "http://localhost:5000",
+  "total_endpoints": 12,
+  "accessible_endpoints": 12,
+  "inaccessible_endpoints": 0,
+  "accessibility_rate": 100.0,
+  "total_methods": 15,
+  "accessible_methods": 14,
+  "method_accessibility_rate": 93.33333333333333,
+  "average_response_time": 0.05,
+  "total_warnings": 0,
+  "total_errors": 0,
+  "validation_results": [
+    {
+      "endpoint_path": "/createdb",
+      "methods": [
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET"
+      ],
+      "response_times": {
+        "GET": 0.11138105392456055
+      },
+      "status_codes": {
+        "GET": 200
+      },
+      "response_sizes": {
+        "GET": 36
+      },
+      "authentication_status": {
+        "GET": "none_required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.11230993270874023,
+      "reason": "Accessible via: GET"
+    },
+    {
+      "endpoint_path": "/",
+      "methods": [
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET"
+      ],
+      "response_times": {
+        "GET": 0.03761410713195801
+      },
+      "status_codes": {
+        "GET": 200
+      },
+      "response_sizes": {
+        "GET": 271
+      },
+      "authentication_status": {
+        "GET": "none_required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.038043975830078125,
+      "reason": "Accessible via: GET"
+    },
+    {
+      "endpoint_path": "/users/v1",
+      "methods": [
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET"
+      ],
+      "response_times": {
+        "GET": 0.04560422897338867
+      },
+      "status_codes": {
+        "GET": 200
+      },
+      "response_sizes": {
+        "GET": 236
+      },
+      "authentication_status": {
+        "GET": "none_required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.04569673538208008,
+      "reason": "Accessible via: GET"
+    },
+    {
+      "endpoint_path": "/users/v1/_debug",
+      "methods": [
+        "GET",
+        "DELETE"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET",
+        "DELETE"
+      ],
+      "response_times": {
+        "GET": 0.05320382118225098,
+        "DELETE": 0.04864907264709473
+      },
+      "status_codes": {
+        "GET": 200,
+        "DELETE": 401
+      },
+      "response_sizes": {
+        "GET": 382,
+        "DELETE": 119
+      },
+      "authentication_status": {
+        "GET": "none_required",
+        "DELETE": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.10196590423583984,
+      "reason": "Accessible via: GET, DELETE"
+    },
+    {
+      "endpoint_path": "/users/v1/register",
+      "methods": [
+        "POST"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "POST"
+      ],
+      "response_times": {
+        "POST": 0.0395510196685791
+      },
+      "status_codes": {
+        "POST": 400
+      },
+      "response_sizes": {
+        "POST": 68
+      },
+      "authentication_status": {
+        "POST": "unknown"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.0396580696105957,
+      "reason": "Accessible via: POST"
+    },
+    {
+      "endpoint_path": "/users/v1/login",
+      "methods": [
+        "POST"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "POST"
+      ],
+      "response_times": {
+        "POST": 0.04769301414489746
+      },
+      "status_codes": {
+        "POST": 400
+      },
+      "response_sizes": {
+        "POST": 68
+      },
+      "authentication_status": {
+        "POST": "unknown"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.04784584045410156,
+      "reason": "Accessible via: POST"
+    },
+    {
+      "endpoint_path": "/me",
+      "methods": [
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET"
+      ],
+      "response_times": {
+        "GET": 0.043982744216918945
+      },
+      "status_codes": {
+        "GET": 401
+      },
+      "response_sizes": {
+        "GET": 119
+      },
+      "authentication_status": {
+        "GET": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.044069766998291016,
+      "reason": "Accessible via: GET"
+    },
+    {
+      "endpoint_path": "/users/v1/{user_id}",
+      "methods": [
+        "DELETE",
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "DELETE"
+      ],
+      "response_times": {
+        "DELETE": 0.04323005676269531
+      },
+      "status_codes": {
+        "DELETE": 401
+      },
+      "response_sizes": {
+        "DELETE": 119
+      },
+      "authentication_status": {
+        "DELETE": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.10006499290466309,
+      "reason": "Accessible via: DELETE"
+    },
+    {
+      "endpoint_path": "/users/v1/{user_id}/email",
+      "methods": [
+        "PUT"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "PUT"
+      ],
+      "response_times": {
+        "PUT": 0.05569314956665039
+      },
+      "status_codes": {
+        "PUT": 401
+      },
+      "response_sizes": {
+        "PUT": 119
+      },
+      "authentication_status": {
+        "PUT": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.05588388442993164,
+      "reason": "Accessible via: PUT"
+    },
+    {
+      "endpoint_path": "/users/v1/{user_id}/password",
+      "methods": [
+        "PUT"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "PUT"
+      ],
+      "response_times": {
+        "PUT": 0.04293084144592285
+      },
+      "status_codes": {
+        "PUT": 401
+      },
+      "response_sizes": {
+        "PUT": 119
+      },
+      "authentication_status": {
+        "PUT": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.042999982833862305,
+      "reason": "Accessible via: PUT"
+    },
+    {
+      "endpoint_path": "/books/v1",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET",
+        "POST"
+      ],
+      "response_times": {
+        "GET": 0.054299116134643555,
+        "POST": 0.03215312957763672
+      },
+      "status_codes": {
+        "GET": 200,
+        "POST": 401
+      },
+      "response_sizes": {
+        "GET": 229,
+        "POST": 119
+      },
+      "authentication_status": {
+        "GET": "none_required",
+        "POST": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.0865778923034668,
+      "reason": "Accessible via: GET, POST"
+    },
+    {
+      "endpoint_path": "/books/v1/{book_title}",
+      "methods": [
+        "GET"
+      ],
+      "is_accessible": true,
+      "accessible_methods": [
+        "GET"
+      ],
+      "response_times": {
+        "GET": 0.04022097587585449
+      },
+      "status_codes": {
+        "GET": 401
+      },
+      "response_sizes": {
+        "GET": 119
+      },
+      "authentication_status": {
+        "GET": "required"
+      },
+      "validation_errors": [],
+      "warnings": [],
+      "validation_duration": 0.04046297073364258,
+      "reason": "Accessible via: GET"
+    }
+  ],
+  "accessible_endpoints_data": [
     {
       "id": "DOC000",
       "path": "/createdb",
@@ -2936,126 +3257,5 @@
       "deprecated": false
     }
   ],
-  "authentication_mechanisms": [
-    {
-      "type": "Bearer",
-      "name": "Bearer Authentication",
-      "description": "Standard Bearer authentication mechanism",
-      "config": {
-        "token_location": "header",
-        "header_name": "Authorization",
-        "endpoints": [
-          "/users/v1",
-          "/users/v1/_debug",
-          "/me",
-          "/users/v1/{user_id}",
-          "/users/v1/{user_id}/email",
-          "/users/v1/{user_id}/password",
-          "/books/v1",
-          "/books/v1/{book_title}"
-        ]
-      },
-      "security_strength": "high",
-      "vulnerabilities": [
-        "Token validation",
-        "Secure transmission",
-        "Token replay"
-      ],
-      "implementation_details": "Used by 8 endpoints. Token location: header, Header: Authorization",
-      "documentation_url": null,
-      "discovered_at": "2025-08-31T03:08:25.925965",
-      "endpoints_using": [
-        "DOC002",
-        "DOC003",
-        "DOC006",
-        "DOC007",
-        "DOC009",
-        "DOC010",
-        "DOC011",
-        "DOC013"
-      ]
-    }
-  ],
-  "api_structure": {
-    "base_url": "http://localhost:5000",
-    "version": "v1",
-    "title": "VAmPI API",
-    "description": "VAmPI API discovered through endpoint scanning",
-    "base_paths": [
-      "/createdb",
-      "/",
-      "/users/v1",
-      "/me",
-      "/books/v1"
-    ],
-    "versions": [
-      "v1"
-    ],
-    "common_patterns": [
-      "REST",
-      "JSON_responses",
-      "Authentication_required",
-      "Parameterized_endpoints",
-      "CRUD_operations"
-    ],
-    "schemes": [
-      "http",
-      "https"
-    ],
-    "host": "localhost",
-    "port": 5000,
-    "endpoint_groups": {
-      "createdb": [
-        "/createdb"
-      ],
-      "": [
-        "/"
-      ],
-      "users": [
-        "/users/v1",
-        "/users/v1/_debug",
-        "/users/v1/register",
-        "/users/v1/login",
-        "/users/v1/{user_id}",
-        "/users/v1/{user_id}/email",
-        "/users/v1/{user_id}/password"
-      ],
-      "me": [
-        "/me"
-      ],
-      "books": [
-        "/books/v1",
-        "/books/v1/{book_title}"
-      ]
-    },
-    "endpoint_relationships": {},
-    "api_compliance": {},
-    "contact_info": null,
-    "license_info": null,
-    "external_docs": null,
-    "discovered_at": "2025-08-31T03:04:27.492613",
-    "discovery_method": "endpoint_scanning"
-  },
-  "report_id": "vampi_discovery_20250831_030825",
-  "generated_at": "2025-08-31T03:08:25.926130",
-  "generator_version": "1.0.0",
-  "discovery_config": {},
-  "tags": [],
-  "notes": "Technical Analysis: Generated from discovery data with validation metrics",
-  "validation_metrics": {
-    "accuracy": {
-      "overall_accuracy": 95.0,
-      "method_accuracy": 100.0,
-      "authentication_accuracy": 90.0,
-      "false_positives": 2,
-      "false_negatives": 1
-    },
-    "completeness": {
-      "overall_completeness": 100.0,
-      "resource_coverage": 95.0,
-      "method_coverage": 100.0,
-      "parameter_coverage": 100.0,
-      "schema_coverage": 85.0
-    }
-  }
+  "validation_status": "SUCCESS"
 }

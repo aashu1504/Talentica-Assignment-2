@@ -67,16 +67,23 @@ class SecurityTestingTool(BaseTool):
             if not os.path.exists("temp_discovery_results.json"):
                 return "No discovery results found. Please run API discovery first."
             
-            # Load discovered endpoints
-            with open("temp_discovery_results.json", 'r') as f:
-                discovery_data = json.load(f)
+            # ENHANCED: Validate endpoints before security testing
+            print("🔍 Validating endpoints for accessibility before security testing...")
+            validation_result = self._validate_endpoints_for_testing()
             
-            # Extract endpoints from the nested structure
-            endpoints = discovery_data.get('discovery_data', {}).get('endpoints', [])
-            if not endpoints:
-                return "No endpoints found for security testing. Please run API discovery first."
+            if not validation_result or validation_result.get('validation_status') != 'SUCCESS':
+                return f"❌ Endpoint validation failed: {validation_result.get('error_message', 'Unknown error')}"
             
-            print(f"📊 Found {len(endpoints)} endpoints for security testing")
+            # Use validated endpoints instead of raw discovery results
+            accessible_endpoints = validation_result.get('accessible_endpoints_data', [])
+            if not accessible_endpoints:
+                return "❌ No endpoints are accessible for security testing after validation"
+            
+            print(f"✅ Endpoint validation completed: {len(accessible_endpoints)}/{validation_result.get('total_endpoints')} endpoints accessible")
+            print(f"📊 Found {len(accessible_endpoints)} validated endpoints for security testing")
+            
+            # Continue with validated endpoints
+            endpoints = accessible_endpoints
             
             # Initialize security testing engine
             security_engine = SecurityTestingEngine(self.base_url)
@@ -175,6 +182,79 @@ class SecurityTestingTool(BaseTool):
             
         except Exception as e:
             return f"Security testing failed: {str(e)}"
+    
+    def _validate_endpoints_for_testing(self) -> Dict[str, Any]:
+        """Validate discovered endpoints for accessibility before security testing"""
+        try:
+            # Import the endpoint validator
+            from endpoint_validator import EndpointValidator
+            
+            # Initialize validator
+            validator = EndpointValidator(self.base_url, timeout=30)
+            
+            # Run validation asynchronously
+            async def run_validation():
+                return await validator.validate_endpoints_for_testing()
+            
+            # Execute validation
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                validation_result = loop.run_until_complete(run_validation())
+                loop.close()
+                return validation_result
+            except Exception as e:
+                loop.close()
+                print(f"❌ Validation failed: {e}")
+                return None
+                
+        except ImportError:
+            print("⚠️  Endpoint validator not available, falling back to basic validation")
+            return self._basic_endpoint_validation()
+        except Exception as e:
+            print(f"❌ Validation failed: {e}")
+            return None
+    
+    def _basic_endpoint_validation(self) -> Dict[str, Any]:
+        """Basic endpoint validation fallback"""
+        try:
+            # Load discovery results
+            with open("temp_discovery_results.json", 'r') as f:
+                discovery_data = json.load(f)
+            
+            endpoints = discovery_data.get('discovery_data', {}).get('endpoints', [])
+            if not endpoints:
+                return {
+                    "validation_status": "FAILED",
+                    "error_message": "No endpoints found in discovery data",
+                    "total_endpoints": 0,
+                    "accessible_endpoints": 0
+                }
+            
+            # Basic validation - just check if endpoints have required fields
+            valid_endpoints = []
+            for endpoint in endpoints:
+                if (endpoint.get('path') and 
+                    endpoint.get('methods') and 
+                    isinstance(endpoint.get('methods'), list) and
+                    len(endpoint.get('methods', [])) > 0):
+                    valid_endpoints.append(endpoint)
+            
+            return {
+                "validation_status": "SUCCESS" if valid_endpoints else "FAILED",
+                "total_endpoints": len(endpoints),
+                "accessible_endpoints": len(valid_endpoints),
+                "accessible_endpoints_data": valid_endpoints,
+                "error_message": None if valid_endpoints else "No valid endpoints found"
+            }
+            
+        except Exception as e:
+            return {
+                "validation_status": "FAILED",
+                "error_message": f"Basic validation failed: {str(e)}",
+                "total_endpoints": 0,
+                "accessible_endpoints": 0
+            }
     
     def _generate_security_assessment_report(self, endpoint_reports) -> SecurityAssessmentReport:
         """Generate comprehensive security assessment report"""

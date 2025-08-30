@@ -90,7 +90,7 @@ class IntegratedSecurityDemo:
         try:
             # Initialize discovery engine
             config = DiscoveryConfig(
-                vampi_url=self.base_url,
+                base_url=self.base_url,
                 timeout=30,
                 rate_limit_delay=1.0,
                 max_retries=3,
