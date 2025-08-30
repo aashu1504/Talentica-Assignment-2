@@ -17,6 +17,7 @@ The Security Testing Module provides comprehensive OWASP API security testing ca
 - **Risk Categorization**: Critical, High, Medium, Low, and Info severity levels
 - **Detailed Reporting**: Individual endpoint security reports with actionable recommendations
 - **Proof of Concept**: Working exploit demonstrations for identified vulnerabilities
+- **Exploit Generation**: Automated creation of working proof-of-concept exploits for all vulnerability types including SQL, NoSQL, XSS, Authentication, and Authorization vulnerabilities
 
 ### 🚀 CrewAI Integration
 - **Intelligent Agent**: AI-powered security testing specialist using CrewAI framework
@@ -76,6 +77,7 @@ Core engine that implements the actual security testing logic and vulnerability 
 
 **Testing Capabilities:**
 - SQL Injection detection using malicious payloads
+- NoSQL Injection detection with JSON payloads
 - XSS vulnerability testing with script injection
 - Authentication bypass testing
 - JWT token validation testing
@@ -93,8 +95,8 @@ CrewAI agent that orchestrates the security testing workflow and generates compr
 - CVSS scoring and risk assessment
 - Actionable recommendations
 
-### 4. Integrated Agent (`integrated_agent.py`)
-Combines API discovery with security testing to create a complete end-to-end security assessment platform.
+### 4. Integrated Workflow (Built into test_crew_agents.py)
+The complete integrated workflow is now built into the main test_crew_agents.py file, combining API discovery with security testing to create a complete end-to-end security assessment platform.
 
 **Workflow:**
 1. **Phase 1**: API Discovery using existing framework
@@ -142,14 +144,10 @@ print(f"Assessment result: {result}")
 ### Complete Integrated Assessment
 
 ```python
-from integrated_agent import IntegratedVAmPIAgent
+# The integrated workflow is now built into test_crew_agents.py
+# Run the complete assessment:
 
-# Initialize integrated agent
-agent = IntegratedVAmPIAgent("http://localhost:5000")
-
-# Run complete assessment (discovery + security testing)
-result = agent.run_integrated_assessment()
-print(f"Integrated assessment result: {result}")
+python src/test_crew_agents.py
 ```
 
 ## Demo Script
@@ -189,9 +187,9 @@ The demo script will:
 ## Security Testing Categories
 
 ### 1. Injection Vulnerabilities
-- **SQL Injection**: Database query manipulation
+- **SQL Injection**: Database query manipulation with multiple payload types
+- **NoSQL Injection**: Document database attacks (MongoDB, etc.) with JSON payloads
 - **XSS**: Cross-site scripting attacks
-- **NoSQL Injection**: Document database attacks
 - **Command Injection**: System command execution
 
 ### 2. Authentication Vulnerabilities
@@ -241,7 +239,10 @@ test_suite = SecurityTestSuite(
     injection_payloads=[
         "' OR '1'='1",
         "<script>alert('XSS')</script>",
-        "admin'--"
+        "admin'--",
+        '{"$gt": ""}',
+        '{"$ne": null}',
+        '{"$where": "1==1"}'
     ]
 )
 ```

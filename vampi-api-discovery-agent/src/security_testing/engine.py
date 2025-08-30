@@ -160,6 +160,23 @@ class SecurityTestingEngine:
                     )
                     tests.append(test_result)
         
+        # NoSQL Injection testing
+        if method in ['GET', 'POST'] and parameters.get('query_params'):
+            for param in parameters['query_params']:
+                nosql_payloads = [
+                    '{"$gt": ""}',
+                    '{"$ne": null}',
+                    '{"$where": "1==1"}',
+                    '{"$regex": ".*"}',
+                    '{"$exists": true}',
+                    '{"$in": ["admin", "user"]}'
+                ]
+                for payload in nosql_payloads:
+                    test_result = await self._test_nosql_injection(
+                        endpoint_path, method, param, payload
+                    )
+                    tests.append(test_result)
+        
         # XSS testing for body parameters
         if method in ['POST', 'PUT'] and parameters.get('body_params'):
             for param in parameters['body_params']:
@@ -231,6 +248,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("SQL Injection", payload, endpoint_path, method, param) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -249,33 +267,85 @@ class SecurityTestingEngine:
                 test_duration=execution_time
             )
     
-    def _detect_sql_injection(self, response: requests.Response) -> bool:
-        """Detect SQL injection vulnerability from response"""
-        response_text = response.text.lower()
+    async def _test_nosql_injection(self, endpoint_path: str, method: str, 
+                                  param: str, payload: str) -> SecurityTest:
+        """Test for NoSQL injection vulnerability"""
+        start_time = time.time()
         
-        # Common SQL error messages
-        sql_error_patterns = [
-            "sql syntax",
-            "mysql error",
-            "oracle error",
-            "postgresql error",
-            "sqlite error",
-            "syntax error",
-            "unclosed quotation mark",
-            "division by zero",
-            "invalid column name",
-            "table doesn't exist"
-        ]
-        
-        for pattern in sql_error_patterns:
-            if pattern in response_text:
-                return True
-        
-        # Check for unusual response patterns
-        if response.status_code == 500 and len(response_text) > 100:
-            return True
-        
-        return False
+        try:
+            if method == 'GET':
+                url = f"{self.base_url}{endpoint_path}"
+                params = {param: payload}
+                response = self.session.get(url, params=params, timeout=self.timeout)
+            else:
+                url = f"{self.base_url}{endpoint_path}"
+                data = {param: payload}
+                response = self.session.post(url, json=data, timeout=self.timeout)
+            
+            # Analyze response for NoSQL injection indicators
+            vulnerability_found = self._detect_nosql_injection(response)
+            
+            if vulnerability_found:
+                cvss_metrics = CVSSMetrics(
+                    attack_vector=AttackVector.NETWORK,
+                    attack_complexity=AttackComplexity.LOW,
+                    privileges_required=PrivilegesRequired.NONE,
+                    user_interaction=UserInteraction.NONE,
+                    scope=Scope.CHANGED,
+                    confidentiality_impact=Impact.HIGH,
+                    integrity_impact=Impact.HIGH,
+                    availability_impact=Impact.HIGH
+                )
+                
+                severity = VulnerabilitySeverity.CRITICAL
+                risk_score = 9.0
+                recommendations = [
+                    "Implement input validation and sanitization",
+                    "Use parameterized queries or ORM methods",
+                    "Apply proper input length restrictions",
+                    "Implement WAF rules for NoSQL injection detection",
+                    "Use MongoDB/MongoDB-like database security best practices"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name=f"NoSQL Injection Test - {param}",
+                test_category=OWASPCategory.INJECTION,
+                test_description=f"Testing {param} parameter for NoSQL injection using payload: {payload}",
+                test_method=f"HTTP {method} with NoSQL payload",
+                payload_used=payload,
+                request_details={"method": method, "parameter": param, "payload": payload},
+                response_details={"status_code": response.status_code, "response_length": len(response.text)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="NoSQL injection vulnerability detected" if vulnerability_found else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("NoSQL Injection", payload, endpoint_path, method, param) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name=f"NoSQL Injection Test - {param}",
+                test_category=OWASPCategory.INJECTION,
+                test_description=f"Testing {param} parameter for NoSQL injection",
+                test_method=f"HTTP {method} with NoSQL payload",
+                payload_used=payload,
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
     
     async def _test_xss_injection(self, endpoint_path: str, method: str,
                                 param: str, payload: str) -> SecurityTest:
@@ -332,6 +402,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("XSS", payload, endpoint_path, method, param) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -423,6 +494,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("Authentication Bypass", "", endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -501,6 +573,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("JWT Vulnerability", fake_token, endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -597,6 +670,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("IDOR", "", endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -690,6 +764,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("Information Disclosure", "", endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -772,6 +847,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
+                proof_of_concept=self._generate_proof_of_concept("Missing Security Headers", f"Missing: {', '.join(missing_headers)}", endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -838,4 +914,279 @@ class SecurityTestingEngine:
             if rec not in unique_recommendations:
                 unique_recommendations.append(rec)
         
-        return unique_recommendations[:10]  # Limit to top 10 recommendations 
+        return unique_recommendations[:10]  # Limit to top 10 recommendations
+    
+    def _generate_proof_of_concept(self, vulnerability_type: str, payload: str, 
+                                  endpoint_path: str, method: str, param: str = None) -> str:
+        """Generate working proof-of-concept exploit for discovered vulnerabilities"""
+        
+        if vulnerability_type == "SQL Injection":
+            poc = f"""
+# SQL Injection Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Parameter: {param}
+# Payload: {payload}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+payload = "{payload}"
+
+if "{method}" == "GET":
+    params = {{"{param}": payload}}
+    response = requests.get(url, params=params)
+else:
+    data = {{"{param}": payload}}
+    response = requests.post(url, json=data)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Check for SQL injection indicators
+if any(indicator in response.text.lower() for indicator in [
+    "sql syntax", "mysql error", "oracle error", "postgresql error", 
+    "sqlite error", "syntax error", "unclosed quotation mark"
+]):
+    print("✅ SQL Injection vulnerability confirmed!")
+else:
+    print("❌ No SQL injection vulnerability detected")
+"""
+        
+        elif vulnerability_type == "NoSQL Injection":
+            poc = f"""
+# NoSQL Injection Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Parameter: {param}
+# Payload: {payload}
+
+import requests
+import json
+
+url = "{self.base_url}{endpoint_path}"
+payload = {payload}
+
+if "{method}" == "GET":
+    params = {{"{param}": payload}}
+    response = requests.get(url, params=params)
+else:
+    data = {{"{param}": payload}}
+    response = requests.post(url, json=data)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Check for NoSQL injection indicators
+if any(indicator in response.text.lower() for indicator in [
+    "mongodb error", "bson error", "json parse error", "invalid json",
+    "unexpected token", "syntax error", "parse error"
+]):
+    print("✅ NoSQL Injection vulnerability confirmed!")
+else:
+    print("❌ No NoSQL injection vulnerability detected")
+"""
+        
+        elif vulnerability_type == "XSS":
+            poc = f"""
+# XSS Injection Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Parameter: {param}
+# Payload: {payload}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+payload = "{payload}"
+
+data = {{"{param}": payload}}
+response = requests.post(url, json=data)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Check if XSS payload is reflected
+if payload in response.text:
+    print("✅ XSS vulnerability confirmed!")
+    print("Payload is reflected in response - potential XSS attack vector")
+else:
+    print("❌ No XSS vulnerability detected")
+"""
+        
+        elif vulnerability_type == "Authentication Bypass":
+            poc = f"""
+# Authentication Bypass Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+
+# Test without authentication
+if "{method}" == "GET":
+    response = requests.get(url)
+else:
+    response = requests.post(url)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Check if access was granted without authentication
+if response.status_code not in [401, 403]:
+    print("✅ Authentication bypass vulnerability confirmed!")
+    print("Endpoint accessible without authentication")
+else:
+    print("❌ Authentication properly enforced")
+"""
+        
+        elif vulnerability_type == "JWT Vulnerability":
+            poc = f"""
+# JWT Token Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+
+# Test with fake JWT token
+fake_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+headers = {{"Authorization": f"Bearer {{fake_token}}"}}
+
+if "{method}" == "GET":
+    response = requests.get(url, headers=headers)
+else:
+    response = requests.post(url, headers=headers)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Check if fake token was accepted
+if response.status_code not in [401, 403]:
+    print("✅ JWT validation vulnerability confirmed!")
+    print("Fake JWT token was accepted")
+else:
+    print("❌ JWT validation properly enforced")
+"""
+        
+        elif vulnerability_type == "IDOR":
+            poc = f"""
+# IDOR Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+
+import requests
+
+base_url = "{self.base_url}"
+endpoint = "{endpoint_path}"
+
+# Test with different user IDs
+test_ids = ["1", "2", "999", "admin", "user123"]
+
+for test_id in test_ids:
+    # Replace {{id}} placeholder in path
+    test_path = endpoint.replace("{{id}}", test_id)
+    url = base_url + test_path
+    
+    if "{method}" == "GET":
+        response = requests.get(url)
+    else:
+        response = requests.post(url)
+    
+    print(f"Testing ID {{test_id}}: {{response.status_code}}")
+    
+    if response.status_code == 200 and len(response.text) > 0:
+        print(f"✅ IDOR vulnerability confirmed with ID {{test_id}}!")
+        print(f"Response: {{response.text[:200]}}...")
+        break
+else:
+    print("❌ No IDOR vulnerability detected")
+"""
+        
+        else:
+            poc = f"""
+# {vulnerability_type} Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+
+# Test the vulnerability
+if "{method}" == "GET":
+    response = requests.get(url)
+else:
+    response = requests.post(url)
+
+print(f"Status Code: {{response.status_code}}")
+print(f"Response: {{response.text}}")
+
+# Manual analysis required for this vulnerability type
+print("Manual analysis required for {vulnerability_type}")
+"""
+        
+        return poc.strip()
+    
+    def _detect_sql_injection(self, response: requests.Response) -> bool:
+        """Detect SQL injection vulnerability from response"""
+        response_text = response.text.lower()
+        
+        # Common SQL error messages
+        sql_error_patterns = [
+            "sql syntax",
+            "mysql error",
+            "oracle error",
+            "postgresql error",
+            "sqlite error",
+            "syntax error",
+            "unclosed quotation mark",
+            "division by zero",
+            "invalid column name",
+            "table doesn't exist"
+        ]
+        
+        for pattern in sql_error_patterns:
+            if pattern in response_text:
+                return True
+        
+        # Check for unusual response patterns
+        if response.status_code == 500 and len(response_text) > 100:
+            return True
+        
+        return False
+    
+    def _detect_nosql_injection(self, response: requests.Response) -> bool:
+        """Detect NoSQL injection vulnerability from response"""
+        response_text = response.text.lower()
+        
+        # Common NoSQL error messages and indicators
+        nosql_error_patterns = [
+            "mongodb error",
+            "bson error",
+            "json parse error",
+            "invalid json",
+            "unexpected token",
+            "syntax error",
+            "parse error",
+            "invalid query",
+            "malformed query"
+        ]
+        
+        for pattern in nosql_error_patterns:
+            if pattern in response_text:
+                return True
+        
+        # Check for unusual response patterns that might indicate NoSQL injection
+        if response.status_code == 500 and len(response_text) > 100:
+            return True
+        
+        # Check if NoSQL operators are reflected in response
+        nosql_operators = ["$gt", "$ne", "$where", "$regex", "$exists", "$in"]
+        for operator in nosql_operators:
+            if operator in response_text:
+                return True
+        
+        return False 

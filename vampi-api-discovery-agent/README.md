@@ -25,9 +25,11 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 - **✅ False Positive Filtering**: Advanced validation to eliminate false positives
 - **✅ Comprehensive Logging**: Datewise logging system with performance tracking and error monitoring
 - **🔒 OWASP API Security Testing**: Comprehensive vulnerability testing including injection, authentication, and authorization
+- **💉 Injection Testing**: SQL, XSS, and NoSQL injection vulnerability detection with multiple payload types and comprehensive testing
 - **📊 CVSS v3.1 Scoring**: Industry-standard vulnerability risk assessment
 - **🚀 Integrated Security Assessment**: End-to-end discovery + security testing workflow
 - **🎯 Professional Security Reports**: Executive summaries with actionable remediation guidance
+- **💣 Exploit Generation**: Working proof-of-concept exploits for all discovered vulnerabilities with automated generation
 
 ## Recent Improvements (v2.0)
 
@@ -78,7 +80,7 @@ The project now includes a **Comprehensive Security Testing Module** that implem
 ### **Security Testing Workflow**
 
 ```python
-from integrated_agent import IntegratedVAmPIAgent
+# Integrated agent functionality is now built into test_crew_agents.py
 
 # Initialize integrated agent (discovery + security testing)
 agent = IntegratedVAmPIAgent("http://localhost:5000")
