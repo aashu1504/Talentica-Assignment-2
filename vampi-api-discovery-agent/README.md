@@ -24,6 +24,10 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 - **✅ Pluggable Risk Assessment**: Modular and extensible risk assessment architecture
 - **✅ False Positive Filtering**: Advanced validation to eliminate false positives
 - **✅ Comprehensive Logging**: Datewise logging system with performance tracking and error monitoring
+- **🔒 OWASP API Security Testing**: Comprehensive vulnerability testing including injection, authentication, and authorization
+- **📊 CVSS v3.1 Scoring**: Industry-standard vulnerability risk assessment
+- **🚀 Integrated Security Assessment**: End-to-end discovery + security testing workflow
+- **🎯 Professional Security Reports**: Executive summaries with actionable remediation guidance
 
 ## Recent Improvements (v2.0)
 
@@ -57,6 +61,41 @@ The VAmPI API Discovery Agent is a sophisticated tool designed to automatically 
 - **Run History**: Complete audit trail of all agent operations
 - **Analysis Tools**: Built-in log analysis and reporting capabilities
 
+## Security Testing & OWASP Integration
+
+The project now includes a **Comprehensive Security Testing Module** that implements OWASP API Top 10 security testing capabilities. This enhancement transforms the discovery agent into a complete end-to-end security assessment platform.
+
+### **Key Security Testing Capabilities**
+
+- **🔒 OWASP API Top 10 Coverage**: Complete testing for all major API security risks
+- **💉 Injection Testing**: SQL, XSS, and NoSQL injection vulnerability detection
+- **🔐 Authentication Testing**: JWT validation, authentication bypass, and session security
+- **🚪 Authorization Testing**: IDOR, privilege escalation, and access control validation
+- **⚙️ Security Misconfiguration**: Missing headers, information disclosure, and configuration issues
+- **📊 CVSS v3.1 Scoring**: Industry-standard vulnerability risk assessment
+- **🎯 Professional Reporting**: Executive summaries with prioritized remediation guidance
+
+### **Security Testing Workflow**
+
+```python
+from integrated_agent import IntegratedVAmPIAgent
+
+# Initialize integrated agent (discovery + security testing)
+agent = IntegratedVAmPIAgent("http://localhost:5000")
+
+# Run complete end-to-end security assessment
+result = agent.run_integrated_assessment()
+```
+
+### **Generated Security Reports**
+
+- **Security Assessment Report**: Detailed vulnerability findings with CVSS scores
+- **Integrated Report**: Combined discovery and security findings
+- **Executive Summary**: Business-focused risk analysis and recommendations
+- **Remediation Priority**: Actionable guidance for security improvements
+
+For detailed security testing documentation, see [src/security_testing/README.md](src/security_testing/README.md).
+
 ## Generic API Discovery
 
 The project includes a **Generic API Discovery Engine** that can work with any REST API, not just VAmPI. This enhancement makes the discovery agent truly universal and reusable across different projects.
@@ -89,6 +128,34 @@ async with GenericAPIDiscoveryEngine(config) as engine:
 ```
 
 For detailed documentation, see [docs/GENERIC_DISCOVERY.md](docs/GENERIC_DISCOVERY.md).
+
+## Quick Start & Demo
+
+### **Run the Integrated Security Assessment Demo**
+
+```bash
+# Start VAmPI API (in a separate terminal)
+cd vampi-local
+npm install
+npm start
+
+# Run the comprehensive demo
+python scripts/demo_integrated_security.py
+```
+
+The demo script will:
+1. ✅ Check VAmPI API status
+2. 🔒 Demonstrate security testing components
+3. 🚀 Run complete integrated assessment
+4. 📊 Generate comprehensive security reports
+5. 📖 Provide usage instructions
+
+### **Generated Reports**
+
+After running the demo, you'll have:
+- `discovered_endpoints.json` - API endpoint discovery results
+- `security_assessment_report.json` - Detailed security findings
+- `integrated_security_assessment.json` - Combined discovery and security report
 
 ## Project Structure
 
@@ -433,5 +500,5 @@ For issues and questions:
 ---
 
 *VAmPI API Discovery Agent v2.0*
-*Built with Python, CrewAI, and security best practices*
+*Built with Python, CrewAI, and security best practices* 
 *Achieving 100% discovery accuracy with zero false positives* 🚀 

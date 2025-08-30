@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 100.0,
-      "discovery_start_time": "2025-08-27 14:52:42.680417",
-      "discovery_end_time": "2025-08-27 14:52:42.680428",
-      "discovery_duration": 109.89671492576599,
+      "discovery_start_time": "2025-08-31 01:30:57.791724",
+      "discovery_end_time": "2025-08-31 01:30:57.791736",
+      "discovery_duration": 107.4582839012146,
       "total_parameters": 172,
       "unique_parameters": 16
     },
@@ -2947,7 +2947,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-27 14:52:42.672287",
+        "discovered_at": "2025-08-31 01:30:57.779649",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -2964,7 +2964,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-27 14:52:42.672345",
+        "discovered_at": "2025-08-31 01:30:57.779781",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -4829,8 +4829,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>}",
+            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           },
           "books": {
             "endpoints": [
@@ -5303,8 +5303,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>}",
+            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           }
         },
         "dependencies": {
@@ -5536,10 +5536,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-27 14:52:42.599917",
+      "discovered_at": "2025-08-31 01:30:57.775383",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-27 14:52:42.749596",
+  "discovery_timestamp": "2025-08-31 01:30:57.881264",
   "total_endpoints": 12
 }

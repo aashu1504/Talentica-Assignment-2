@@ -645,11 +645,11 @@ class TechnicalWriterTool(BaseTool):
             
             # Create DiscoveryReport
             report = DiscoveryReport(
-                          endpoints=endpoints,
-                          discovery_summary=summary,
+                endpoints=endpoints,
+                discovery_summary=summary,
                           authentication_mechanisms=auth_mechanisms,
-                          api_structure=api_structure,
-                          report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                api_structure=api_structure,
+                report_id=f"vampi_discovery_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
                           notes=f"Technical Analysis: Generated from discovery data with validation metrics",
                           validation_metrics={
                               "accuracy": {
@@ -667,7 +667,7 @@ class TechnicalWriterTool(BaseTool):
                                   "schema_coverage": 85.0
                               }
                           }
-                      )
+            )
             
             return report
             
