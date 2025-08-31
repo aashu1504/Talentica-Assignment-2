@@ -22,6 +22,9 @@ from .models import (
     PrivilegesRequired, UserInteraction, Scope, Impact
 )
 
+# Import our new SQL analyzer
+from .sql_analyzer import SQLAnalyzer, DatabaseType, analyze_sql_payload, fingerprint_database
+
 
 class SecurityTestingEngine:
     """Main engine for performing API security testing"""
@@ -190,7 +193,7 @@ class SecurityTestingEngine:
     
     async def _test_sql_injection(self, endpoint_path: str, method: str, 
                                 param: str, payload: str) -> SecurityTest:
-        """Test for SQL injection vulnerability"""
+        """Test for SQL injection vulnerability using sqlparse analysis"""
         start_time = time.time()
         
         try:
@@ -203,10 +206,34 @@ class SecurityTestingEngine:
                 data = {param: payload}
                 response = self.session.post(url, json=data, timeout=self.timeout)
             
+            # Enhanced SQL analysis using sqlparse
+            sql_analyzer = SQLAnalyzer()
+            payload_analysis = sql_analyzer.analyze_sql_payload(payload)
+            db_fingerprint = sql_analyzer.fingerprint_database_from_error(response.text)
+            
             # Analyze response for SQL injection indicators
             vulnerability_found = self._detect_sql_injection(response)
             
             if vulnerability_found:
+                # Enhanced recommendations based on database type
+                recommendations = [
+                    "Implement input validation and sanitization",
+                    "Use parameterized queries or prepared statements",
+                    "Apply proper input length restrictions",
+                    "Implement WAF rules for SQL injection detection"
+                ]
+                
+                # Add database-specific recommendations
+                if db_fingerprint.database_type != DatabaseType.UNKNOWN:
+                    recommendations.append(f"Database detected: {db_fingerprint.database_type.value}")
+                    if db_fingerprint.specific_features:
+                        recommendations.append(f"Features: {', '.join(db_fingerprint.specific_features)}")
+                
+                # Add payload analysis insights
+                if payload_analysis.is_valid_sql:
+                    recommendations.append(f"Payload SQL type: {payload_analysis.sql_type}")
+                    recommendations.append(f"Payload vulnerability level: {payload_analysis.vulnerability_level}")
+                
                 cvss_metrics = CVSSMetrics(
                     attack_vector=AttackVector.NETWORK,
                     attack_complexity=AttackComplexity.LOW,
@@ -220,12 +247,6 @@ class SecurityTestingEngine:
                 
                 severity = VulnerabilitySeverity.CRITICAL
                 risk_score = 9.0
-                recommendations = [
-                    "Implement input validation and sanitization",
-                    "Use parameterized queries or prepared statements",
-                    "Apply proper input length restrictions",
-                    "Implement WAF rules for SQL injection detection"
-                ]
             else:
                 cvss_metrics = None
                 severity = VulnerabilitySeverity.INFO
@@ -234,10 +255,17 @@ class SecurityTestingEngine:
             
             execution_time = time.time() - start_time
             
+            # Enhanced test description with sqlparse analysis
+            test_description = f"Testing {param} parameter for SQL injection using payload: {payload}"
+            if payload_analysis.is_valid_sql:
+                test_description += f" (SQL Type: {payload_analysis.sql_type}, Level: {payload_analysis.vulnerability_level})"
+            if db_fingerprint.database_type != DatabaseType.UNKNOWN:
+                test_description += f" (DB: {db_fingerprint.database_type.value}, Confidence: {db_fingerprint.confidence_score:.2f})"
+            
             return SecurityTest(
                 test_name=f"SQL Injection Test - {param}",
                 test_category=OWASPCategory.INJECTION,
-                test_description=f"Testing {param} parameter for SQL injection using payload: {payload}",
+                test_description=test_description,
                 test_method=f"HTTP {method} with malicious payload",
                 payload_used=payload,
                 request_details={"method": method, "parameter": param, "payload": payload},
@@ -921,12 +949,17 @@ class SecurityTestingEngine:
         """Generate working proof-of-concept exploit for discovered vulnerabilities"""
         
         if vulnerability_type == "SQL Injection":
+            # Enhanced proof-of-concept with sqlparse analysis
             poc = f"""
 # SQL Injection Proof of Concept
 # Target: {endpoint_path}
 # Method: {method}
 # Parameter: {param}
 # Payload: {payload}
+
+# Enhanced SQL Analysis using sqlparse:
+# This proof-of-concept demonstrates advanced SQL injection testing
+# with intelligent payload analysis and database fingerprinting
 
 import requests
 
@@ -943,14 +976,53 @@ else:
 print(f"Status Code: {{response.status_code}}")
 print(f"Response: {{response.text}}")
 
-# Check for SQL injection indicators
-if any(indicator in response.text.lower() for indicator in [
-    "sql syntax", "mysql error", "oracle error", "postgresql error", 
-    "sqlite error", "syntax error", "unclosed quotation mark"
-]):
-    print("✅ SQL Injection vulnerability confirmed!")
-else:
-    print("❌ No SQL injection vulnerability detected")
+# Enhanced SQL injection detection using sqlparse analysis
+try:
+    from sql_analyzer import SQLAnalyzer
+    
+    analyzer = SQLAnalyzer()
+    
+    # Analyze the payload structure
+    payload_analysis = analyzer.analyze_sql_payload(payload)
+    print(f"\\n🔍 SQL Payload Analysis:")
+    print(f"  - Valid SQL: {{payload_analysis.is_valid_sql}}")
+    print(f"  - SQL Type: {{payload_analysis.sql_type or 'Unknown'}}")
+    print(f"  - Vulnerability Level: {{payload_analysis.vulnerability_level}}")
+    print(f"  - Confidence Score: {{payload_analysis.confidence_score:.2f}}")
+    
+    # Database fingerprinting from error response
+    db_fingerprint = analyzer.fingerprint_database_from_error(response.text)
+    if db_fingerprint.database_type.value != "unknown":
+        print(f"\\n🗄️ Database Fingerprinting:")
+        print(f"  - Database Type: {{db_fingerprint.database_type.value}}")
+        print(f"  - Confidence: {{db_fingerprint.confidence_score:.2f}}")
+        if db_fingerprint.specific_features:
+            print(f"  - Features: {{', '.join(db_fingerprint.specific_features)}}")
+        if db_fingerprint.version_hints:
+            print(f"  - Version Hints: {{', '.join(db_fingerprint.version_hints)}}")
+    
+    # Generate database-specific payloads for further testing
+    if db_fingerprint.database_type.value != "unknown":
+        db_specific_payloads = analyzer.generate_database_specific_payloads(db_fingerprint.database_type)
+        print(f"\\n🚀 Database-Specific Payloads for {{db_fingerprint.database_type.value}}:")
+        for i, db_payload in enumerate(db_specific_payloads[:5], 1):
+            print(f"  {{i}}. {{db_payload}}")
+    
+    # Format payload for better readability
+    formatted_payload = analyzer.format_sql_payload(payload)
+    print(f"\\n📝 Formatted SQL Payload:")
+    print(formatted_payload)
+    
+except ImportError:
+    print("\\n⚠️ sqlparse not available - using basic detection")
+    # Fallback to basic detection
+    if any(indicator in response.text.lower() for indicator in [
+        "sql syntax", "mysql error", "oracle error", "postgresql error", 
+        "sqlite error", "syntax error", "unclosed quotation mark"
+    ]):
+        print("✅ SQL Injection vulnerability confirmed!")
+    else:
+        print("❌ No SQL injection vulnerability detected")
 """
         
         elif vulnerability_type == "NoSQL Injection":
@@ -1131,10 +1203,29 @@ print("Manual analysis required for {vulnerability_type}")
         return poc.strip()
     
     def _detect_sql_injection(self, response: requests.Response) -> bool:
-        """Detect SQL injection vulnerability from response"""
-        response_text = response.text.lower()
+        """Detect SQL injection vulnerability from response using sqlparse analysis"""
+        response_text = response.text
         
-        # Common SQL error messages
+        # Use sqlparse for intelligent SQL analysis
+        sql_analyzer = SQLAnalyzer()
+        
+        # Extract SQL fragments from response
+        sql_fragments = sql_analyzer.extract_sql_fragments(response_text)
+        
+        # If we found SQL fragments, analyze them
+        if sql_fragments:
+            for fragment in sql_fragments:
+                analysis = sql_analyzer.analyze_sql_payload(fragment)
+                if analysis.is_valid_sql:
+                    return True
+        
+        # Database fingerprinting from error response
+        db_fingerprint = sql_analyzer.fingerprint_database_from_error(response_text)
+        if db_fingerprint.confidence_score > 0.5:
+            return True
+        
+        # Fallback to pattern matching for broader coverage
+        response_lower = response_text.lower()
         sql_error_patterns = [
             "sql syntax",
             "mysql error",
@@ -1149,7 +1240,7 @@ print("Manual analysis required for {vulnerability_type}")
         ]
         
         for pattern in sql_error_patterns:
-            if pattern in response_text:
+            if pattern in response_lower:
                 return True
         
         # Check for unusual response patterns
