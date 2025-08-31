@@ -95,18 +95,60 @@ class SecurityTestingEngine:
                 total_tests += 1
                 if test.vulnerability_found:
                     tests_failed += 1
-                    vulnerabilities_found += 1
+                    # Count actual vulnerabilities found, not just tests with vulnerabilities
+                    if hasattr(test, 'response_details') and test.response_details:
+                        # Check if test has sub-vulnerabilities count
+                        if isinstance(test.response_details, dict) and 'vulnerability_count' in test.response_details:
+                            vulnerabilities_found += test.response_details['vulnerability_count']
+                        else:
+                            # Fallback to counting as 1 vulnerability
+                            vulnerabilities_found += 1
+                    else:
+                        vulnerabilities_found += 1
                 else:
                     tests_passed += 1
         
         # Calculate overall risk score
         overall_risk_score = self._calculate_endpoint_risk_score(security_tests)
         
-        # Count vulnerabilities by severity
-        critical_vulns = len([t for t in security_tests if t.severity == VulnerabilitySeverity.CRITICAL])
-        high_vulns = len([t for t in security_tests if t.severity == VulnerabilitySeverity.HIGH])
-        medium_vulns = len([t for t in security_tests if t.severity == VulnerabilitySeverity.MEDIUM])
-        low_vulns = len([t for t in security_tests if t.severity == VulnerabilitySeverity.LOW])
+        # Count vulnerabilities by severity - ensure consistency with total count
+        critical_vulns = 0
+        high_vulns = 0
+        medium_vulns = 0
+        low_vulns = 0
+        
+        for test in security_tests:
+            if test.vulnerability_found:
+                # Count main test vulnerability
+                if test.severity == VulnerabilitySeverity.CRITICAL:
+                    critical_vulns += 1
+                elif test.severity == VulnerabilitySeverity.HIGH:
+                    high_vulns += 1
+                elif test.severity == VulnerabilitySeverity.MEDIUM:
+                    medium_vulns += 1
+                elif test.severity == VulnerabilitySeverity.LOW:
+                    low_vulns += 1
+                
+                # Count sub-vulnerabilities with different severities
+                if hasattr(test, 'response_details') and test.response_details:
+                    if isinstance(test.response_details, dict) and 'test_results' in test.response_details:
+                        for sub_test in test.response_details['test_results']:
+                            if sub_test.get('vulnerability_found'):
+                                risk_level = sub_test.get('risk_level', '').upper()
+                                if 'CRITICAL' in risk_level:
+                                    critical_vulns += 1
+                                elif 'HIGH' in risk_level:
+                                    high_vulns += 1
+                                elif 'MEDIUM' in risk_level:
+                                    medium_vulns += 1
+                                elif 'LOW' in risk_level:
+                                    low_vulns += 1
+        
+        # Ensure total vulnerabilities matches sum of severity counts
+        calculated_total = critical_vulns + high_vulns + medium_vulns + low_vulns
+        if calculated_total != vulnerabilities_found:
+            # Adjust vulnerabilities_found to match severity counts for consistency
+            vulnerabilities_found = calculated_total
         
         # Generate summary and recommendations
         summary_dict = self._generate_endpoint_summary(endpoint_path, http_methods, security_tests)
@@ -147,6 +189,14 @@ class SecurityTestingEngine:
         
         # Security misconfiguration testing
         tests.extend(await self._test_security_misconfigurations(endpoint_path, method, parameters))
+        
+        # User Enumeration testing (Medium severity)
+        if method == 'POST' and 'register' in endpoint_path.lower():
+            test_result = await self._test_user_enumeration(endpoint_path, method)
+            tests.append(test_result)
+        
+        # Mass Assignment testing
+        tests.extend(await self._test_mass_assignment_vulnerabilities(endpoint_path, method, parameters))
         
         return tests
     
@@ -191,6 +241,507 @@ class SecurityTestingEngine:
                 tests.append(test_result)
         
         return tests
+    
+    async def _test_mass_assignment_vulnerabilities(self, endpoint_path: str, method: str,
+                                                  parameters: Dict[str, Any]) -> List[SecurityTest]:
+        """Test for Mass Assignment vulnerabilities (API6:2019)"""
+        tests = []
+        
+        # Only test POST/PUT methods that can modify data
+        if method not in ['POST', 'PUT', 'PATCH']:
+            return tests
+        
+        # Test parameter pollution attacks
+        if parameters.get('body_params'):
+            test_result = await self._test_parameter_pollution(endpoint_path, method, parameters)
+            tests.append(test_result)
+        
+        # Test privilege escalation via extra parameters
+        test_result = await self._test_privilege_escalation_parameters(endpoint_path, method, parameters)
+        tests.append(test_result)
+        
+        # Test input filtering validation
+        test_result = await self._test_input_filtering_validation(endpoint_path, method, parameters)
+        tests.append(test_result)
+        
+        return tests
+    
+    async def _test_parameter_pollution(self, endpoint_path: str, method: str,
+                                       parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for parameter pollution attacks"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Create payload with unexpected parameters that could cause mass assignment
+            unexpected_params = {
+                "id": "999",
+                "role": "admin",
+                "is_admin": "true",
+                "permissions": "all",
+                "access_level": "superuser",
+                "created_at": "2025-01-01",
+                "updated_at": "2025-01-01",
+                "deleted_at": None,
+                "status": "active",
+                "verified": "true",
+                "email_verified": "true",
+                "phone_verified": "true",
+                "two_factor_enabled": "false",
+                "last_login": "2025-01-01T00:00:00Z",
+                "login_count": "999",
+                "failed_login_attempts": "0",
+                "locked": "false",
+                "password_changed_at": "2025-01-01T00:00:00Z"
+            }
+            
+            # Add original parameters if they exist
+            if parameters.get('body_params'):
+                for param in parameters['body_params']:
+                    unexpected_params[param] = "test_value"
+            
+            # Test with unexpected parameters
+            response = self.session.post(url, json=unexpected_params, timeout=self.timeout)
+            
+            # Check for mass assignment indicators
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # 1. Check if unexpected parameters were accepted
+            if response.status_code in [200, 201]:
+                vulnerability_found = True
+                vulnerability_details.append("Endpoint accepted unexpected parameters")
+                risk_score += 2.0
+            
+            # 2. Check response for sensitive fields that might have been set
+            response_text = response.text.lower()
+            sensitive_fields_found = []
+            for field in ["role", "admin", "permissions", "access_level", "verified"]:
+                if field in response_text:
+                    sensitive_fields_found.append(field)
+            
+            if sensitive_fields_found:
+                vulnerability_found = True
+                vulnerability_details.append(f"Sensitive fields in response: {', '.join(sensitive_fields_found)}")
+                risk_score += 3.0
+            
+            # 3. Check for privilege escalation indicators
+            if any(field in response_text for field in ["admin", "superuser", "all"]):
+                vulnerability_found = True
+                vulnerability_details.append("Privilege escalation indicators detected")
+                risk_score += 4.0
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 7.0:
+                    severity = VulnerabilitySeverity.CRITICAL
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.HIGH,
+                        integrity_impact=Impact.HIGH,
+                        availability_impact=Impact.MEDIUM
+                    )
+                elif risk_score >= 4.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.HIGH,
+                        availability_impact=Impact.LOW
+                    )
+                else:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.LOW,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.NONE
+                    )
+                
+                recommendations = [
+                    "Implement strict parameter whitelisting",
+                    "Use DTOs (Data Transfer Objects) with explicit field mapping",
+                    "Apply principle of least privilege for parameter acceptance",
+                    "Implement input validation and sanitization",
+                    "Use model binding with explicit field inclusion/exclusion",
+                    "Implement parameter filtering middleware",
+                    "Regularly audit accepted parameters for sensitive fields"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Parameter Pollution Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for parameter pollution attacks and mass assignment vulnerabilities",
+                test_method=f"HTTP {method} with unexpected parameters",
+                payload_used=str(unexpected_params),
+                request_details={"method": method, "parameters": unexpected_params},
+                response_details={"status_code": response.status_code, "response_length": len(response.text)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_parameter_pollution_poc(endpoint_path, method, unexpected_params) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Parameter Pollution Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for parameter pollution attacks and mass assignment vulnerabilities",
+                test_method=f"HTTP {method} with unexpected parameters",
+                payload_used=None,
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_privilege_escalation_parameters(self, endpoint_path: str, method: str,
+                                                   parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for privilege escalation via extra parameters"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Create payload with privilege escalation parameters
+            escalation_params = {
+                "role": "admin",
+                "is_admin": "true",
+                "permissions": "all",
+                "access_level": "superuser",
+                "can_delete_users": "true",
+                "can_modify_system": "true",
+                "can_access_admin_panel": "true",
+                "can_view_sensitive_data": "true",
+                "can_export_data": "true",
+                "can_import_data": "true",
+                "can_manage_roles": "true",
+                "can_audit_logs": "true",
+                "can_configure_system": "true",
+                "can_manage_backups": "true",
+                "can_restore_backups": "true"
+            }
+            
+            # Add original parameters if they exist
+            if parameters.get('body_params'):
+                for param in parameters['body_params']:
+                    escalation_params[param] = "test_value"
+            
+            # Test with privilege escalation parameters
+            response = self.session.post(url, json=escalation_params, timeout=self.timeout)
+            
+            # Check for privilege escalation indicators
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # 1. Check if privilege escalation parameters were accepted
+            if response.status_code in [200, 201]:
+                vulnerability_found = True
+                vulnerability_details.append("Endpoint accepted privilege escalation parameters")
+                risk_score += 3.0
+            
+            # 2. Check response for admin/privileged indicators
+            response_text = response.text.lower()
+            admin_indicators = []
+            for indicator in ["admin", "superuser", "all", "privileges", "permissions"]:
+                if indicator in response_text:
+                    admin_indicators.append(indicator)
+            
+            if admin_indicators:
+                vulnerability_found = True
+                vulnerability_details.append(f"Admin indicators in response: {', '.join(admin_indicators)}")
+                risk_score += 4.0
+            
+            # 3. Check for role elevation confirmation
+            if any(phrase in response_text for phrase in ["role.*admin", "admin.*true", "privileges.*granted"]):
+                vulnerability_found = True
+                vulnerability_details.append("Role elevation confirmed in response")
+                risk_score += 5.0
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 8.0:
+                    severity = VulnerabilitySeverity.CRITICAL
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.HIGH,
+                        integrity_impact=Impact.HIGH,
+                        availability_impact=Impact.HIGH
+                    )
+                elif risk_score >= 5.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.HIGH,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.LOW
+                    )
+                else:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.NONE
+                    )
+                
+                recommendations = [
+                    "Implement strict role-based access control (RBAC)",
+                    "Validate all parameters against allowed field lists",
+                    "Use DTOs with explicit field inclusion/exclusion",
+                    "Implement parameter whitelisting for sensitive operations",
+                    "Apply principle of least privilege for all endpoints",
+                    "Regularly audit parameter acceptance patterns",
+                    "Implement privilege escalation detection and logging"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Privilege Escalation Parameters Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for privilege escalation via extra parameters",
+                test_method=f"HTTP {method} with privilege escalation parameters",
+                payload_used=str(escalation_params),
+                request_details={"method": method, "parameters": escalation_params},
+                response_details={"status_code": response.status_code, "response_length": len(response.text)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_privilege_escalation_poc(endpoint_path, method, escalation_params) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Privilege Escalation Parameters Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for privilege escalation via extra parameters",
+                test_method=f"HTTP {method} with privilege escalation parameters",
+                payload_used=None,
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_input_filtering_validation(self, endpoint_path: str, method: str,
+                                             parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for input filtering mechanism validation"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Create payload with various parameter types to test filtering
+            test_params = {
+                "normal_param": "test_value",
+                "id": "123",
+                "role": "user",
+                "is_admin": "false",
+                "permissions": "read",
+                "access_level": "basic",
+                "created_at": "2025-01-01",
+                "updated_at": "2025-01-01",
+                "deleted_at": None,
+                "status": "active",
+                "verified": "false",
+                "email_verified": "false",
+                "phone_verified": "false",
+                "two_factor_enabled": "false",
+                "last_login": "2025-01-01T00:00:00Z",
+                "login_count": "1",
+                "failed_login_attempts": "0",
+                "locked": "false",
+                "password_changed_at": "2025-01-01T00:00:00Z",
+                "sensitive_field": "should_be_filtered",
+                "internal_flag": "true",
+                "system_setting": "default",
+                "debug_mode": "false",
+                "test_flag": "true"
+            }
+            
+            # Add original parameters if they exist
+            if parameters.get('body_params'):
+                for param in parameters['body_params']:
+                    test_params[param] = "test_value"
+            
+            # Test with various parameter types
+            response = self.session.post(url, json=test_params, timeout=self.timeout)
+            
+            # Check for input filtering indicators
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # 1. Check if sensitive parameters were accepted
+            if response.status_code in [200, 201]:
+                vulnerability_found = True
+                vulnerability_details.append("Endpoint accepted sensitive parameters")
+                risk_score += 2.0
+            
+            # 2. Check response for filtered vs unfiltered parameters
+            response_text = response.text.lower()
+            unfiltered_sensitive = []
+            for field in ["sensitive_field", "internal_flag", "system_setting", "debug_mode"]:
+                if field in response_text:
+                    unfiltered_sensitive.append(field)
+            
+            if unfiltered_sensitive:
+                vulnerability_found = True
+                vulnerability_details.append(f"Unfiltered sensitive parameters: {', '.join(unfiltered_sensitive)}")
+                risk_score += 3.0
+            
+            # 3. Check for parameter whitelisting effectiveness
+            if len(test_params) > 10 and response.status_code in [200, 201]:
+                vulnerability_found = True
+                vulnerability_details.append("Endpoint accepted large number of parameters without filtering")
+                risk_score += 2.0
+            
+            # 4. Check for specific filtering bypass indicators
+            if any(phrase in response_text for phrase in ["should_be_filtered", "internal_flag", "test_flag"]):
+                vulnerability_found = True
+                vulnerability_details.append("Filtering bypass indicators detected")
+                risk_score += 3.0
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 7.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.HIGH,
+                        availability_impact=Impact.LOW
+                    )
+                elif risk_score >= 4.0:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.LOW,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.NONE
+                    )
+                else:
+                    severity = VulnerabilitySeverity.LOW
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.LOW,
+                        integrity_impact=Impact.LOW,
+                        availability_impact=Impact.NONE
+                    )
+                
+                recommendations = [
+                    "Implement strict parameter whitelisting",
+                    "Use DTOs with explicit field mapping",
+                    "Apply input validation and sanitization",
+                    "Implement parameter filtering middleware",
+                    "Regularly audit accepted parameters",
+                    "Use model binding with explicit field inclusion/exclusion",
+                    "Implement parameter logging and monitoring"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Input Filtering Validation Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for input filtering mechanism effectiveness",
+                test_method=f"HTTP {method} with various parameter types",
+                payload_used=str(test_params),
+                request_details={"method": method, "parameters": test_params},
+                response_details={"status_code": response.status_code, "response_length": len(response.text)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_input_filtering_poc(endpoint_path, method, test_params) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Input Filtering Validation Test",
+                test_category=OWASPCategory.MASS_ASSIGNMENT,
+                test_description="Testing for input filtering mechanism effectiveness",
+                test_method=f"HTTP {method} with various parameter types",
+                payload_used=None,
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
     
     async def _test_sql_injection(self, endpoint_path: str, method: str, 
                                 param: str, payload: str) -> SecurityTest:
@@ -470,6 +1021,11 @@ class SecurityTestingEngine:
             test_result = await self._test_session_management(endpoint_path, method)
             tests.append(test_result)
         
+        # Test rate limiting vulnerabilities (Medium severity)
+        if method == 'POST' and 'login' in endpoint_path.lower():
+            test_result = await self._test_rate_limiting(endpoint_path, method)
+            tests.append(test_result)
+        
         return tests
     
     async def _test_missing_authentication(self, endpoint_path: str, method: str) -> SecurityTest:
@@ -539,6 +1095,111 @@ class SecurityTestingEngine:
                 test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
                 test_description="Testing if endpoint can be accessed without authentication",
                 test_method=f"HTTP {method} without Authorization header",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_rate_limiting(self, endpoint_path: str, method: str) -> SecurityTest:
+        """Test for rate limiting vulnerabilities (Medium severity)"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Test payload for login attempts
+            test_payload = {"username": "testuser", "password": "testpass"}
+            
+            # Make multiple rapid requests to test rate limiting
+            responses = []
+            for i in range(10):  # Try 10 rapid requests
+                response = self.session.post(url, json=test_payload, timeout=self.timeout)
+                responses.append(response)
+                time.sleep(0.1)  # Small delay between requests
+            
+            # Analyze responses for rate limiting indicators
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # Check if all requests succeeded (no rate limiting)
+            successful_requests = sum(1 for r in responses if r.status_code == 200)
+            if successful_requests >= 8:  # If 8+ out of 10 requests succeeded
+                vulnerability_found = True
+                vulnerability_details.append("Rate limiting not enforced - multiple rapid requests succeeded")
+                risk_score += 3.0
+            
+            # Check for rate limiting headers
+            rate_limit_headers = ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"]
+            missing_headers = [h for h in rate_limit_headers if h not in responses[0].headers]
+            if len(missing_headers) >= 3:  # If most rate limiting headers are missing
+                vulnerability_found = True
+                vulnerability_details.append(f"Missing rate limiting headers: {', '.join(missing_headers)}")
+                risk_score += 2.0
+            
+            # Check for consistent response times (no throttling)
+            response_times = [r.elapsed.total_seconds() for r in responses]
+            if max(response_times) - min(response_times) < 0.1:  # If response times are too consistent
+                vulnerability_found = True
+                vulnerability_details.append("No response time throttling detected")
+                risk_score += 1.5
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                severity = VulnerabilitySeverity.MEDIUM
+                cvss_metrics = CVSSMetrics(
+                    attack_vector=AttackVector.NETWORK,
+                    attack_complexity=AttackComplexity.LOW,
+                    privileges_required=PrivilegesRequired.NONE,
+                    user_interaction=UserInteraction.NONE,
+                    scope=Scope.UNCHANGED,
+                    confidentiality_impact=Impact.MEDIUM,
+                    integrity_impact=Impact.NONE,
+                    availability_impact=Impact.MEDIUM
+                )
+                
+                recommendations = [
+                    "Implement proper rate limiting for authentication endpoints",
+                    "Add rate limiting headers (X-RateLimit-*)",
+                    "Implement exponential backoff for failed attempts",
+                    "Add CAPTCHA after multiple failed attempts",
+                    "Log and monitor brute force attempts"
+                ]
+            else:
+                severity = VulnerabilitySeverity.INFO
+                cvss_metrics = None
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Rate Limiting Test",
+                test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
+                test_description="Testing for rate limiting vulnerabilities during authentication",
+                test_method=f"HTTP {method} with multiple rapid requests to detect rate limiting",
+                payload_used=str(test_payload),
+                request_details={"method": method, "payload": test_payload, "rapid_requests": 10},
+                response_details={"vulnerability_found": vulnerability_found, "details": vulnerability_details, "successful_requests": successful_requests},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Rate Limiting Test",
+                test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
+                test_description="Testing for rate limiting vulnerabilities during authentication",
+                test_method=f"HTTP {method} with multiple rapid requests to detect rate limiting",
                 vulnerability_found=False,
                 severity=VulnerabilitySeverity.INFO,
                 risk_score=0.0,
@@ -1379,10 +2040,25 @@ class SecurityTestingEngine:
             # Check for sensitive information in response
             sensitive_patterns = [
                 "error", "exception", "stack trace", "debug", "internal",
-                "database", "password", "secret", "key", "token"
+                "database", "password", "secret", "key", "token", "sql",
+                "mysql", "postgresql", "oracle", "mssql", "sqlite",
+                "connection", "query", "select", "insert", "update", "delete",
+                "where", "from", "table", "column", "row", "record"
             ]
             
             vulnerability_found = any(pattern in response.text.lower() for pattern in sensitive_patterns)
+            
+            # Additional checks for Medium severity vulnerabilities
+            if not vulnerability_found:
+                # Check for version information
+                version_patterns = ["version", "v1", "v2", "api", "build", "release"]
+                if any(pattern in response.text.lower() for pattern in version_patterns):
+                    vulnerability_found = True
+                
+                # Check for development/staging indicators
+                dev_patterns = ["development", "staging", "test", "localhost", "127.0.0.1", "192.168", "10.0"]
+                if any(pattern in response.text.lower() for pattern in dev_patterns):
+                    vulnerability_found = True
             
             if vulnerability_found:
                 cvss_metrics = CVSSMetrics(
@@ -1601,6 +2277,105 @@ class SecurityTestingEngine:
                 recommendations=[],
                 test_duration=execution_time
             )
+    
+    async def _test_user_enumeration(self, endpoint_path: str, method: str) -> SecurityTest:
+        """Test for user enumeration vulnerabilities (Medium severity)"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Test with existing username to check for user enumeration
+            test_payloads = [
+                {"username": "admin", "password": "test123"},
+                {"username": "user1", "password": "test123"},
+                {"username": "testuser", "password": "test123"}
+            ]
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            for payload in test_payloads:
+                response = self.session.post(url, json=payload, timeout=self.timeout)
+                
+                # Check for user enumeration indicators
+                response_text = response.text.lower()
+                
+                # Common user enumeration patterns
+                if any(pattern in response_text for pattern in [
+                    "user already exists", "username taken", "user not found", 
+                    "invalid username", "account exists", "user exists"
+                ]):
+                    vulnerability_found = True
+                    vulnerability_details.append(f"User enumeration detected with payload: {payload['username']}")
+                    risk_score += 2.0
+                
+                # Check for different response times (timing attack)
+                if response.status_code == 200 and "user already exists" in response_text:
+                    vulnerability_found = True
+                    vulnerability_details.append("User enumeration via response message")
+                    risk_score += 3.0
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                severity = VulnerabilitySeverity.MEDIUM
+                cvss_metrics = CVSSMetrics(
+                    attack_vector=AttackVector.NETWORK,
+                    attack_complexity=AttackComplexity.LOW,
+                    privileges_required=PrivilegesRequired.NONE,
+                    user_interaction=UserInteraction.NONE,
+                    scope=Scope.UNCHANGED,
+                    confidentiality_impact=Impact.MEDIUM,
+                    integrity_impact=Impact.NONE,
+                    availability_impact=Impact.NONE
+                )
+                
+                recommendations = [
+                    "Use generic error messages for registration attempts",
+                    "Implement consistent response times",
+                    "Add CAPTCHA or rate limiting",
+                    "Log failed registration attempts"
+                ]
+            else:
+                severity = VulnerabilitySeverity.INFO
+                cvss_metrics = None
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="User Enumeration Test",
+                test_category=OWASPCategory.EXCESSIVE_DATA_EXPOSURE,
+                test_description="Testing for user enumeration vulnerabilities during registration",
+                test_method=f"HTTP {method} with various usernames to detect enumeration",
+                payload_used=str(test_payloads),
+                request_details={"method": method, "payloads": test_payloads},
+                response_details={"vulnerability_found": vulnerability_found, "details": vulnerability_details},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="User Enumeration Test",
+                test_category=OWASPCategory.EXCESSIVE_DATA_EXPOSURE,
+                test_description="Testing for user enumeration vulnerabilities during registration",
+                test_method=f"HTTP {method} with various usernames to detect enumeration",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+                )
     
     async def _test_security_headers(self, endpoint_path: str, method: str) -> SecurityTest:
         """Test for missing security headers"""
@@ -2518,6 +3293,195 @@ if debug_info:
     print(f"❌ DEBUG INFO EXPOSED: {{', '.join(debug_info)}}")
 
 print("\\n🔍 Check if sensitive data is properly filtered!")
+"""
+        return poc
+    
+    def _generate_parameter_pollution_poc(self, endpoint_path: str, method: str, unexpected_params: Dict[str, Any]) -> str:
+        """Generate proof of concept for parameter pollution vulnerability"""
+        poc = f"""# Parameter Pollution Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerability: Mass Assignment via Parameter Pollution
+
+import requests
+import json
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔓 Testing Parameter Pollution...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test payload with unexpected parameters
+payload = {json.dumps(unexpected_params, indent=2)}
+
+print("\\n📊 Testing with unexpected parameters:")
+print(json.dumps(payload, indent=2))
+
+# Test the endpoint
+response = requests.{method.lower()}(url, json=payload)
+print(f"\\n📊 Response Analysis:")
+print(f"Status Code: {{response.status_code}}")
+print(f"Response Length: {{len(response.text)}} characters")
+
+# Check for mass assignment indicators
+print("\\n🔍 Checking for Mass Assignment Indicators...")
+
+# 1. Check if unexpected parameters were accepted
+if response.status_code in [200, 201]:
+    print("❌ VULNERABILITY CONFIRMED!")
+    print("Endpoint accepted unexpected parameters")
+    print("This indicates a Mass Assignment vulnerability")
+else:
+    print("✅ Endpoint properly rejected unexpected parameters")
+
+# 2. Check response for sensitive fields
+response_text = response.text.lower()
+sensitive_fields = ["role", "admin", "permissions", "access_level", "verified"]
+sensitive_found = []
+
+for field in sensitive_fields:
+    if field in response_text:
+        sensitive_found.append(field)
+
+if sensitive_found:
+    print(f"\\n❌ SENSITIVE FIELDS EXPOSED: {{', '.join(sensitive_found)}}")
+    print("This confirms privilege escalation potential")
+
+# 3. Check for privilege escalation indicators
+if any(field in response_text for field in ["admin", "superuser", "all"]):
+    print("\\n❌ PRIVILEGE ESCALATION INDICATORS DETECTED!")
+    print("Role elevation may be possible via parameter manipulation")
+
+print("\\n🔍 Check if sensitive parameters were processed!")
+"""
+        return poc
+    
+    def _generate_privilege_escalation_poc(self, endpoint_path: str, method: str, escalation_params: Dict[str, Any]) -> str:
+        """Generate proof of concept for privilege escalation via parameters"""
+        poc = f"""# Privilege Escalation via Parameters Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerability: Privilege Escalation via Mass Assignment
+
+import requests
+import json
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔓 Testing Privilege Escalation via Parameters...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test payload with privilege escalation parameters
+payload = {json.dumps(escalation_params, indent=2)}
+
+print("\\n📊 Testing with privilege escalation parameters:")
+print(json.dumps(payload, indent=2))
+
+# Test the endpoint
+response = requests.{method.lower()}(url, json=payload)
+print(f"\\n📊 Response Analysis:")
+print(f"Status Code: {{response.status_code}}")
+print(f"Response Length: {{len(response.text)}} characters")
+
+# Check for privilege escalation indicators
+print("\\n🔍 Checking for Privilege Escalation Indicators...")
+
+# 1. Check if privilege escalation parameters were accepted
+if response.status_code in [200, 201]:
+    print("❌ VULNERABILITY CONFIRMED!")
+    print("Endpoint accepted privilege escalation parameters")
+    print("This indicates a critical Mass Assignment vulnerability")
+else:
+    print("✅ Endpoint properly rejected privilege escalation parameters")
+
+# 2. Check response for admin/privileged indicators
+response_text = response.text.lower()
+admin_indicators = ["admin", "superuser", "all", "privileges", "permissions"]
+admin_found = []
+
+for indicator in admin_indicators:
+    if indicator in response_text:
+        admin_found.append(indicator)
+
+if admin_found:
+    print(f"\\n❌ ADMIN INDICATORS DETECTED: {{', '.join(admin_found)}}")
+    print("Privilege escalation may have been successful")
+
+# 3. Check for role elevation confirmation
+if any(phrase in response_text for phrase in ["role.*admin", "admin.*true", "privileges.*granted"]):
+    print("\\n❌ ROLE ELEVATION CONFIRMED!")
+    print("User privileges have been elevated via parameter manipulation")
+
+print("\\n🔍 Check if admin privileges were granted!")
+"""
+        return poc
+    
+    def _generate_input_filtering_poc(self, endpoint_path: str, method: str, test_params: Dict[str, Any]) -> str:
+        """Generate proof of concept for input filtering vulnerability"""
+        poc = f"""# Input Filtering Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerability: Ineffective Input Filtering
+
+import requests
+import json
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔓 Testing Input Filtering...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test payload with various parameter types
+payload = {json.dumps(test_params, indent=2)}
+
+print("\\n📊 Testing with various parameter types:")
+print(json.dumps(payload, indent=2))
+
+# Test the endpoint
+response = requests.{method.lower()}(url, json=payload)
+print(f"\\n📊 Response Analysis:")
+print(f"Status Code: {{response.status_code}}")
+print(f"Response Length: {{len(response.text)}} characters")
+
+# Check for input filtering indicators
+print("\\n🔍 Checking for Input Filtering Issues...")
+
+# 1. Check if sensitive parameters were accepted
+if response.status_code in [200, 201]:
+    print("❌ VULNERABILITY CONFIRMED!")
+    print("Endpoint accepted sensitive parameters")
+    print("This indicates ineffective input filtering")
+else:
+    print("✅ Endpoint properly filtered sensitive parameters")
+
+# 2. Check response for filtered vs unfiltered parameters
+response_text = response.text.lower()
+unfiltered_sensitive = ["sensitive_field", "internal_flag", "system_setting", "debug_mode"]
+unfiltered_found = []
+
+for field in unfiltered_sensitive:
+    if field in response_text:
+        unfiltered_found.append(field)
+
+if unfiltered_found:
+    print(f"\\n❌ UNFILTERED SENSITIVE PARAMETERS: {{', '.join(unfiltered_found)}}")
+    print("Input filtering is not working effectively")
+
+# 3. Check for parameter whitelisting effectiveness
+if len(test_params) > 10 and response.status_code in [200, 201]:
+    print("\\n❌ LARGE PARAMETER SET ACCEPTED!")
+    print("Endpoint accepted large number of parameters without filtering")
+    print("Parameter whitelisting may be ineffective")
+
+# 4. Check for specific filtering bypass indicators
+if any(phrase in response_text for phrase in ["should_be_filtered", "internal_flag", "test_flag"]):
+    print("\\n❌ FILTERING BYPASS DETECTED!")
+    print("Input filtering mechanism can be bypassed")
+
+print("\\n🔍 Check if parameter filtering is working properly!")
 """
         return poc
     
