@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 100.0,
-      "discovery_start_time": "2025-08-31 17:57:38.417382",
-      "discovery_end_time": "2025-08-31 17:57:38.417385",
-      "discovery_duration": 105.4902081489563,
+      "discovery_start_time": "2025-08-31 18:32:54.756763",
+      "discovery_end_time": "2025-08-31 18:32:54.756768",
+      "discovery_duration": 105.76041603088379,
       "total_parameters": 172,
       "unique_parameters": 16
     },
@@ -2947,7 +2947,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-31 17:57:38.416404",
+        "discovered_at": "2025-08-31 18:32:54.755669",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -2964,7 +2964,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-31 17:57:38.416435",
+        "discovered_at": "2025-08-31 18:32:54.755706",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -5536,10 +5536,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-31 17:57:38.412636",
+      "discovered_at": "2025-08-31 18:32:54.741571",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-31 17:57:38.513621",
+  "discovery_timestamp": "2025-08-31 18:32:55.642884",
   "total_endpoints": 12
 }

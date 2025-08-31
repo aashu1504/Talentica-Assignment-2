@@ -20,6 +20,7 @@ class OWASPCategory(str, Enum):
     BROKEN_FUNCTION_LEVEL_AUTHORIZATION = "Broken Function Level Authorization"
     MASS_ASSIGNMENT = "Mass Assignment"
     SECURITY_MISCONFIGURATION = "Security Misconfiguration"
+    EXCESSIVE_DATA_EXPOSURE = "Excessive Data Exposure"
     INSUFFICIENT_LOGGING_MONITORING = "Insufficient Logging & Monitoring"
     INJECTION = "Injection"
     IMPROPER_ASSET_MANAGEMENT = "Improper Asset Management"

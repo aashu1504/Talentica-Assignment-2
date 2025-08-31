@@ -1351,6 +1351,10 @@ class SecurityTestingEngine:
             test_result = await self._test_information_disclosure(endpoint_path, method)
             tests.append(test_result)
             
+            # Test for data filtering mechanism validation
+            test_result = await self._test_data_filtering_mechanisms(endpoint_path, method)
+            tests.append(test_result)
+            
             # Test for missing security headers
             test_result = await self._test_security_headers(endpoint_path, method)
             tests.append(test_result)
@@ -1433,6 +1437,164 @@ class SecurityTestingEngine:
                 test_category=OWASPCategory.SECURITY_MISCONFIGURATION,
                 test_description="Testing for information disclosure in responses",
                 test_method=f"HTTP {method} and analyze response content",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_data_filtering_mechanisms(self, endpoint_path: str, method: str) -> SecurityTest:
+        """Test for data filtering mechanism vulnerabilities (Excessive Data Exposure)"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            if method == 'GET':
+                response = self.session.get(url, timeout=self.timeout)
+            else:
+                response = self.session.post(url, timeout=self.timeout)
+            
+            # Check for excessive data exposure indicators
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            severity = VulnerabilitySeverity.INFO
+            cvss_metrics = None
+            recommendations = []
+            
+            # 1. Check response size for potential data dumping
+            response_size = len(response.text)
+            if response_size > 10000:  # More than 10KB might indicate excessive data
+                vulnerability_found = True
+                vulnerability_details.append(f"Large response size: {response_size} characters")
+                risk_score += 2.0
+            
+            # 2. Check for sensitive user data fields
+            sensitive_user_fields = [
+                "password", "passwd", "pwd", "secret", "token", "key", "api_key",
+                "credit_card", "ssn", "social_security", "phone", "email", "address",
+                "birth_date", "salary", "bank_account", "pin", "cvv"
+            ]
+            
+            sensitive_data_found = []
+            for field in sensitive_user_fields:
+                if field in response.text.lower():
+                    sensitive_data_found.append(field)
+            
+            if sensitive_data_found:
+                vulnerability_found = True
+                vulnerability_details.append(f"Sensitive data fields exposed: {', '.join(sensitive_data_found)}")
+                risk_score += 3.0
+            
+            # 3. Check for array/list responses that might contain excessive data
+            try:
+                response_data = response.json()
+                if isinstance(response_data, list) and len(response_data) > 100:
+                    vulnerability_found = True
+                    vulnerability_details.append(f"Large data array returned: {len(response_data)} items")
+                    risk_score += 2.0
+                elif isinstance(response_data, dict) and len(response_data) > 50:
+                    vulnerability_found = True
+                    vulnerability_details.append(f"Large data object returned: {len(response_data)} fields")
+                    risk_score += 1.5
+            except:
+                pass  # Not JSON response
+            
+            # 4. Check for debug/development information
+            debug_patterns = ["debug", "development", "test", "staging", "localhost", "127.0.0.1"]
+            debug_info_found = []
+            for pattern in debug_patterns:
+                if pattern in response.text.lower():
+                    debug_info_found.append(pattern)
+            
+            if debug_info_found:
+                vulnerability_found = True
+                vulnerability_details.append(f"Debug information exposed: {', '.join(debug_info_found)}")
+                risk_score += 2.5
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 6.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.HIGH,
+                        integrity_impact=Impact.NONE,
+                        availability_impact=Impact.NONE
+                    )
+                elif risk_score >= 3.0:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.NONE,
+                        availability_impact=Impact.NONE
+                    )
+                else:
+                    severity = VulnerabilitySeverity.LOW
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.LOW,
+                        integrity_impact=Impact.NONE,
+                        availability_impact=Impact.NONE
+                    )
+                
+                recommendations = [
+                    "Implement proper data filtering and pagination",
+                    "Use field-level access controls",
+                    "Implement response size limits",
+                    "Remove debug/development information from production",
+                    "Apply principle of least privilege for data access",
+                    "Use data masking for sensitive fields",
+                    "Implement proper error handling without data leakage"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Data Filtering Mechanism Test",
+                test_category=OWASPCategory.EXCESSIVE_DATA_EXPOSURE,
+                test_description="Testing for excessive data exposure and filtering mechanism vulnerabilities",
+                test_method=f"HTTP {method} and analyze response for data filtering issues",
+                payload_used=None,
+                request_details={"method": method},
+                response_details={"status_code": response.status_code, "response_length": len(response.text)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_data_filtering_poc(endpoint_path, method, vulnerability_details) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Data Filtering Mechanism Test",
+                test_category=OWASPCategory.EXCESSIVE_DATA_EXPOSURE,
+                test_description="Testing for excessive data exposure and filtering mechanism vulnerabilities",
+                test_method=f"HTTP {method} and analyze response for data filtering issues",
                 vulnerability_found=False,
                 severity=VulnerabilitySeverity.INFO,
                 risk_score=0.0,
@@ -2286,6 +2448,76 @@ else:
     print("\\n✅ Authentication properly enforced")
 
 print("\\n🔍 Check if sensitive data is exposed!")
+"""
+        return poc
+    
+    def _generate_data_filtering_poc(self, endpoint_path: str, method: str, vulnerability_details: List[str]) -> str:
+        """Generate proof of concept for data filtering mechanism vulnerabilities"""
+        poc = f"""# Data Filtering Mechanism Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerabilities: {', '.join(vulnerability_details)}
+
+import requests
+import json
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔍 Testing Data Filtering Mechanisms...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test the endpoint
+response = requests.{method.lower()}(url)
+print(f"\\n📊 Response Analysis:")
+print(f"Status Code: {{response.status_code}}")
+print(f"Response Length: {{len(response.text)}} characters")
+
+# Check for excessive data exposure
+print("\\n🔍 Checking for Excessive Data Exposure...")
+
+# 1. Response size analysis
+if len(response.text) > 10000:
+    print(f"❌ LARGE RESPONSE: {{len(response.text)}} characters (potential data dumping)")
+
+# 2. Sensitive data field detection
+sensitive_fields = ["password", "passwd", "pwd", "secret", "token", "key", "api_key",
+                   "credit_card", "ssn", "social_security", "phone", "email", "address",
+                   "birth_date", "salary", "bank_account", "pin", "cvv"]
+
+sensitive_data_found = []
+for field in sensitive_fields:
+    if field in response.text.lower():
+        sensitive_data_found.append(field)
+
+if sensitive_data_found:
+    print(f"❌ SENSITIVE DATA EXPOSED: {{', '.join(sensitive_data_found)}}")
+
+# 3. Data structure analysis
+try:
+    data = response.json()
+    if isinstance(data, list):
+        print(f"📊 ARRAY RESPONSE: {{len(data)}} items")
+        if len(data) > 100:
+            print(f"❌ EXCESSIVE DATA: Array contains {{len(data)}} items")
+    elif isinstance(data, dict):
+        print(f"📊 OBJECT RESPONSE: {{len(data)}} fields")
+        if len(data) > 50:
+            print(f"❌ EXCESSIVE DATA: Object contains {{len(data)}} fields")
+except:
+    print("📊 Non-JSON response")
+
+# 4. Debug information check
+debug_patterns = ["debug", "development", "test", "staging", "localhost", "127.0.0.1"]
+debug_info = []
+for pattern in debug_patterns:
+    if pattern in response.text.lower():
+        debug_info.append(pattern)
+
+if debug_info:
+    print(f"❌ DEBUG INFO EXPOSED: {{', '.join(debug_info)}}")
+
+print("\\n🔍 Check if sensitive data is properly filtered!")
 """
         return poc
     
