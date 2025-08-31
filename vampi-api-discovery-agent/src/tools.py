@@ -53,11 +53,14 @@ class APIDiscoveryTool(BaseTool):
     
     name: str = "api_discovery_tool"
     description: str = "Discovers and analyzes VAmPI API endpoints. Scans the API systematically and generates a comprehensive discovery report."
-    base_url: str = Field(..., description="Base URL for VAmPI API")
-    api_key: str = Field(..., description="Google API key for Gemini LLM")
+    base_url: str = Field(default="http://localhost:5000", description="Base URL for VAmPI API")
+    api_key: str = Field(default="", description="Google API key for Gemini LLM")
     
     @log_agent_run
-    def _run(self) -> str:
+    def _run(self, base_url: str = None, api_key: str = None) -> str:
+        # Use provided arguments or fall back to instance variables
+        base_url = base_url or self.base_url
+        api_key = api_key or self.api_key
         """Execute the API discovery tool."""
         try:
             print(f"🔍 Starting API discovery for {self.base_url}")
@@ -154,10 +157,13 @@ class QATestingTool(BaseTool):
     
     name: str = "qa_testing_tool"
     description: str = "Validates discovered API endpoints and performs QA testing. Generates test cases and identifies high-risk endpoints."
-    base_url: str = Field(..., description="Base URL for VAmPI API")
-    api_key: str = Field(..., description="Google API key for Gemini LLM")
+    base_url: str = Field(default="http://localhost:5000", description="Base URL for VAmPI API")
+    api_key: str = Field(default="", description="Google API key for Gemini LLM")
     
-    def _run(self) -> str:
+    def _run(self, base_url: str = None, api_key: str = None) -> str:
+        # Use provided arguments or fall back to instance variables
+        base_url = base_url or self.base_url
+        api_key = api_key or self.api_key
         """Execute the QA testing tool."""
         try:
             print("🧪 Starting QA testing of discovered endpoints...")
@@ -301,10 +307,13 @@ class TechnicalWriterTool(BaseTool):
     
     name: str = "technical_writer_tool"
     description: str = "Generates comprehensive technical reports from discovery and QA results. Creates security analysis and actionable recommendations."
-    base_url: str = Field(..., description="Base URL for VAmPI API")
-    api_key: str = Field(..., description="Google API key for Gemini LLM")
+    base_url: str = Field(default="http://localhost:5000", description="Base URL for VAmPI API")
+    api_key: str = Field(default="", description="Google API key for Gemini LLM")
     
-    def _run(self) -> str:
+    def _run(self, base_url: str = None, api_key: str = None) -> str:
+        # Use provided arguments or fall back to instance variables
+        base_url = base_url or self.base_url
+        api_key = api_key or self.api_key
         """Execute the technical writer tool."""
         try:
             print("📝 Starting technical report generation...")

@@ -53,12 +53,15 @@ class SecurityTestingTool(BaseTool):
     base_url: str = None
     api_key: str = None
     
-    def __init__(self, base_url: str, api_key: str):
+    def __init__(self):
         super().__init__()
-        self.base_url = base_url
-        self.api_key = api_key
+        self.base_url = "http://localhost:5000"
+        self.api_key = ""
     
-    def _run(self, **kwargs) -> str:
+    def _run(self, base_url: str = None, api_key: str = None, **kwargs) -> str:
+        # Use provided arguments or fall back to instance variables
+        base_url = base_url or self.base_url
+        api_key = api_key or self.api_key
         """Execute the security testing tool"""
         try:
             print("🔒 Starting comprehensive API security testing...")
@@ -515,7 +518,7 @@ class CrewAITestOrchestrator:
             allow_delegation=False,
             llm=self.llm,
             tools=[
-                APIDiscoveryTool(base_url=self.base_url, api_key=self.api_key)
+                APIDiscoveryTool()
             ]
         )
         
@@ -530,7 +533,7 @@ class CrewAITestOrchestrator:
             allow_delegation=False,
             llm=self.llm,
             tools=[
-                QATestingTool(base_url=self.base_url, api_key=self.api_key)
+                QATestingTool()
             ]
         )
         
@@ -547,7 +550,7 @@ class CrewAITestOrchestrator:
             allow_delegation=False,
             llm=self.llm,
             tools=[
-                SecurityTestingTool(base_url=self.base_url, api_key=self.api_key)
+                SecurityTestingTool()
             ]
         )
         
@@ -562,7 +565,7 @@ class CrewAITestOrchestrator:
             allow_delegation=False,
             llm=self.llm,
             tools=[
-                TechnicalWriterTool(base_url=self.base_url, api_key=self.api_key)
+                TechnicalWriterTool()
             ]
         )
         
@@ -583,7 +586,7 @@ class CrewAITestOrchestrator:
             all API endpoints of the VAmPI application at {self.base_url}.
             
             REQUIRED ACTIONS:
-            1. Execute the api_discovery_tool with the base_url parameter set to {self.base_url}
+            1. Execute the api_discovery_tool with base_url="{self.base_url}" and api_key="{self.api_key}"
             2. Wait for the tool to complete the API scanning process
             3. The tool will automatically call the VAmPIDiscoveryEngine from discovery.py
             4. Report the number of endpoints discovered and any security findings
@@ -623,7 +626,7 @@ class CrewAITestOrchestrator:
             
             REQUIRED ACTIONS:
             1. Read the discovery results from temp_discovery_results.json
-            2. Execute the qa_testing_tool to test each endpoint
+            2. Execute the qa_testing_tool with base_url="{self.base_url}" and api_key="{self.api_key}"
             3. Identify and document any security vulnerabilities
             4. Generate test results and recommendations
             
@@ -647,7 +650,7 @@ class CrewAITestOrchestrator:
             
             REQUIRED ACTIONS:
             1. Read the discovery results from temp_discovery_results.json
-            2. Execute the security_testing_tool to perform comprehensive security testing
+            2. Execute the security_testing_tool with base_url="{self.base_url}" and api_key="{self.api_key}"
             3. Test for OWASP API Top 10 vulnerabilities including:
                - SQL Injection and XSS vulnerabilities
                - Authentication bypass and JWT validation issues
@@ -678,7 +681,7 @@ class CrewAITestOrchestrator:
             1. Read discovery results from temp_discovery_results.json
             2. Read QA results from temp_qa_results.json
             3. Read security testing results from temp_security_results.json
-            4. Execute the technical_writer_tool to generate the final report
+            4. Execute the technical_writer_tool with base_url="{self.base_url}" and api_key="{self.api_key}"
             5. Create a comprehensive security analysis document that combines all findings
             6. Generate both JSON and Markdown formatted reports
             
