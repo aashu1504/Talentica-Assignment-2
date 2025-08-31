@@ -1,5 +1,5 @@
 {
-  "validation_timestamp": "2025-08-31T15:09:30.939331",
+  "validation_timestamp": "2025-08-31T17:19:50.965286",
   "base_url": "http://localhost:5000",
   "total_endpoints": 12,
   "accessible_endpoints": 12,
@@ -8,7 +8,7 @@
   "total_methods": 15,
   "accessible_methods": 14,
   "method_accessibility_rate": 93.33333333333333,
-  "average_response_time": 0.068,
+  "average_response_time": 0.102,
   "total_warnings": 0,
   "total_errors": 0,
   "validation_results": [
@@ -22,7 +22,7 @@
         "GET"
       ],
       "response_times": {
-        "GET": 0.14173603057861328
+        "GET": 0.15665793418884277
       },
       "status_codes": {
         "GET": 200
@@ -35,7 +35,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.14240527153015137,
+      "validation_duration": 0.15672874450683594,
       "reason": "Accessible via: GET"
     },
     {
@@ -48,7 +48,7 @@
         "GET"
       ],
       "response_times": {
-        "GET": 0.04942512512207031
+        "GET": 0.0951230525970459
       },
       "status_codes": {
         "GET": 200
@@ -61,7 +61,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.04962301254272461,
+      "validation_duration": 0.09524703025817871,
       "reason": "Accessible via: GET"
     },
     {
@@ -74,7 +74,7 @@
         "GET"
       ],
       "response_times": {
-        "GET": 0.08077502250671387
+        "GET": 0.10264992713928223
       },
       "status_codes": {
         "GET": 200
@@ -87,7 +87,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.08105611801147461,
+      "validation_duration": 0.1027219295501709,
       "reason": "Accessible via: GET"
     },
     {
@@ -102,8 +102,8 @@
         "DELETE"
       ],
       "response_times": {
-        "GET": 0.09404897689819336,
-        "DELETE": 0.03650403022766113
+        "GET": 0.07516002655029297,
+        "DELETE": 0.0715329647064209
       },
       "status_codes": {
         "GET": 200,
@@ -119,7 +119,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.13106012344360352,
+      "validation_duration": 0.14734268188476562,
       "reason": "Accessible via: GET, DELETE"
     },
     {
@@ -132,7 +132,7 @@
         "POST"
       ],
       "response_times": {
-        "POST": 0.04978036880493164
+        "POST": 0.1184389591217041
       },
       "status_codes": {
         "POST": 400
@@ -145,7 +145,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.05013394355773926,
+      "validation_duration": 0.11961698532104492,
       "reason": "Accessible via: POST"
     },
     {
@@ -158,7 +158,7 @@
         "POST"
       ],
       "response_times": {
-        "POST": 0.08469700813293457
+        "POST": 0.12193036079406738
       },
       "status_codes": {
         "POST": 400
@@ -171,7 +171,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.08480000495910645,
+      "validation_duration": 0.12201714515686035,
       "reason": "Accessible via: POST"
     },
     {
@@ -184,7 +184,7 @@
         "GET"
       ],
       "response_times": {
-        "GET": 0.06564998626708984
+        "GET": 0.07744407653808594
       },
       "status_codes": {
         "GET": 401
@@ -197,21 +197,21 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.06582880020141602,
+      "validation_duration": 0.07765698432922363,
       "reason": "Accessible via: GET"
     },
     {
       "endpoint_path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
-        "DELETE"
+        "DELETE",
+        "GET"
       ],
       "is_accessible": true,
       "accessible_methods": [
         "DELETE"
       ],
       "response_times": {
-        "DELETE": 0.037996768951416016
+        "DELETE": 0.08802103996276855
       },
       "status_codes": {
         "DELETE": 401
@@ -224,7 +224,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.08722281455993652,
+      "validation_duration": 0.14827322959899902,
       "reason": "Accessible via: DELETE"
     },
     {
@@ -237,7 +237,7 @@
         "PUT"
       ],
       "response_times": {
-        "PUT": 0.08440184593200684
+        "PUT": 0.05482912063598633
       },
       "status_codes": {
         "PUT": 401
@@ -250,7 +250,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.08449769020080566,
+      "validation_duration": 0.05490303039550781,
       "reason": "Accessible via: PUT"
     },
     {
@@ -263,7 +263,7 @@
         "PUT"
       ],
       "response_times": {
-        "PUT": 0.07149505615234375
+        "PUT": 0.0612030029296875
       },
       "status_codes": {
         "PUT": 401
@@ -276,7 +276,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.07217812538146973,
+      "validation_duration": 0.061357975006103516,
       "reason": "Accessible via: PUT"
     },
     {
@@ -291,8 +291,8 @@
         "POST"
       ],
       "response_times": {
-        "GET": 0.06728482246398926,
-        "POST": 0.03332090377807617
+        "GET": 0.05123782157897949,
+        "POST": 0.06448197364807129
       },
       "status_codes": {
         "GET": 200,
@@ -308,7 +308,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.10113096237182617,
+      "validation_duration": 0.1161959171295166,
       "reason": "Accessible via: GET, POST"
     },
     {
@@ -321,7 +321,7 @@
         "GET"
       ],
       "response_times": {
-        "GET": 0.05610799789428711
+        "GET": 0.2828340530395508
       },
       "status_codes": {
         "GET": 401
@@ -334,7 +334,7 @@
       },
       "validation_errors": [],
       "warnings": [],
-      "validation_duration": 0.05618786811828613,
+      "validation_duration": 0.28304100036621094,
       "reason": "Accessible via: GET"
     }
   ],
@@ -1930,8 +1930,8 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
-        "DELETE"
+        "DELETE",
+        "GET"
       ],
       "description": "Retrieves user by username",
       "parameters": {

@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 100.0,
-      "discovery_start_time": "2025-08-31 15:08:18.327756",
-      "discovery_end_time": "2025-08-31 15:08:18.327765",
-      "discovery_duration": 106.5365161895752,
+      "discovery_start_time": "2025-08-31 17:19:17.812497",
+      "discovery_end_time": "2025-08-31 17:19:17.812508",
+      "discovery_duration": 110.30353093147278,
       "total_parameters": 172,
       "unique_parameters": 16
     },
@@ -1610,8 +1610,8 @@
         "id": "DOC007",
         "path": "/users/v1/{user_id}",
         "methods": [
-          "GET",
-          "DELETE"
+          "DELETE",
+          "GET"
         ],
         "description": "Retrieves user by username",
         "parameters": {
@@ -2947,7 +2947,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-31 15:08:18.326323",
+        "discovered_at": "2025-08-31 17:19:17.809387",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -2964,7 +2964,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-08-31 15:08:18.326393",
+        "discovered_at": "2025-08-31 17:19:17.809496",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -3968,8 +3968,8 @@
                 "id": "DOC007",
                 "path": "/users/v1/{user_id}",
                 "methods": [
-                  "GET",
-                  "DELETE"
+                  "DELETE",
+                  "GET"
                 ],
                 "description": "Retrieves user by username",
                 "parameters": {
@@ -4829,8 +4829,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
+            "methods": "{<HTTPMethod.PUT: 'PUT'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>}",
+            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           },
           "books": {
             "endpoints": [
@@ -5303,8 +5303,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
+            "methods": "{<HTTPMethod.POST: 'POST'>, <HTTPMethod.GET: 'GET'>}",
+            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
           }
         },
         "dependencies": {
@@ -5536,10 +5536,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-08-31 15:08:18.317950",
+      "discovered_at": "2025-08-31 17:19:17.788417",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-08-31 15:08:18.483497",
+  "discovery_timestamp": "2025-08-31 17:19:17.974266",
   "total_endpoints": 12
 }
