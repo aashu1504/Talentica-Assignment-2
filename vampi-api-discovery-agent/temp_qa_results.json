@@ -8,8 +8,8 @@
       "risk_level": "Low",
       "authentication_required": false,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:07:21 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }",
-      "test_timestamp": "2025-08-31 21:37:21.544938"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:31:37 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }",
+      "test_timestamp": "2025-08-31 22:01:37.251846"
     },
     {
       "path": "/",
@@ -19,8 +19,8 @@
       "risk_level": "Low",
       "authentication_required": false,
       "test_status": "Passed",
-      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:07:21 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}",
-      "test_timestamp": "2025-08-31 21:37:21.719840"
+      "test_details": "Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:31:37 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}",
+      "test_timestamp": "2025-08-31 22:01:37.638829"
     },
     {
       "path": "/users/v1",
@@ -31,7 +31,7 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.759861"
+      "test_timestamp": "2025-08-31 22:01:37.772628"
     },
     {
       "path": "/users/v1/_debug",
@@ -43,7 +43,7 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.789606"
+      "test_timestamp": "2025-08-31 22:01:37.846867"
     },
     {
       "path": "/users/v1/register",
@@ -54,7 +54,7 @@
       "authentication_required": false,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
-      "test_timestamp": "2025-08-31 21:37:21.821041"
+      "test_timestamp": "2025-08-31 22:01:37.912040"
     },
     {
       "path": "/users/v1/login",
@@ -65,7 +65,7 @@
       "authentication_required": false,
       "test_status": "Failed",
       "test_details": "Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
-      "test_timestamp": "2025-08-31 21:37:21.855535"
+      "test_timestamp": "2025-08-31 22:01:37.960429"
     },
     {
       "path": "/me",
@@ -76,19 +76,19 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.886821"
+      "test_timestamp": "2025-08-31 22:01:38.096393"
     },
     {
       "path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
-        "DELETE"
+        "DELETE",
+        "GET"
       ],
       "risk_level": "Critical",
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.930411"
+      "test_timestamp": "2025-08-31 22:01:38.185854"
     },
     {
       "path": "/users/v1/{user_id}/email",
@@ -99,7 +99,7 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.958951"
+      "test_timestamp": "2025-08-31 22:01:38.272171"
     },
     {
       "path": "/users/v1/{user_id}/password",
@@ -110,7 +110,7 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:21.993051"
+      "test_timestamp": "2025-08-31 22:01:38.337686"
     },
     {
       "path": "/books/v1",
@@ -122,7 +122,7 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:22.025758"
+      "test_timestamp": "2025-08-31 22:01:38.476495"
     },
     {
       "path": "/books/v1/{book_title}",
@@ -133,10 +133,10 @@
       "authentication_required": true,
       "test_status": "Failed",
       "test_details": "HTTP Request Error: Illegal header value b'Bearer '",
-      "test_timestamp": "2025-08-31 21:37:22.055940"
+      "test_timestamp": "2025-08-31 22:01:38.558050"
     }
   ],
-  "qa_report": "# VAmPI API Test Report\n\n## Overview\n- Total Endpoints Tested: 12\n- High Risk Endpoints: 9\n- Test Date: 2025-08-31 21:37:22\n\n## Test Results\n\n### Test Case 1: ['GET'] /createdb\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:07:21 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }\n- **Test Timestamp**: 2025-08-31 21:37:21.544938\n\n### Test Case 2: ['GET'] /\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:07:21 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}\n- **Test Timestamp**: 2025-08-31 21:37:21.719840\n\n### Test Case 3: ['GET'] /users/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.759861\n\n### Test Case 4: ['GET', 'DELETE'] /users/v1/_debug\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.789606\n\n### Test Case 5: ['POST'] /users/v1/register\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-31 21:37:21.821041\n\n### Test Case 6: ['POST'] /users/v1/login\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-31 21:37:21.855535\n\n### Test Case 7: ['GET'] /me\n- **Risk Level**: Low\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.886821\n\n### Test Case 8: ['GET', 'DELETE'] /users/v1/{user_id}\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.930411\n\n### Test Case 9: ['PUT'] /users/v1/{user_id}/email\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.958951\n\n### Test Case 10: ['PUT'] /users/v1/{user_id}/password\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:21.993051\n\n### Test Case 11: ['GET', 'POST'] /books/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:22.025758\n\n### Test Case 12: ['GET'] /books/v1/{book_title}\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 21:37:22.055940\n\n## Recommendations\n1. Implement proper authentication for all sensitive endpoints\n2. Add input validation and sanitization\n3. Implement rate limiting for public endpoints\n4. Regular security audits and penetration testing\n",
-  "qa_timestamp": "2025-08-31 21:37:22.116510",
+  "qa_report": "# VAmPI API Test Report\n\n## Overview\n- Total Endpoints Tested: 12\n- High Risk Endpoints: 9\n- Test Date: 2025-08-31 22:01:38\n\n## Test Results\n\n### Test Case 1: ['GET'] /createdb\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:31:37 GMT', 'content-type': 'application/json', 'content-length': '36', 'connection': 'close'}), Body: { \"message\": \"Database populated.\" }\n- **Test Timestamp**: 2025-08-31 22:01:37.251846\n\n### Test Case 2: ['GET'] /\n- **Risk Level**: Low\n- **Authentication**: Not Required\n- **Test Status**: Passed\n- **Test Details**: Status: 200, Headers: Headers({'server': 'Werkzeug/2.2.3 Python/3.10.18', 'date': 'Sun, 31 Aug 2025 16:31:37 GMT', 'content-type': 'application/json', 'content-length': '271', 'connection': 'close'}), Body: { \"message\": \"VAmPI the Vulnerable API\", \"help\": \"VAmPI is a vulnerable on purpose API. It was created in order to evaluate the efficiency of third party tools in identifying vulnerabilities in APIs but it can also be used in learning/teaching purposes.\", \"vulnerable\":1}\n- **Test Timestamp**: 2025-08-31 22:01:37.638829\n\n### Test Case 3: ['GET'] /users/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:37.772628\n\n### Test Case 4: ['GET', 'DELETE'] /users/v1/_debug\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:37.846867\n\n### Test Case 5: ['POST'] /users/v1/register\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/register'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-31 22:01:37.912040\n\n### Test Case 6: ['POST'] /users/v1/login\n- **Risk Level**: Critical\n- **Authentication**: Not Required\n- **Test Status**: Failed\n- **Test Details**: Unexpected Error: Client error '400 BAD REQUEST' for url 'http://localhost:5000/users/v1/login'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400\n- **Test Timestamp**: 2025-08-31 22:01:37.960429\n\n### Test Case 7: ['GET'] /me\n- **Risk Level**: Low\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.096393\n\n### Test Case 8: ['DELETE', 'GET'] /users/v1/{user_id}\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.185854\n\n### Test Case 9: ['PUT'] /users/v1/{user_id}/email\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.272171\n\n### Test Case 10: ['PUT'] /users/v1/{user_id}/password\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.337686\n\n### Test Case 11: ['GET', 'POST'] /books/v1\n- **Risk Level**: Critical\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.476495\n\n### Test Case 12: ['GET'] /books/v1/{book_title}\n- **Risk Level**: High\n- **Authentication**: Required\n- **Test Status**: Failed\n- **Test Details**: HTTP Request Error: Illegal header value b'Bearer '\n- **Test Timestamp**: 2025-08-31 22:01:38.558050\n\n## Recommendations\n1. Implement proper authentication for all sensitive endpoints\n2. Add input validation and sanitization\n3. Implement rate limiting for public endpoints\n4. Regular security audits and penetration testing\n",
+  "qa_timestamp": "2025-08-31 22:01:38.625070",
   "total_endpoints_tested": 12
 }

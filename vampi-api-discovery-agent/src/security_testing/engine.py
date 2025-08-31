@@ -198,6 +198,10 @@ class SecurityTestingEngine:
         # Mass Assignment testing
         tests.extend(await self._test_mass_assignment_vulnerabilities(endpoint_path, method, parameters))
         
+        # Improper Assets Management testing (API9:2019)
+        test_result = await self._test_improper_assets_management(endpoint_path, method, parameters)
+        tests.append(test_result)
+        
         return tests
     
     async def _test_injection_vulnerabilities(self, endpoint_path: str, method: str,
@@ -1181,7 +1185,7 @@ class SecurityTestingEngine:
                 request_details={"method": method, "payloads": command_payloads[:3]},
                 response_details={"vulnerability_found": vulnerability_found, "details": vulnerability_details},
                 vulnerability_found=vulnerability_found,
-                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
                 risk_score=risk_score,
@@ -1202,7 +1206,318 @@ class SecurityTestingEngine:
                 risk_score=0.0,
                 recommendations=[],
                 test_duration=execution_time
-                )
+            )
+    
+    async def _test_improper_assets_management(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for Improper Assets Management vulnerabilities (API9:2019)"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Test 1: Version comparison and security analysis
+            version_vulnerabilities = await self._test_version_comparison_security(endpoint_path, method)
+            
+            # Test 2: Deprecated endpoint identification
+            deprecated_vulnerabilities = await self._test_deprecated_endpoint_identification(endpoint_path, method)
+            
+            # Test 3: Inconsistent security control detection
+            security_control_vulnerabilities = await self._test_inconsistent_security_controls(endpoint_path, method, parameters)
+            
+            # Aggregate all findings
+            all_vulnerabilities = []
+            all_vulnerabilities.extend(version_vulnerabilities)
+            all_vulnerabilities.extend(deprecated_vulnerabilities)
+            all_vulnerabilities.extend(security_control_vulnerabilities)
+            
+            vulnerability_found = len(all_vulnerabilities) > 0
+            vulnerability_details = all_vulnerabilities
+            risk_score = len(all_vulnerabilities) * 2.0  # Base risk score
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 8.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.MEDIUM
+                    )
+                elif risk_score >= 5.0:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.NONE,
+                        availability_impact=Impact.NONE
+                    )
+                else:
+                    severity = VulnerabilitySeverity.LOW
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.LOW,
+                        integrity_impact=Impact.NONE,
+                        availability_impact=Impact.NONE
+                    )
+                
+                recommendations = [
+                    "Implement consistent API versioning strategy",
+                    "Remove deprecated endpoints and versions",
+                    "Standardize security controls across all endpoints",
+                    "Implement API lifecycle management",
+                    "Regular security audits of API versions",
+                    "Document security requirements for each version",
+                    "Implement automated security policy enforcement"
+                ]
+            else:
+                severity = VulnerabilitySeverity.INFO
+                cvss_metrics = None
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Improper Assets Management Test",
+                test_category=OWASPCategory.IMPROPER_ASSET_MANAGEMENT,
+                test_description="Testing for Improper Assets Management vulnerabilities (API9:2019)",
+                test_method=f"HTTP {method} with version, deprecated endpoint, and security control analysis",
+                payload_used=None,
+                request_details={"method": method, "endpoint": endpoint_path},
+                response_details={"vulnerability_found": vulnerability_found, "details": vulnerability_details},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Improper Assets Management Test",
+                test_category=OWASPCategory.IMPROPER_ASSET_MANAGEMENT,
+                test_description="Testing for Improper Assets Management vulnerabilities (API9:2019)",
+                test_method=f"HTTP {method} with version, deprecated endpoint, and security control analysis",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_version_comparison_security(self, endpoint_path: str, method: str) -> List[str]:
+        """Test 1: Version comparison and security analysis"""
+        vulnerabilities = []
+        
+        try:
+            # Check for version patterns in endpoint
+            version_patterns = ['/v1/', '/v2/', '/v3/', '/v1.0/', '/v2.0/', '/v3.0/']
+            current_version = None
+            
+            for pattern in version_patterns:
+                if pattern in endpoint_path:
+                    current_version = pattern.strip('/')
+                    break
+            
+            if current_version:
+                # Test different versions for security differences
+                base_path = endpoint_path.split('/v')[0]
+                test_versions = ['v1', 'v2', 'v3', 'v1.0', 'v2.0', 'v3.0']
+                
+                for test_version in test_versions:
+                    if test_version != current_version:
+                        test_url = f"{self.base_url}{base_path}/{test_version}"
+                        
+                        try:
+                            response = self.session.get(test_url, timeout=self.timeout)
+                            
+                            # Check for security differences
+                            if response.status_code == 200:
+                                # Version exists but might have different security
+                                if 'v1' in test_version and 'v2' in current_version:
+                                    vulnerabilities.append(f"Older version {test_version} still accessible alongside {current_version}")
+                                
+                                # Check for security header differences
+                                current_response = self.session.get(f"{self.base_url}{endpoint_path}", timeout=self.timeout)
+                                if current_response.status_code == 200:
+                                    current_headers = set(current_response.headers.keys())
+                                    test_headers = set(response.headers.keys())
+                                    
+                                    security_headers = {'X-Content-Type-Options', 'X-Frame-Options', 'X-XSS-Protection', 'Strict-Transport-Security'}
+                                    missing_in_current = security_headers - current_headers
+                                    missing_in_test = security_headers - test_headers
+                                    
+                                    if missing_in_current != missing_in_test:
+                                        vulnerabilities.append(f"Security headers inconsistent between {current_version} and {test_version}")
+                        except:
+                            pass  # Version doesn't exist
+                
+                # Check for version deprecation headers
+                response = self.session.get(f"{self.base_url}{endpoint_path}", timeout=self.timeout)
+                if 'Deprecation' in response.headers or 'Sunset' in response.headers:
+                    vulnerabilities.append(f"Version {current_version} is marked as deprecated")
+            
+            # Check for version information in response
+            response = self.session.get(f"{self.base_url}{endpoint_path}", timeout=self.timeout)
+            if response.status_code == 200:
+                response_text = response.text.lower()
+                if any(version in response_text for version in ['version', 'v1', 'v2', 'v3', 'api version']):
+                    vulnerabilities.append("Version information exposed in API response")
+            
+        except Exception as e:
+            pass
+        
+        return vulnerabilities
+    
+    async def _test_deprecated_endpoint_identification(self, endpoint_path: str, method: str) -> List[str]:
+        """Test 2: Deprecated endpoint identification"""
+        vulnerabilities = []
+        
+        try:
+            # Check for deprecated endpoint patterns
+            deprecated_patterns = [
+                '/deprecated/', '/old/', '/legacy/', '/v0/', '/beta/', '/alpha/',
+                '/test/', '/staging/', '/dev/', '/development/', '/experimental/'
+            ]
+            
+            for pattern in deprecated_patterns:
+                if pattern in endpoint_path.lower():
+                    vulnerabilities.append(f"Endpoint contains deprecated pattern: {pattern}")
+                    break
+            
+            # Check for deprecation headers
+            response = self.session.get(f"{self.base_url}{endpoint_path}", timeout=self.timeout)
+            
+            if 'Deprecation' in response.headers:
+                deprecation_date = response.headers.get('Deprecation')
+                vulnerabilities.append(f"Endpoint marked as deprecated since: {deprecation_date}")
+            
+            if 'Sunset' in response.headers:
+                sunset_date = response.headers.get('Sunset')
+                vulnerabilities.append(f"Endpoint scheduled for removal on: {sunset_date}")
+            
+            # Check for deprecated authentication methods
+            if 'Authorization' in str(response.headers):
+                auth_header = response.headers.get('Authorization', '')
+                deprecated_auth_methods = ['Basic', 'Digest', 'Bearer legacy']
+                
+                for auth_method in deprecated_auth_methods:
+                    if auth_method.lower() in auth_header.lower():
+                        vulnerabilities.append(f"Deprecated authentication method detected: {auth_method}")
+            
+            # Check for deprecated HTTP methods
+            if method in ['HEAD', 'OPTIONS']:
+                # These methods might be deprecated in some APIs
+                vulnerabilities.append(f"Potentially deprecated HTTP method: {method}")
+            
+        except Exception as e:
+            pass
+        
+        return vulnerabilities
+    
+    async def _test_inconsistent_security_controls(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> List[str]:
+        """Test 3: Inconsistent security control detection"""
+        vulnerabilities = []
+        
+        try:
+            # Check for authentication consistency
+            requires_auth = parameters.get('headers') and 'Authorization' in parameters['headers']
+            
+            # Compare with similar endpoints
+            similar_endpoints = [
+                '/users/v1', '/users/v2', '/users/v3',
+                '/books/v1', '/books/v2', '/books/v3',
+                '/admin/v1', '/admin/v2', '/admin/v3'
+            ]
+            
+            auth_inconsistencies = []
+            for similar_endpoint in similar_endpoints:
+                if similar_endpoint in endpoint_path:
+                    # Check if similar endpoints have consistent auth requirements
+                    try:
+                        test_url = f"{self.base_url}{similar_endpoint}"
+                        response = self.session.get(test_url, timeout=self.timeout)
+                        
+                        if requires_auth and response.status_code not in [401, 403]:
+                            auth_inconsistencies.append(f"Similar endpoint {similar_endpoint} lacks authentication")
+                        elif not requires_auth and response.status_code in [401, 403]:
+                            auth_inconsistencies.append(f"Similar endpoint {similar_endpoint} has unexpected authentication")
+                    except:
+                        pass
+            
+            if auth_inconsistencies:
+                vulnerabilities.extend(auth_inconsistencies)
+            
+            # Check for security header consistency
+            response = self.session.get(f"{self.base_url}{endpoint_path}", timeout=self.timeout)
+            if response.status_code == 200:
+                security_headers = {
+                    'X-Content-Type-Options': 'nosniff',
+                    'X-Frame-Options': 'DENY',
+                    'X-XSS-Protection': '1; mode=block',
+                    'Strict-Transport-Security': 'max-age=31536000'
+                }
+                
+                missing_headers = []
+                for header, expected_value in security_headers.items():
+                    if header not in response.headers:
+                        missing_headers.append(header)
+                
+                if missing_headers:
+                    vulnerabilities.append(f"Missing security headers: {', '.join(missing_headers)}")
+                
+                # Check for inconsistent header values
+                if 'X-Frame-Options' in response.headers:
+                    xfo_value = response.headers['X-Frame-Options']
+                    if xfo_value not in ['DENY', 'SAMEORIGIN']:
+                        vulnerabilities.append(f"Inconsistent X-Frame-Options value: {xfo_value}")
+            
+            # Check for rate limiting consistency
+            if method == 'POST':
+                # Test rate limiting on similar endpoints
+                rate_limit_inconsistencies = []
+                for similar_endpoint in similar_endpoints:
+                    if similar_endpoint in endpoint_path:
+                        try:
+                            test_url = f"{self.base_url}{similar_endpoint}"
+                            # Make multiple rapid requests
+                            responses = []
+                            for i in range(5):
+                                response = self.session.post(test_url, json={"test": "data"}, timeout=self.timeout)
+                                responses.append(response)
+                                time.sleep(0.1)
+                            
+                            # Check if rate limiting is consistent
+                            successful_requests = sum(1 for r in responses if r.status_code == 200)
+                            if successful_requests >= 4:  # No rate limiting
+                                rate_limit_inconsistencies.append(f"Similar endpoint {similar_endpoint} lacks rate limiting")
+                        except:
+                            pass
+                
+                if rate_limit_inconsistencies:
+                    vulnerabilities.extend(rate_limit_inconsistencies)
+            
+        except Exception as e:
+            pass
+        
+        return vulnerabilities
     
     async def _test_authentication_vulnerabilities(self, endpoint_path: str, method: str,
                                                  parameters: Dict[str, Any]) -> List[SecurityTest]:
