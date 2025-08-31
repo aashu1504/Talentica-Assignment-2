@@ -240,6 +240,11 @@ class SecurityTestingEngine:
                 )
                 tests.append(test_result)
         
+        # Command injection testing for endpoints that might execute commands
+        if method in ['POST', 'PUT'] and any(keyword in endpoint_path.lower() for keyword in ['exec', 'system', 'shell', 'command', 'run', 'process']):
+            test_result = await self._test_command_injection(endpoint_path, method, parameters)
+            tests.append(test_result)
+        
         return tests
     
     async def _test_mass_assignment_vulnerabilities(self, endpoint_path: str, method: str,
@@ -1000,6 +1005,204 @@ class SecurityTestingEngine:
                 recommendations=[],
                 test_duration=execution_time
             )
+    
+    async def _test_command_injection(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for command injection vulnerabilities (OS Command Injection)"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Command injection payloads for different operating systems
+            command_payloads = [
+                # Unix/Linux command injection
+                "; ls -la",
+                "| cat /etc/passwd",
+                "&& whoami",
+                "|| id",
+                "`whoami`",
+                "$(id)",
+                "; cat /etc/hostname",
+                "| uname -a",
+                "&& ps aux",
+                "|| netstat -an",
+                
+                # Windows command injection
+                "& dir",
+                "| type C:\\Windows\\System32\\drivers\\etc\\hosts",
+                "&& whoami",
+                "|| ipconfig",
+                "`dir`",
+                "$(dir)",
+                "& systeminfo",
+                "| tasklist",
+                "&& net user",
+                "|| ver",
+                
+                # Generic command injection
+                "; echo 'test'",
+                "| echo 'test'",
+                "&& echo 'test'",
+                "|| echo 'test'",
+                "`echo 'test'`",
+                "$(echo 'test')"
+            ]
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # Test with different command injection payloads
+            for payload in command_payloads:
+                # Create test payload with command injection
+                test_data = {}
+                if parameters.get('body_params'):
+                    for param in parameters['body_params']:
+                        test_data[param] = f"test_value{payload}"
+                else:
+                    # If no body params, test with generic field
+                    test_data["input"] = f"test_value{payload}"
+                
+                # Send request with command injection payload
+                response = self.session.post(url, json=test_data, timeout=self.timeout)
+                
+                # Check for command injection indicators
+                response_text = response.text.lower()
+                
+                # 1. Check for OS command output in response
+                os_indicators = [
+                    "root:", "bin:", "daemon:", "sys:", "adm:", "tty:", "disk:", "lp:",
+                    "uid=", "gid=", "groups=", "home=", "shell=", "login=",
+                    "windows", "microsoft", "system32", "program files", "users\\",
+                    "total", "drwx", "-rwx", "d---", "l---", "c---", "b---",
+                    "inet ", "tcp ", "udp ", "established", "listening", "time_wait"
+                ]
+                
+                for indicator in os_indicators:
+                    if indicator in response_text:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"OS command output detected: {indicator}")
+                        risk_score += 4.0
+                        break
+                
+                # 2. Check for command execution errors
+                error_indicators = [
+                    "command not found", "no such file", "permission denied",
+                    "access denied", "file not found", "directory not found",
+                    "syntax error", "invalid command", "bad command",
+                    "the system cannot find", "the specified path was not found"
+                ]
+                
+                for indicator in error_indicators:
+                    if indicator in response_text:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"Command execution error: {indicator}")
+                        risk_score += 3.0
+                        break
+                
+                # 3. Check for timing-based command injection
+                if response.elapsed.total_seconds() > 2.0:  # Suspicious delay
+                    vulnerability_found = True
+                    vulnerability_details.append("Suspicious response delay (potential command execution)")
+                    risk_score += 2.0
+                
+                # 4. Check for command injection in error messages
+                if any(cmd in response_text for cmd in ["ls", "dir", "cat", "type", "whoami", "id"]):
+                    vulnerability_found = True
+                    vulnerability_details.append("Command injection in error messages")
+                    risk_score += 3.0
+                
+                # If vulnerability found, no need to test more payloads
+                if vulnerability_found:
+                    break
+            
+            # Determine severity and CVSS metrics
+            if vulnerability_found:
+                if risk_score >= 8.0:
+                    severity = VulnerabilitySeverity.CRITICAL
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.HIGH,
+                        integrity_impact=Impact.HIGH,
+                        availability_impact=Impact.HIGH
+                    )
+                elif risk_score >= 5.0:
+                    severity = VulnerabilitySeverity.HIGH
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.CHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.MEDIUM
+                    )
+                else:
+                    severity = VulnerabilitySeverity.MEDIUM
+                    cvss_metrics = CVSSMetrics(
+                        attack_vector=AttackVector.NETWORK,
+                        attack_complexity=AttackComplexity.LOW,
+                        privileges_required=PrivilegesRequired.NONE,
+                        user_interaction=UserInteraction.NONE,
+                        scope=Scope.UNCHANGED,
+                        confidentiality_impact=Impact.MEDIUM,
+                        integrity_impact=Impact.MEDIUM,
+                        availability_impact=Impact.MEDIUM
+                    )
+                
+                recommendations = [
+                    "Implement strict input validation and sanitization",
+                    "Use parameterized APIs instead of command execution",
+                    "Implement allowlist for allowed commands",
+                    "Use sandboxed environments for command execution",
+                    "Implement proper error handling without information disclosure",
+                    "Use security libraries for command execution",
+                    "Implement logging and monitoring for command execution attempts"
+                ]
+            else:
+                severity = VulnerabilitySeverity.INFO
+                cvss_metrics = None
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Command Injection Test",
+                test_category=OWASPCategory.INJECTION,
+                test_description="Testing for OS command injection vulnerabilities",
+                test_method=f"HTTP {method} with command injection payloads",
+                payload_used=str(command_payloads[:3]),  # Show first 3 payloads
+                request_details={"method": method, "payloads": command_payloads[:3]},
+                response_details={"vulnerability_found": vulnerability_found, "details": vulnerability_details},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Command Injection Test",
+                test_category=OWASPCategory.INJECTION,
+                test_description="Testing for OS command injection vulnerabilities",
+                test_method=f"HTTP {method} with command injection payloads",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+                )
     
     async def _test_authentication_vulnerabilities(self, endpoint_path: str, method: str,
                                                  parameters: Dict[str, Any]) -> List[SecurityTest]:
