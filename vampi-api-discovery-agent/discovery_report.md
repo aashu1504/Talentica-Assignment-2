@@ -1,6 +1,6 @@
 # VAmPI API Discovery Report
 
-**Generated:** 2025-08-31 17:21:16
+**Generated:** 2025-08-31 17:59:45
 
 ## Configuration
 
@@ -110,7 +110,7 @@
 
 ### /users/v1/{user_id}
 
-- **Methods:** DELETE, GET
+- **Methods:** GET, DELETE
 - **Description:** Retrieves user by username
 - **Authentication Required:** Yes
 - **Risk Level:** Critical

@@ -465,6 +465,11 @@ class SecurityTestingEngine:
             test_result = await self._test_jwt_vulnerabilities(endpoint_path, method)
             tests.append(test_result)
         
+        # Test session management vulnerabilities
+        if parameters.get('headers') and 'Authorization' in parameters['headers']:
+            test_result = await self._test_session_management(endpoint_path, method)
+            tests.append(test_result)
+        
         return tests
     
     async def _test_missing_authentication(self, endpoint_path: str, method: str) -> SecurityTest:
@@ -523,7 +528,7 @@ class SecurityTestingEngine:
                 severity=severity,
                 risk_score=risk_score,
                 recommendations=recommendations,
-                proof_of_concept=self._generate_proof_of_concept("Authentication Bypass", "", endpoint_path, method) if vulnerability_found else None,
+                proof_of_concept=self._generate_authentication_bypass_poc(endpoint_path, method) if vulnerability_found else None,
                 test_duration=execution_time
             )
             
@@ -613,6 +618,121 @@ class SecurityTestingEngine:
                 test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
                 test_description="Testing JWT token validation with fake token",
                 test_method=f"HTTP {method} with fake JWT token",
+                vulnerability_found=False,
+                severity=VulnerabilitySeverity.INFO,
+                risk_score=0.0,
+                recommendations=[],
+                test_duration=execution_time
+            )
+    
+    async def _test_session_management(self, endpoint_path: str, method: str) -> SecurityTest:
+        """Test for session management vulnerabilities"""
+        start_time = time.time()
+        
+        try:
+            # Test various session management scenarios
+            session_tests = [
+                {"name": "Expired Token", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"},
+                {"name": "Manipulated Token", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbiBVc2VyIiwiaWF0IjoxNTE2MjM5MDIyfQ.invalid_signature"},
+                {"name": "Empty Token", "token": ""},
+                {"name": "Null Token", "token": None},
+                {"name": "Malformed Token", "token": "not.a.valid.token"}
+            ]
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            test_results = []
+            
+            for test in session_tests:
+                try:
+                    url = f"{self.base_url}{endpoint_path}"
+                    headers = {"Content-Type": "application/json"}
+                    
+                    if test["token"]:
+                        headers["Authorization"] = f"Bearer {test['token']}"
+                    
+                    if method == 'GET':
+                        response = self.session.get(url, headers=headers, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, headers=headers, timeout=self.timeout)
+                    
+                    # Analyze session management response
+                    test_result = {
+                        "test_name": test["name"],
+                        "status_code": response.status_code,
+                        "vulnerability_found": response.status_code not in [401, 403],
+                        "details": f"Status: {response.status_code}, Expected: 401/403"
+                    }
+                    
+                    test_results.append(test_result)
+                    
+                    if test_result["vulnerability_found"]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"{test['name']}: Accepted invalid token")
+                        
+                except Exception as e:
+                    test_results.append({
+                        "test_name": test["name"],
+                        "status_code": None,
+                        "vulnerability_found": False,
+                        "details": f"Error: {str(e)}"
+                    })
+            
+            if vulnerability_found:
+                cvss_metrics = CVSSMetrics(
+                    attack_vector=AttackVector.NETWORK,
+                    attack_complexity=AttackComplexity.LOW,
+                    privileges_required=PrivilegesRequired.NONE,
+                    user_interaction=UserInteraction.NONE,
+                    scope=Scope.CHANGED,
+                    confidentiality_impact=Impact.HIGH,
+                    integrity_impact=Impact.HIGH,
+                    availability_impact=Impact.MEDIUM
+                )
+                
+                severity = VulnerabilitySeverity.HIGH
+                risk_score = 8.0
+                recommendations = [
+                    "Implement proper session validation",
+                    "Validate token expiration and signature",
+                    "Implement session timeout mechanisms",
+                    "Add session fixation protection",
+                    "Use secure session storage",
+                    "Implement proper logout and session invalidation"
+                ]
+            else:
+                cvss_metrics = None
+                severity = VulnerabilitySeverity.INFO
+                risk_score = 0.0
+                recommendations = []
+            
+            execution_time = time.time() - start_time
+            
+            return SecurityTest(
+                test_name="Session Management Test",
+                test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
+                test_description=f"Comprehensive testing for session management vulnerabilities. Tested {len(session_tests)} scenarios including expired, manipulated, and malformed tokens.",
+                test_method=f"HTTP {method} with various token scenarios",
+                payload_used=f"Session tests: {', '.join([t['name'] for t in session_tests])}",
+                request_details={"method": method, "session_tests": session_tests},
+                response_details={"test_results": test_results, "vulnerability_count": len(vulnerability_details)},
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                cvss_metrics=cvss_metrics,
+                severity=severity,
+                risk_score=risk_score,
+                recommendations=recommendations,
+                proof_of_concept=self._generate_session_management_poc(endpoint_path, method, test_results) if vulnerability_found else None,
+                test_duration=execution_time
+            )
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            return SecurityTest(
+                test_name="Session Management Test",
+                test_category=OWASPCategory.BROKEN_USER_AUTHENTICATION,
+                test_description="Testing for session management vulnerabilities",
+                test_method=f"HTTP {method} with session tests",
                 vulnerability_found=False,
                 severity=VulnerabilitySeverity.INFO,
                 risk_score=0.0,
@@ -2136,3 +2256,79 @@ if __name__ == "__main__":
                 unique_recommendations.append(rec)
         
         return unique_recommendations
+    
+    def _generate_authentication_bypass_poc(self, endpoint_path: str, method: str) -> str:
+        """Generate proof of concept for authentication bypass vulnerability"""
+        poc = f"""# Authentication Bypass Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerability: Missing Authentication
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔓 Testing Authentication Bypass...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test without authentication
+response = requests.{method.lower()}(url)
+print(f"\\n📊 Response without authentication:")
+print(f"Status Code: {{response.status_code}}")
+print(f"Response Length: {{len(response.text)}} chars")
+
+if response.status_code not in [401, 403]:
+    print("\\n❌ VULNERABILITY CONFIRMED!")
+    print("Endpoint accessible without authentication")
+    print(f"Expected: 401/403, Got: {{response.status_code}}")
+else:
+    print("\\n✅ Authentication properly enforced")
+
+print("\\n🔍 Check if sensitive data is exposed!")
+"""
+        return poc
+    
+    def _generate_session_management_poc(self, endpoint_path: str, method: str, test_results: List[Dict]) -> str:
+        """Generate proof of concept for session management vulnerabilities"""
+        poc = f"""# Session Management Vulnerability Proof of Concept
+# Target: {endpoint_path}
+# Method: {method}
+# Vulnerabilities Found: {len([r for r in test_results if r.get('vulnerability_found')])}
+
+import requests
+
+url = "{self.base_url}{endpoint_path}"
+
+print("🔐 Testing Session Management...")
+print(f"Target: {{url}}")
+print(f"Method: {method}")
+
+# Test various token scenarios
+token_tests = [
+    {{"name": "Expired Token", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"}},
+    {{"name": "Manipulated Token", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbiBVc2VyIiwiaWF0IjoxNTE2MjM5MDIyfQ.invalid_signature"}},
+    {{"name": "Empty Token", "token": ""}},
+    {{"name": "Malformed Token", "token": "not.a.valid.token"}}
+]
+
+for test in token_tests:
+    headers = {{"Content-Type": "application/json"}}
+    if test["token"]:
+        headers["Authorization"] = f"Bearer {{test['token']}}"
+    
+    try:
+        response = requests.{method.lower()}(url, headers=headers)
+        print(f"\\n{{test['name']}}: {{response.status_code}}")
+        
+        if response.status_code not in [401, 403]:
+            print(f"❌ VULNERABILITY: {{test['name']}} accepted!")
+        else:
+            print(f"✅ {{test['name']}} properly rejected")
+            
+    except Exception as e:
+        print(f"\\n{{test['name']}}: Error - {{e}}")
+
+print("\\n🔍 Check which invalid tokens were accepted!")
+"""
+        return poc
