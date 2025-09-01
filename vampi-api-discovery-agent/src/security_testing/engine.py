@@ -878,7 +878,12 @@ class SecurityTestingEngine:
                 request_details={"method": method, "parameters": escalation_params},
                 response_details={"status_code": response.status_code, "response_length": len(response.text)},
                 vulnerability_found=vulnerability_found,
-                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else None,
+                vulnerability_details=self._generate_detailed_vulnerability_description(
+                    "PRIVILEGE_ESCALATION", endpoint_path, method, "privilege_parameters", str(escalation_params)
+                ) if vulnerability_found else None,
+                technical_impact_analysis=self._generate_technical_impact_analysis(
+                    "PRIVILEGE_ESCALATION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
                 risk_score=risk_score,
@@ -1172,6 +1177,9 @@ class SecurityTestingEngine:
                 vulnerability_found=vulnerability_found,
                 vulnerability_details=self._generate_detailed_vulnerability_description(
                     "SQL_INJECTION", endpoint_path, method, param, payload
+                ) if vulnerability_found else None,
+                technical_impact_analysis=self._generate_technical_impact_analysis(
+                    "SQL_INJECTION", severity.value, endpoint_path
                 ) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
@@ -4432,3 +4440,60 @@ print("\\n🔍 Check which invalid tokens were accepted!")
             self.logger.error(f"Error generating detailed vulnerability description: {e}")
             # Fallback to basic description
             return f"{vulnerability_type} vulnerability detected in {endpoint} endpoint using {method} method with parameter '{parameter}'"
+    
+    def _generate_technical_impact_analysis(self, vulnerability_type: str, 
+                                          severity: str, endpoint: str) -> str:
+        """Generate comprehensive technical impact analysis using technical findings generator"""
+        try:
+            # Use the technical findings generator to create impact analysis
+            impact_analysis = self.technical_findings_generator.generate_technical_impact_analysis(
+                vulnerability_type, severity, endpoint
+            )
+            
+            # Format the analysis for display
+            analysis = f"""
+**System Level Impact:**
+{impact_analysis.system_level_impact}
+
+**Data Impact:**
+{impact_analysis.data_impact}
+
+**Network Impact:**
+{impact_analysis.network_impact}
+
+**Application Impact:**
+{impact_analysis.application_impact}
+
+**Infrastructure Impact:**
+{impact_analysis.infrastructure_impact}
+
+**Integration Impact:**
+{impact_analysis.integration_impact}
+
+**Performance Impact:**
+{impact_analysis.performance_impact}
+
+**Scalability Impact:**
+{impact_analysis.scalability_impact}
+
+**Maintenance Impact:**
+{impact_analysis.maintenance_impact}
+
+**Technical Risk Propagation:**
+{impact_analysis.technical_risk_propagation}
+
+**Cascading Effects:**
+{', '.join(impact_analysis.cascading_effects)}
+
+**Recovery Complexity:**
+{impact_analysis.recovery_complexity}
+
+**Technical Debt Implications:**
+{impact_analysis.technical_debt_implications}
+"""
+            return analysis.strip()
+            
+        except Exception as e:
+            self.logger.error(f"Error generating technical impact analysis: {e}")
+            # Fallback to basic impact description
+            return f"Technical impact analysis for {vulnerability_type} vulnerability in {endpoint} endpoint with {severity} severity requires comprehensive assessment of system components, data flows, and infrastructure dependencies."

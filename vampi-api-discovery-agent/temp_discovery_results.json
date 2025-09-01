@@ -12,9 +12,9 @@
       "authentication_types": [],
       "discovery_coverage": 100.0,
       "parameter_coverage": 100.0,
-      "discovery_start_time": "2025-09-02 00:29:12.825135",
-      "discovery_end_time": "2025-09-02 00:29:12.825143",
-      "discovery_duration": 106.04100394248962,
+      "discovery_start_time": "2025-09-02 01:11:01.685445",
+      "discovery_end_time": "2025-09-02 01:11:01.685450",
+      "discovery_duration": 106.89879703521729,
       "total_parameters": 172,
       "unique_parameters": 16
     },
@@ -2947,7 +2947,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-09-02 00:29:12.823090",
+        "discovered_at": "2025-09-02 01:11:01.684244",
         "endpoints_using": [
           "/createdb",
           "/",
@@ -2964,7 +2964,7 @@
         "vulnerabilities": [],
         "implementation_details": null,
         "documentation_url": null,
-        "discovered_at": "2025-09-02 00:29:12.823165",
+        "discovered_at": "2025-09-02 01:11:01.684295",
         "endpoints_using": [
           "/users/v1",
           "/users/v1/_debug",
@@ -4829,8 +4829,8 @@
               }
             ],
             "sub_resources": "{'v1'}",
-            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.PUT: 'PUT'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.DELETE: 'DELETE'>, <HTTPMethod.POST: 'POST'>, <HTTPMethod.PUT: 'PUT'>}",
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           },
           "books": {
             "endpoints": [
@@ -5304,7 +5304,7 @@
             ],
             "sub_resources": "{'v1'}",
             "methods": "{<HTTPMethod.GET: 'GET'>, <HTTPMethod.POST: 'POST'>}",
-            "risk_levels": "{<RiskLevel.HIGH: 'High'>, <RiskLevel.CRITICAL: 'Critical'>}"
+            "risk_levels": "{<RiskLevel.CRITICAL: 'Critical'>, <RiskLevel.HIGH: 'High'>}"
           }
         },
         "dependencies": {
@@ -5536,10 +5536,10 @@
       "contact_info": null,
       "license_info": null,
       "external_docs": null,
-      "discovered_at": "2025-09-02 00:29:12.810125",
+      "discovered_at": "2025-09-02 01:11:01.670074",
       "discovery_method": "endpoint_scanning"
     }
   },
-  "discovery_timestamp": "2025-09-02 00:29:12.907129",
+  "discovery_timestamp": "2025-09-02 01:11:01.773224",
   "total_endpoints": 12
 }

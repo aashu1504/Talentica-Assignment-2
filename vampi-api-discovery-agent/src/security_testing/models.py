@@ -342,6 +342,9 @@ class SecurityTest(BaseModel):
     proof_of_concept: Optional[str] = Field(None, description="Proof of concept exploit")
     test_timestamp: datetime = Field(default_factory=datetime.now, description="When test was performed")
     test_duration: Optional[float] = Field(None, description="Test duration in seconds")
+    
+    # Enhanced Technical Findings fields
+    technical_impact_analysis: Optional[str] = Field(None, description="Technical impact analysis")
 
 
 class EnhancedSecurityTest(BaseModel):
