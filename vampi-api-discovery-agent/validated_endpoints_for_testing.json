@@ -1,5 +1,5 @@
 {
-  "validation_timestamp": "2025-09-02T02:00:22.343727",
+  "validation_timestamp": "2025-09-02T03:18:50.091049",
   "base_url": "http://localhost:5000",
   "total_accessible": 12,
   "accessible_endpoints": [
@@ -1594,8 +1594,8 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "GET",
-        "DELETE"
+        "DELETE",
+        "GET"
       ],
       "description": "Retrieves user by username",
       "parameters": {
