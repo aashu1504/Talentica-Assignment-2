@@ -35,6 +35,22 @@ class SecurityTestingEngine:
         self.session = requests.Session()
         self.logger = logging.getLogger(__name__)
         
+        # Enhanced error handling configuration
+        self.max_retries = 3
+        self.retry_delay = 2
+        self.network_error_threshold = 5
+        self.auth_failure_threshold = 3
+        
+        # Security audit trail logging
+        self.security_logger = logging.getLogger('security_audit_trail')
+        self._setup_security_logging()
+        
+        # Error tracking for comprehensive monitoring
+        self.network_failures = 0
+        self.auth_failures = 0
+        self.authorization_failures = 0
+        self.test_errors = 0
+        
         # Default test suite configuration
         self.test_suite = SecurityTestSuite(
             suite_name="OWASP API Security Test Suite",
@@ -67,6 +83,288 @@ class SecurityTestingEngine:
                 "function_level_access_control"
             ]
         )
+    
+    def _setup_security_logging(self):
+        """Setup comprehensive security audit trail logging"""
+        # Create security logger with file handler
+        security_handler = logging.FileHandler('logs/security_audit_trail.log')
+        security_handler.setLevel(logging.DEBUG)
+        
+        # Security-specific formatter
+        security_formatter = logging.Formatter(
+            '%(asctime)s - SECURITY_AUDIT - %(levelname)s - %(message)s'
+        )
+        security_handler.setFormatter(security_formatter)
+        
+        # Prevent duplicate handlers
+        if not self.security_logger.handlers:
+            self.security_logger.addHandler(security_handler)
+            self.security_logger.setLevel(logging.DEBUG)
+    
+    def _log_security_event(self, event_type: str, details: Dict[str, Any], severity: str = "INFO"):
+        """Log security events for audit trail"""
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "event_type": event_type,
+            "severity": severity,
+            "details": details,
+            "engine_state": {
+                "network_failures": self.network_failures,
+                "auth_failures": self.auth_failures,
+                "authorization_failures": self.authorization_failures,
+                "test_errors": self.test_errors
+            }
+        }
+        
+        if severity == "ERROR":
+            self.security_logger.error(json.dumps(log_entry))
+        elif severity == "WARNING":
+            self.security_logger.warning(json.dumps(log_entry))
+        else:
+            self.security_logger.info(json.dumps(log_entry))
+    
+    def _handle_network_failure(self, error: Exception, endpoint: str, operation: str) -> Dict[str, Any]:
+        """Handle network failures with retry logic and comprehensive logging"""
+        self.network_failures += 1
+        
+        error_details = {
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "endpoint": endpoint,
+            "operation": operation,
+            "timestamp": datetime.now().isoformat(),
+            "retry_count": 0
+        }
+        
+        # Log network failure for security audit
+        self._log_security_event(
+            "NETWORK_FAILURE",
+            error_details,
+            "WARNING"
+        )
+        
+        # Check if we should stop testing due to excessive network failures
+        if self.network_failures >= self.network_error_threshold:
+            self._log_security_event(
+                "NETWORK_FAILURE_THRESHOLD_EXCEEDED",
+                {"threshold": self.network_error_threshold, "current_failures": self.network_failures},
+                "ERROR"
+            )
+            raise Exception(f"Network failure threshold exceeded ({self.network_failures}/{self.network_error_threshold}). Stopping security testing.")
+        
+        return {
+            "handled": True,
+            "retry_recommended": True,
+            "error_details": error_details
+        }
+    
+    def _handle_authentication_failure(self, error: Exception, endpoint: str, operation: str) -> Dict[str, Any]:
+        """Handle authentication failures with comprehensive logging"""
+        self.auth_failures += 1
+        
+        error_details = {
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "endpoint": endpoint,
+            "operation": operation,
+            "timestamp": datetime.now().isoformat(),
+            "failure_count": self.auth_failures
+        }
+        
+        # Log authentication failure for security audit
+        self._log_security_event(
+            "AUTHENTICATION_FAILURE",
+            error_details,
+            "WARNING"
+        )
+        
+        # Check if we should stop testing due to excessive auth failures
+        if self.auth_failures >= self.auth_failure_threshold:
+            self._log_security_event(
+                "AUTHENTICATION_FAILURE_THRESHOLD_EXCEEDED",
+                {"threshold": self.auth_failure_threshold, "current_failures": self.auth_failures},
+                "ERROR"
+            )
+            raise Exception(f"Authentication failure threshold exceeded ({self.auth_failures}/{self.auth_failure_threshold}). Stopping security testing.")
+        
+        return {
+            "handled": True,
+            "retry_recommended": False,  # Auth failures typically don't benefit from retries
+            "error_details": error_details
+        }
+    
+    def _handle_authorization_failure(self, error: Exception, endpoint: str, operation: str) -> Dict[str, Any]:
+        """Handle authorization failures with comprehensive logging"""
+        self.authorization_failures += 1
+        
+        error_details = {
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "endpoint": endpoint,
+            "operation": operation,
+            "timestamp": datetime.now().isoformat(),
+            "failure_count": self.authorization_failures
+        }
+        
+        # Log authorization failure for security audit
+        self._log_security_event(
+            "AUTHORIZATION_FAILURE",
+            error_details,
+            "WARNING"
+        )
+        
+        return {
+            "handled": True,
+            "retry_recommended": False,  # Auth failures typically don't benefit from retries
+            "error_details": error_details
+        }
+    
+    def _safe_request(self, method: str, url: str, **kwargs) -> requests.Response:
+        """Make HTTP request with comprehensive error handling and retry logic"""
+        last_error = None
+        
+        for attempt in range(self.max_retries + 1):
+            try:
+                # Add timeout if not specified
+                if 'timeout' not in kwargs:
+                    kwargs['timeout'] = self.timeout
+                
+                response = self.session.request(method, url, **kwargs)
+                
+                # Log successful request for audit trail
+                self._log_security_event(
+                    "REQUEST_SUCCESS",
+                    {
+                        "method": method,
+                        "url": url,
+                        "status_code": response.status_code,
+                        "attempt": attempt + 1
+                    }
+                )
+                
+                return response
+                
+            except requests.exceptions.ConnectionError as e:
+                last_error = e
+                error_handling = self._handle_network_failure(e, url, f"{method} request")
+                
+                if not error_handling["retry_recommended"] or attempt == self.max_retries:
+                    break
+                    
+                # Wait before retry
+                time.sleep(self.retry_delay * (attempt + 1))
+                
+            except requests.exceptions.Timeout as e:
+                last_error = e
+                error_handling = self._handle_network_failure(e, url, f"{method} request")
+                
+                if not error_handling["retry_recommended"] or attempt == self.max_retries:
+                    break
+                    
+                # Wait before retry
+                time.sleep(self.retry_delay * (attempt + 1))
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code in [401, 403]:
+                    # Authentication/Authorization failure
+                    if e.response.status_code == 401:
+                        error_handling = self._handle_authentication_failure(e, url, f"{method} request")
+                    else:
+                        error_handling = self._handle_authorization_failure(e, url, f"{method} request")
+                    
+                    # Don't retry auth failures
+                    break
+                else:
+                    # Other HTTP errors
+                    last_error = e
+                    if attempt == self.max_retries:
+                        break
+                    time.sleep(self.retry_delay * (attempt + 1))
+                    
+            except Exception as e:
+                last_error = e
+                self.test_errors += 1
+                
+                # Log unexpected error for security audit
+                self._log_security_event(
+                    "UNEXPECTED_ERROR",
+                    {
+                        "error_type": type(e).__name__,
+                        "error_message": str(e),
+                        "url": url,
+                        "method": method,
+                        "attempt": attempt + 1
+                    },
+                    "ERROR"
+                )
+                
+                if attempt == self.max_retries:
+                    break
+                time.sleep(self.retry_delay * (attempt + 1))
+        
+        # If we get here, all retries failed
+        if last_error:
+            self._log_security_event(
+                "REQUEST_FAILED_AFTER_RETRIES",
+                {
+                    "method": method,
+                    "url": url,
+                    "final_error": str(last_error),
+                    "total_attempts": self.max_retries + 1
+                },
+                "ERROR"
+            )
+            raise last_error
+        
+        # This should never happen, but just in case
+        raise Exception("Request failed after all retry attempts")
+    
+    def _log_test_execution(self, test_name: str, endpoint: str, method: str, 
+                           payload: Optional[str] = None, result: Optional[Dict[str, Any]] = None):
+        """Log test execution details for security audit trail"""
+        log_entry = {
+            "test_name": test_name,
+            "endpoint": endpoint,
+            "method": method,
+            "timestamp": datetime.now().isoformat(),
+            "payload": payload,
+            "result": result
+        }
+        
+        self._log_security_event("TEST_EXECUTION", log_entry)
+    
+    def _log_vulnerability_found(self, test_name: str, endpoint: str, method: str,
+                                vulnerability_details: str, severity: str, payload: Optional[str] = None):
+        """Log discovered vulnerabilities for security audit trail"""
+        log_entry = {
+            "test_name": test_name,
+            "endpoint": endpoint,
+            "method": method,
+            "vulnerability_details": vulnerability_details,
+            "severity": severity,
+            "payload": payload,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        self._log_security_event("VULNERABILITY_DISCOVERED", log_entry, "WARNING")
+    
+    def get_error_summary(self) -> Dict[str, Any]:
+        """Get comprehensive error summary for monitoring and reporting"""
+        return {
+            "network_failures": self.network_failures,
+            "authentication_failures": self.auth_failures,
+            "authorization_failures": self.authorization_failures,
+            "test_errors": self.test_errors,
+            "total_errors": self.network_failures + self.auth_failures + self.authorization_failures + self.test_errors,
+            "thresholds": {
+                "network_error_threshold": self.network_error_threshold,
+                "auth_failure_threshold": self.auth_failure_threshold
+            },
+            "status": {
+                "network_healthy": self.network_failures < self.network_error_threshold,
+                "auth_healthy": self.auth_failures < self.auth_failure_threshold
+            }
+        }
     
     async def test_endpoint_security(self, endpoint_data: Dict[str, Any]) -> EndpointSecurityReport:
         """Test security of a single endpoint"""
@@ -439,6 +737,9 @@ class SecurityTestingEngine:
         try:
             url = f"{self.base_url}{endpoint_path}"
             
+            # Log test execution for security audit
+            self._log_test_execution("Privilege Escalation Parameters Test", endpoint_path, method)
+            
             # Create payload with privilege escalation parameters
             escalation_params = {
                 "role": "admin",
@@ -463,8 +764,8 @@ class SecurityTestingEngine:
                 for param in parameters['body_params']:
                     escalation_params[param] = "test_value"
             
-            # Test with privilege escalation parameters
-            response = self.session.post(url, json=escalation_params, timeout=self.timeout)
+            # Test with privilege escalation parameters using safe request
+            response = self._safe_request('POST', url, json=escalation_params)
             
             # Check for privilege escalation indicators
             vulnerability_found = False
@@ -492,8 +793,19 @@ class SecurityTestingEngine:
             # 3. Check for role elevation confirmation
             if any(phrase in response_text for phrase in ["role.*admin", "admin.*true", "privileges.*granted"]):
                 vulnerability_found = True
-                vulnerability_details.append("Role elevation confirmed in response")
+                vulnerability_details.append("Role elevation confirmation in response")
                 risk_score += 5.0
+            
+            # Log vulnerability if found for security audit
+            if vulnerability_found:
+                self._log_vulnerability_found(
+                    "Privilege Escalation Parameters Test",
+                    endpoint_path,
+                    method,
+                    "; ".join(vulnerability_details),
+                    "HIGH",
+                    str(escalation_params)
+                )
             
             # Determine severity and CVSS metrics
             if vulnerability_found:
@@ -758,14 +1070,17 @@ class SecurityTestingEngine:
         start_time = time.time()
         
         try:
+            # Log test execution for security audit
+            self._log_test_execution(f"SQL Injection Test - {param}", endpoint_path, method, payload)
+            
             if method == 'GET':
                 url = f"{self.base_url}{endpoint_path}"
                 params = {param: payload}
-                response = self.session.get(url, params=params, timeout=self.timeout)
+                response = self._safe_request('GET', url, params=params)
             else:
                 url = f"{self.base_url}{endpoint_path}"
                 data = {param: payload}
-                response = self.session.post(url, json=data, timeout=self.timeout)
+                response = self._safe_request('POST', url, json=data)
             
             # Enhanced SQL analysis using sqlparse
             sql_analyzer = SQLAnalyzer()
@@ -774,6 +1089,17 @@ class SecurityTestingEngine:
             
             # Analyze response for SQL injection indicators
             vulnerability_found = self._detect_sql_injection(response)
+            
+            # Log vulnerability if found for security audit
+            if vulnerability_found:
+                self._log_vulnerability_found(
+                    f"SQL Injection Test - {param}",
+                    endpoint_path,
+                    method,
+                    "SQL injection vulnerability detected",
+                    "CRITICAL",
+                    payload
+                )
             
             if vulnerability_found:
                 # Enhanced recommendations based on database type

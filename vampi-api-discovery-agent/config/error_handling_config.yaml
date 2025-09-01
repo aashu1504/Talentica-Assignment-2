@@ -1,0 +1,76 @@
+# Error Handling Configuration for VAmPI Security Testing Engine
+# This file configures how the system handles various types of failures and errors
+
+# Network Failure Handling
+network_failures:
+  max_retries: 3                    # Maximum number of retry attempts for network failures
+  retry_delay: 2                    # Base delay between retries in seconds
+  exponential_backoff: true         # Use exponential backoff for retries
+  threshold_before_stop: 5          # Stop testing after this many network failures
+  timeout_settings:
+    connection_timeout: 10          # Connection timeout in seconds
+    read_timeout: 30               # Read timeout in seconds
+    total_timeout: 60              # Total request timeout in seconds
+
+# Authentication Failure Handling
+authentication_failures:
+  threshold_before_stop: 3          # Stop testing after this many auth failures
+  log_credentials: false            # Whether to log credential attempts (security risk)
+  track_failed_attempts: true       # Track failed authentication attempts
+  rate_limiting:
+    max_attempts_per_minute: 10     # Maximum auth attempts per minute
+    block_duration: 300             # Block duration in seconds after threshold
+
+# Authorization Failure Handling
+authorization_failures:
+  threshold_before_stop: 5          # Stop testing after this many authorization failures
+  log_access_attempts: true         # Log access control attempts
+  track_privilege_escalation: true  # Track privilege escalation attempts
+
+# General Error Handling
+general_errors:
+  max_test_errors: 10               # Maximum number of test execution errors
+  log_all_errors: true              # Log all errors for debugging
+  continue_on_error: true           # Continue testing even if some tests fail
+  error_reporting:
+    include_stack_traces: false     # Include stack traces in error logs
+    include_request_details: true   # Include request details in error logs
+    include_response_details: false # Include response details in error logs
+
+# Security Audit Logging
+security_logging:
+  enabled: true                     # Enable comprehensive security logging
+  log_level: "DEBUG"                # Log level for security events
+  log_file: "logs/security_audit_trail.log"  # Security log file path
+  log_rotation:
+    max_size_mb: 100               # Maximum log file size in MB
+    backup_count: 5                # Number of backup log files to keep
+  events_to_log:
+    - "NETWORK_FAILURE"
+    - "AUTHENTICATION_FAILURE"
+    - "AUTHORIZATION_FAILURE"
+    - "VULNERABILITY_DISCOVERED"
+    - "TEST_EXECUTION"
+    - "REQUEST_SUCCESS"
+    - "REQUEST_FAILED_AFTER_RETRIES"
+    - "UNEXPECTED_ERROR"
+
+# Recovery and Resilience
+recovery:
+  automatic_recovery: true          # Attempt automatic recovery from failures
+  circuit_breaker:
+    enabled: true                   # Enable circuit breaker pattern
+    failure_threshold: 5            # Failures before opening circuit
+    recovery_timeout: 60            # Time to wait before attempting recovery
+    half_open_max_attempts: 3      # Max attempts in half-open state
+
+# Monitoring and Alerting
+monitoring:
+  health_check_interval: 30        # Health check interval in seconds
+  metrics_collection: true          # Collect performance and error metrics
+  alerting:
+    enabled: true                   # Enable alerting for critical failures
+    critical_threshold: 80          # Percentage of failures before alert
+    notification_channels:          # Notification channels for alerts
+      - "log"
+      - "console" 
