@@ -78,21 +78,41 @@ class Impact(str, Enum):
 
 
 class CVSSMetrics(BaseModel):
-    """CVSS v3.1 Base Score Metrics"""
+    """CVSS v3.1 Base Score Metrics with Full Scoring and Justification"""
     attack_vector: AttackVector = Field(..., description="Attack Vector")
     attack_complexity: AttackComplexity = Field(..., description="Attack Complexity")
-    privileges_required: PrivilegesRequired = Field(..., description="Privileges Required")
+    privileges_required: PrivilegesRequired = Field(..., description="Priviles Required")
     user_interaction: UserInteraction = Field(..., description="User Interaction")
     scope: Scope = Field(..., description="Scope")
     confidentiality_impact: Impact = Field(..., description="Confidentiality Impact")
     integrity_impact: Impact = Field(..., description="Integrity Impact")
     availability_impact: Impact = Field(..., description="Availability Impact")
     
+    # Enhanced CVSS v3.1 scoring fields
+    base_score: Optional[float] = Field(None, description="Calculated CVSS Base Score (0.0 to 10.0)")
+    base_severity: Optional[str] = Field(None, description="Base severity rating (None, Low, Medium, High, Critical)")
+    temporal_score: Optional[float] = Field(None, description="Temporal score if applicable")
+    environmental_score: Optional[float] = Field(None, description="Environmental score if applicable")
+    overall_score: Optional[float] = Field(None, description="Overall CVSS score")
+    overall_severity: Optional[str] = Field(None, description="Overall severity rating")
+    
+    # Justification fields for each metric
+    attack_vector_justification: Optional[str] = Field(None, description="Justification for attack vector selection")
+    attack_complexity_justification: Optional[str] = Field(None, description="Justification for attack complexity")
+    privileges_justification: Optional[str] = Field(None, description="Justification for privileges required")
+    user_interaction_justification: Optional[str] = Field(None, description="Justification for user interaction")
+    scope_justification: Optional[str] = Field(None, description="Justification for scope selection")
+    impact_justification: Optional[str] = Field(None, description="Justification for impact assessments")
+    
+    # CVSS v3.1 specific fields
+    exploitability_score: Optional[float] = Field(None, description="Exploitability subscore")
+    impact_score: Optional[float] = Field(None, description="Impact subscore")
+    
     @property
-    def base_score(self) -> float:
-        """Calculate CVSS Base Score (0.0 to 10.0)"""
-        # Simplified CVSS calculation - in production, use proper CVSS library
-        impact_score = 0
+    def calculated_base_score(self) -> float:
+        """Calculate CVSS v3.1 Base Score according to official specification"""
+        # Calculate Impact Subscore
+        impact_score = 0.0
         if self.confidentiality_impact == Impact.HIGH:
             impact_score += 0.56
         elif self.confidentiality_impact == Impact.LOW:
@@ -108,49 +128,200 @@ class CVSSMetrics(BaseModel):
         elif self.availability_impact == Impact.LOW:
             impact_score += 0.22
         
-        if impact_score == 0:
+        # If no impact, return 0
+        if impact_score == 0.0:
             return 0.0
         
-        exploitability = 8.22
+        # Calculate Exploitability Subscore
+        exploitability_score = 8.22
+        
+        # Attack Vector multiplier
         if self.attack_vector == AttackVector.NETWORK:
-            exploitability *= 0.85
+            exploitability_score *= 0.85
         elif self.attack_vector == AttackVector.ADJACENT_NETWORK:
-            exploitability *= 0.62
+            exploitability_score *= 0.62
         elif self.attack_vector == AttackVector.LOCAL:
-            exploitability *= 0.55
+            exploitability_score *= 0.55
         elif self.attack_vector == AttackVector.PHYSICAL:
-            exploitability *= 0.2
-            
+            exploitability_score *= 0.2
+        
+        # Attack Complexity multiplier
         if self.attack_complexity == AttackComplexity.HIGH:
-            exploitability *= 0.45
-            
-        if self.privileges_required == PrivilegesRequired.NONE:
-            exploitability *= 0.85
-        elif self.privileges_required == PrivilegesRequired.LOW:
-            exploitability *= 0.62
-        elif self.privileges_required == PrivilegesRequired.HIGH:
-            exploitability *= 0.27
-            
-        if self.user_interaction == UserInteraction.NONE:
-            exploitability *= 0.85
-        elif self.user_interaction == UserInteraction.REQUIRED:
-            exploitability *= 0.62
-            
+            exploitability_score *= 0.45
+        
+        # Privileges Required multiplier (depends on scope)
         if self.scope == Scope.UNCHANGED:
-            exploitability *= 6.42
+            if self.privileges_required == PrivilegesRequired.NONE:
+                exploitability_score *= 0.85
+            elif self.privileges_required == PrivilegesRequired.LOW:
+                exploitability_score *= 0.62
+            elif self.privileges_required == PrivilegesRequired.HIGH:
+                exploitability_score *= 0.27
+        else:  # Scope Changed
+            if self.privileges_required == PrivilegesRequired.NONE:
+                exploitability_score *= 0.85
+            elif self.privileges_required == PrivilegesRequired.LOW:
+                exploitability_score *= 0.68
+            elif self.privileges_required == PrivilegesRequired.HIGH:
+                exploitability_score *= 0.50
+        
+        # User Interaction multiplier
+        if self.user_interaction == UserInteraction.NONE:
+            exploitability_score *= 0.85
+        elif self.user_interaction == UserInteraction.REQUIRED:
+            exploitability_score *= 0.62
+        
+        # Scope multiplier
+        if self.scope == Scope.UNCHANGED:
+            exploitability_score *= 6.42
         elif self.scope == Scope.CHANGED:
-            exploitability *= 7.52
+            exploitability_score *= 7.52
         
-        base_score = min(10.0, max(0.0, impact_score + exploitability))
+        # Calculate final base score
+        base_score = min(10.0, max(0.0, impact_score + exploitability_score))
         
-        if base_score >= 9.0:
-            return 9.0
-        elif base_score >= 7.0:
-            return 7.0
-        elif base_score >= 4.0:
-            return 4.0
+        # Round to 1 decimal place as per CVSS specification
+        return round(base_score, 1)
+    
+    @property
+    def calculated_severity(self) -> str:
+        """Determine severity based on CVSS base score"""
+        score = self.calculated_base_score
+        if score >= 9.0:
+            return "Critical"
+        elif score >= 7.0:
+            return "High"
+        elif score >= 4.0:
+            return "Medium"
+        elif score >= 0.1:
+            return "Low"
         else:
-            return 0.0
+            return "None"
+    
+    def calculate_scores(self):
+        """Calculate all CVSS scores and update fields"""
+        self.base_score = self.calculated_base_score
+        self.base_severity = self.calculated_severity
+        self.exploitability_score = self._calculate_exploitability_subscore()
+        self.impact_score = self._calculate_impact_subscore()
+        
+        # For now, set overall scores same as base scores
+        # In production, these would include temporal and environmental factors
+        self.overall_score = self.base_score
+        self.overall_severity = self.base_severity
+    
+    def _calculate_exploitability_subscore(self) -> float:
+        """Calculate exploitability subscore component"""
+        score = 8.22
+        
+        # Apply multipliers (same logic as in calculated_base_score)
+        if self.attack_vector == AttackVector.NETWORK:
+            score *= 0.85
+        elif self.attack_vector == AttackVector.ADJACENT_NETWORK:
+            score *= 0.62
+        elif self.attack_vector == AttackVector.LOCAL:
+            score *= 0.55
+        elif self.attack_vector == AttackVector.PHYSICAL:
+            score *= 0.2
+        
+        if self.attack_complexity == AttackComplexity.HIGH:
+            score *= 0.45
+        
+        if self.scope == Scope.UNCHANGED:
+            if self.privileges_required == PrivilegesRequired.NONE:
+                score *= 0.85
+            elif self.privileges_required == PrivilegesRequired.LOW:
+                score *= 0.62
+            elif self.privileges_required == PrivilegesRequired.HIGH:
+                score *= 0.27
+        else:
+            if self.privileges_required == PrivilegesRequired.NONE:
+                score *= 0.85
+            elif self.privileges_required == PrivilegesRequired.LOW:
+                score *= 0.68
+            elif self.privileges_required == PrivilegesRequired.HIGH:
+                score *= 0.50
+        
+        if self.user_interaction == UserInteraction.NONE:
+            score *= 0.85
+        elif self.user_interaction == UserInteraction.REQUIRED:
+            score *= 0.62
+        
+        return round(score, 1)
+    
+    def _calculate_impact_subscore(self) -> float:
+        """Calculate impact subscore component"""
+        score = 0.0
+        
+        if self.confidentiality_impact == Impact.HIGH:
+            score += 0.56
+        elif self.confidentiality_impact == Impact.LOW:
+            score += 0.22
+            
+        if self.integrity_impact == Impact.HIGH:
+            score += 0.56
+        elif self.integrity_impact == Impact.LOW:
+            score += 0.22
+            
+        if self.availability_impact == Impact.HIGH:
+            score += 0.56
+        elif self.availability_impact == Impact.LOW:
+            score += 0.22
+        
+        return round(score, 1)
+
+
+class VulnerabilityDescription(BaseModel):
+    """Detailed vulnerability description with technical analysis"""
+    vulnerability_type: str = Field(..., description="Type of vulnerability")
+    vulnerability_name: str = Field(..., description="Specific vulnerability name")
+    description: str = Field(..., description="Detailed description of the vulnerability")
+    technical_details: str = Field(..., description="Technical explanation of how the vulnerability works")
+    root_cause: str = Field(..., description="Root cause analysis")
+    attack_vectors: List[str] = Field(..., description="Possible attack vectors")
+    prerequisites: List[str] = Field(..., description="Prerequisites for exploitation")
+    exploitation_conditions: str = Field(..., description="Conditions required for successful exploitation")
+    vulnerability_classification: str = Field(..., description="OWASP classification")
+    cwe_id: Optional[str] = Field(None, description="Common Weakness Enumeration ID")
+    cve_references: List[str] = Field(default_factory=list, description="Related CVE references")
+    affected_components: List[str] = Field(..., description="System components affected")
+    data_flow_analysis: str = Field(..., description="Data flow analysis for the vulnerability")
+    architecture_impact: str = Field(..., description="Impact on system architecture")
+
+
+class TechnicalImpactAnalysis(BaseModel):
+    """Comprehensive technical impact analysis"""
+    system_level_impact: str = Field(..., description="System-level technical impact")
+    data_impact: str = Field(..., description="Impact on data integrity, confidentiality, and availability")
+    network_impact: str = Field(..., description="Impact on network security and communication")
+    application_impact: str = Field(..., description="Impact on application functionality and security")
+    infrastructure_impact: str = Field(..., description="Impact on underlying infrastructure")
+    integration_impact: str = Field(..., description="Impact on system integrations and APIs")
+    performance_impact: str = Field(..., description="Performance and availability impact")
+    scalability_impact: str = Field(..., description="Impact on system scalability")
+    maintenance_impact: str = Field(..., description="Impact on system maintenance and operations")
+    technical_risk_propagation: str = Field(..., description="How technical risks propagate through the system")
+    cascading_effects: List[str] = Field(..., description="Cascading technical effects")
+    recovery_complexity: str = Field(..., description="Complexity of technical recovery")
+    technical_debt_implications: str = Field(..., description="Implications for technical debt")
+
+
+class ProofOfConcept(BaseModel):
+    """Enhanced proof-of-concept with detailed technical information"""
+    poc_title: str = Field(..., description="Title of the proof-of-concept")
+    poc_description: str = Field(..., description="Description of what the PoC demonstrates")
+    target_environment: str = Field(..., description="Target environment for the PoC")
+    prerequisites: List[str] = Field(..., description="Prerequisites for running the PoC")
+    attack_scenario: str = Field(..., description="Detailed attack scenario")
+    step_by_step_exploitation: List[str] = Field(..., description="Step-by-step exploitation process")
+    code_implementation: str = Field(..., description="Complete code implementation")
+    payload_details: Dict[str, Any] = Field(..., description="Detailed payload information")
+    expected_results: str = Field(..., description="Expected results when PoC is successful")
+    success_indicators: List[str] = Field(..., description="Indicators of successful exploitation")
+    failure_indicators: List[str] = Field(..., description="Indicators of failed exploitation")
+    safety_notes: str = Field(..., description="Safety notes and warnings")
+    testing_environment: str = Field(..., description="Recommended testing environment")
+    mitigation_during_testing: str = Field(..., description="Mitigation measures during testing")
 
 
 class SecurityTest(BaseModel):
@@ -171,6 +342,38 @@ class SecurityTest(BaseModel):
     proof_of_concept: Optional[str] = Field(None, description="Proof of concept exploit")
     test_timestamp: datetime = Field(default_factory=datetime.now, description="When test was performed")
     test_duration: Optional[float] = Field(None, description="Test duration in seconds")
+
+
+class EnhancedSecurityTest(BaseModel):
+    """Enhanced security test with comprehensive technical findings"""
+    # Inherit from SecurityTest
+    test_name: str = Field(..., description="Name of the security test")
+    test_category: OWASPCategory = Field(..., description="OWASP category")
+    test_description: str = Field(..., description="Description of what was tested")
+    test_method: str = Field(..., description="Method used for testing")
+    payload_used: Optional[str] = Field(None, description="Payload used in testing")
+    request_details: Optional[Dict[str, Any]] = Field(None, description="Request details")
+    response_details: Optional[Dict[str, Any]] = Field(None, description="Response details")
+    vulnerability_found: bool = Field(..., description="Whether vulnerability was found")
+    vulnerability_details: Optional[str] = Field(None, description="Details about the vulnerability")
+    cvss_metrics: Optional[CVSSMetrics] = Field(None, description="CVSS metrics if vulnerability found")
+    severity: VulnerabilitySeverity = Field(..., description="Vulnerability severity")
+    risk_score: float = Field(..., description="Risk score (0.0 to 10.0)")
+    recommendations: List[str] = Field(default_factory=list, description="Security recommendations")
+    proof_of_concept: Optional[str] = Field(None, description="Proof of concept exploit")
+    test_timestamp: datetime = Field(default_factory=datetime.now, description="When test was performed")
+    test_duration: Optional[float] = Field(None, description="Test duration in seconds")
+    
+    # Enhanced Technical Findings fields
+    detailed_vulnerability_description: Optional[VulnerabilityDescription] = Field(None, description="Detailed vulnerability description")
+    technical_impact_analysis: Optional[TechnicalImpactAnalysis] = Field(None, description="Technical impact analysis")
+    enhanced_proof_of_concept: Optional[ProofOfConcept] = Field(None, description="Enhanced proof-of-concept")
+    cvss_justification: Optional[str] = Field(None, description="Detailed CVSS scoring justification")
+    technical_risk_assessment: Optional[str] = Field(None, description="Technical risk assessment")
+    remediation_complexity: Optional[str] = Field(None, description="Complexity of remediation")
+    testing_methodology: Optional[str] = Field(None, description="Testing methodology used")
+    false_positive_analysis: Optional[str] = Field(None, description="False positive analysis")
+    validation_methods: List[str] = Field(default_factory=list, description="Methods used to validate the vulnerability")
 
 
 class EndpointSecurityReport(BaseModel):
@@ -282,12 +485,12 @@ class SecurityAssessmentReport(BaseModel):
     endpoint_reports: List[EndpointSecurityReport] = Field(..., description="Detailed endpoint security reports")
     test_suite_used: SecurityTestSuite = Field(..., description="Security test suite information")
     risk_analysis: str = Field(..., description="Detailed risk analysis")
-    recommendations: List[str] = Field(..., description="Security recommendations")
-    remediation_priority: List[str] = Field(..., description="Prioritized remediation actions")
+    recommendations: List[str] = Field(default_factory=list, description="Security recommendations")
+    remediation_priority: List[str] = Field(default_factory=list, description="Prioritized remediation actions")
     
     # Report metadata
     generated_by: str = Field(..., description="Tool/agent that generated the report")
-    generated_at: datetime = Field(..., description="Report generation timestamp")
+    generated_at: datetime = Field(default_factory=datetime.now, description="Report generation timestamp")
     version: str = Field(..., description="Report version")
     
     # Additional professional features

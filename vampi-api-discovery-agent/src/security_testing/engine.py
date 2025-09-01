@@ -25,6 +25,9 @@ from .models import (
 # SQL analyzer imports for enhanced SQL injection testing
 from .sql_analyzer import SQLAnalyzer, DatabaseType, analyze_sql_payload, fingerprint_database
 
+# Technical findings generator for enhanced reporting
+from .technical_findings_generator import TechnicalFindingsGenerator
+
 
 class SecurityTestingEngine:
     """Main engine for performing API security testing"""
@@ -50,6 +53,9 @@ class SecurityTestingEngine:
         self.auth_failures = 0
         self.authorization_failures = 0
         self.test_errors = 0
+        
+        # Technical findings generator for enhanced reporting
+        self.technical_findings_generator = TechnicalFindingsGenerator()
         
         # Default test suite configuration
         self.test_suite = SecurityTestSuite(
@@ -1121,6 +1127,7 @@ class SecurityTestingEngine:
                     recommendations.append(f"Payload SQL type: {payload_analysis.sql_type}")
                     recommendations.append(f"Payload vulnerability level: {payload_analysis.vulnerability_level}")
                 
+                # Create enhanced CVSS metrics with technical findings
                 cvss_metrics = CVSSMetrics(
                     attack_vector=AttackVector.NETWORK,
                     attack_complexity=AttackComplexity.LOW,
@@ -1132,8 +1139,13 @@ class SecurityTestingEngine:
                     availability_impact=Impact.HIGH
                 )
                 
+                # Enhance CVSS metrics with detailed justification and scoring
+                cvss_metrics = self.technical_findings_generator.enhance_cvss_metrics(
+                    cvss_metrics, "SQL_INJECTION", endpoint_path
+                )
+                
                 severity = VulnerabilitySeverity.CRITICAL
-                risk_score = 9.0
+                risk_score = cvss_metrics.base_score or 9.0
             else:
                 cvss_metrics = None
                 severity = VulnerabilitySeverity.INFO
@@ -1158,7 +1170,9 @@ class SecurityTestingEngine:
                 request_details={"method": method, "parameter": param, "payload": payload},
                 response_details={"status_code": response.status_code, "response_length": len(response.text)},
                 vulnerability_found=vulnerability_found,
-                vulnerability_details="SQL injection vulnerability detected" if vulnerability_found else None,
+                vulnerability_details=self._generate_detailed_vulnerability_description(
+                    "SQL_INJECTION", endpoint_path, method, param, payload
+                ) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
                 risk_score=risk_score,
@@ -4372,3 +4386,49 @@ for test in token_tests:
 print("\\n🔍 Check which invalid tokens were accepted!")
 """
         return poc
+    def _generate_detailed_vulnerability_description(self, vulnerability_type: str, 
+                                                   endpoint: str, method: str, 
+                                                   parameter: str, payload: str) -> str:
+        """Generate detailed vulnerability description using technical findings generator"""
+        try:
+            # Use the technical findings generator to create detailed description
+            detailed_desc = self.technical_findings_generator.generate_detailed_vulnerability_description(
+                vulnerability_type, endpoint, method, parameter, payload
+            )
+            
+            # Format the description for display
+            description = f"""
+**Vulnerability Type:** {detailed_desc.vulnerability_name}
+**CWE ID:** {detailed_desc.cwe_id}
+**Description:** {detailed_desc.description}
+
+**Technical Details:**
+{detailed_desc.technical_details}
+
+**Root Cause:**
+{detailed_desc.root_cause}
+
+**Attack Vectors:**
+{', '.join(detailed_desc.attack_vectors)}
+
+**Prerequisites:**
+{', '.join(detailed_desc.prerequisites)}
+
+**Exploitation Conditions:**
+{detailed_desc.exploitation_conditions}
+
+**Affected Components:**
+{', '.join(detailed_desc.affected_components)}
+
+**Data Flow Analysis:**
+{detailed_desc.data_flow_analysis}
+
+**Architecture Impact:**
+{detailed_desc.architecture_impact}
+"""
+            return description.strip()
+            
+        except Exception as e:
+            self.logger.error(f"Error generating detailed vulnerability description: {e}")
+            # Fallback to basic description
+            return f"{vulnerability_type} vulnerability detected in {endpoint} endpoint using {method} method with parameter '{parameter}'"
