@@ -345,6 +345,13 @@ class SecurityTest(BaseModel):
     
     # Enhanced Technical Findings fields
     technical_impact_analysis: Optional[str] = Field(None, description="Technical impact analysis")
+    
+    # Enhanced Remediation Guidance fields
+    implementation_timeline: Optional[str] = Field(None, description="Implementation timeline and effort estimates")
+    best_practice_guidelines: Optional[str] = Field(None, description="Best practice security guidelines")
+    prevention_strategies: Optional[str] = Field(None, description="Prevention strategies for similar issues")
+    remediation_complexity: Optional[str] = Field(None, description="Complexity assessment for remediation")
+    resource_requirements: Optional[str] = Field(None, description="Resource requirements for implementation")
 
 
 class EnhancedSecurityTest(BaseModel):

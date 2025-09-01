@@ -27,6 +27,7 @@ from .sql_analyzer import SQLAnalyzer, DatabaseType, analyze_sql_payload, finger
 
 # Technical findings generator for enhanced reporting
 from .technical_findings_generator import TechnicalFindingsGenerator
+from .remediation_guidance_generator import RemediationGuidanceGenerator
 
 
 class SecurityTestingEngine:
@@ -56,6 +57,9 @@ class SecurityTestingEngine:
         
         # Technical findings generator for enhanced reporting
         self.technical_findings_generator = TechnicalFindingsGenerator()
+        
+        # Initialize remediation guidance generator
+        self.remediation_guidance_generator = RemediationGuidanceGenerator()
         
         # Default test suite configuration
         self.test_suite = SecurityTestSuite(
@@ -884,6 +888,21 @@ class SecurityTestingEngine:
                 technical_impact_analysis=self._generate_technical_impact_analysis(
                     "PRIVILEGE_ESCALATION", severity.value, endpoint_path
                 ) if vulnerability_found else None,
+                implementation_timeline=self._generate_implementation_timeline(
+                    "PRIVILEGE_ESCALATION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
+                best_practice_guidelines=self._generate_best_practice_guidelines(
+                    "PRIVILEGE_ESCALATION", severity.value
+                ) if vulnerability_found else None,
+                prevention_strategies=self._generate_prevention_strategies(
+                    "PRIVILEGE_ESCALATION", severity.value
+                ) if vulnerability_found else None,
+                remediation_complexity=self._generate_remediation_complexity(
+                    "PRIVILEGE_ESCALATION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
+                resource_requirements=self._generate_resource_requirements(
+                    "PRIVILEGE_ESCALATION", severity.value
+                ) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
                 risk_score=risk_score,
@@ -1180,6 +1199,21 @@ class SecurityTestingEngine:
                 ) if vulnerability_found else None,
                 technical_impact_analysis=self._generate_technical_impact_analysis(
                     "SQL_INJECTION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
+                implementation_timeline=self._generate_implementation_timeline(
+                    "SQL_INJECTION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
+                best_practice_guidelines=self._generate_best_practice_guidelines(
+                    "SQL_INJECTION", severity.value
+                ) if vulnerability_found else None,
+                prevention_strategies=self._generate_prevention_strategies(
+                    "SQL_INJECTION", severity.value
+                ) if vulnerability_found else None,
+                remediation_complexity=self._generate_remediation_complexity(
+                    "SQL_INJECTION", severity.value, endpoint_path
+                ) if vulnerability_found else None,
+                resource_requirements=self._generate_resource_requirements(
+                    "SQL_INJECTION", severity.value
                 ) if vulnerability_found else None,
                 cvss_metrics=cvss_metrics,
                 severity=severity,
@@ -4497,3 +4531,58 @@ print("\\n🔍 Check which invalid tokens were accepted!")
             self.logger.error(f"Error generating technical impact analysis: {e}")
             # Fallback to basic impact description
             return f"Technical impact analysis for {vulnerability_type} vulnerability in {endpoint} endpoint with {severity} severity requires comprehensive assessment of system components, data flows, and infrastructure dependencies."
+    
+    def _generate_implementation_timeline(self, vulnerability_type: str, 
+                                        severity: str, endpoint: str) -> str:
+        """Generate implementation timeline and effort estimates using remediation guidance generator"""
+        try:
+            return self.remediation_guidance_generator.generate_implementation_timeline(
+                vulnerability_type, severity, endpoint
+            )
+        except Exception as e:
+            self.logger.error(f"Error generating implementation timeline: {e}")
+            return f"Implementation timeline for {vulnerability_type} ({severity}) requires detailed assessment based on specific endpoint: {endpoint}"
+    
+    def _generate_best_practice_guidelines(self, vulnerability_type: str, 
+                                         severity: str) -> str:
+        """Generate best practice security guidelines using remediation guidance generator"""
+        try:
+            return self.remediation_guidance_generator.generate_best_practice_guidelines(
+                vulnerability_type, severity
+            )
+        except Exception as e:
+            self.logger.error(f"Error generating best practice guidelines: {e}")
+            return f"Best practice guidelines for {vulnerability_type} are available through OWASP and industry security standards."
+    
+    def _generate_prevention_strategies(self, vulnerability_type: str, 
+                                      severity: str) -> str:
+        """Generate prevention strategies using remediation guidance generator"""
+        try:
+            return self.remediation_guidance_generator.generate_prevention_strategies(
+                vulnerability_type, severity
+            )
+        except Exception as e:
+            self.logger.error(f"Error generating prevention strategies: {e}")
+            return f"Prevention strategies for {vulnerability_type} should focus on secure development practices and continuous security monitoring."
+    
+    def _generate_remediation_complexity(self, vulnerability_type: str, 
+                                       severity: str, endpoint: str) -> str:
+        """Generate remediation complexity assessment using remediation guidance generator"""
+        try:
+            return self.remediation_guidance_generator.generate_remediation_complexity(
+                vulnerability_type, severity, endpoint
+            )
+        except Exception as e:
+            self.logger.error(f"Error generating remediation complexity: {e}")
+            return f"Remediation complexity for {vulnerability_type} ({severity}) requires detailed assessment based on specific endpoint: {endpoint}"
+    
+    def _generate_resource_requirements(self, vulnerability_type: str, 
+                                      severity: str) -> str:
+        """Generate resource requirements using remediation guidance generator"""
+        try:
+            return self.remediation_guidance_generator.generate_resource_requirements(
+                vulnerability_type, severity
+            )
+        except Exception as e:
+            self.logger.error(f"Error generating resource requirements: {e}")
+            return f"Resource requirements for {vulnerability_type} ({severity}) require detailed assessment based on specific implementation approach."
