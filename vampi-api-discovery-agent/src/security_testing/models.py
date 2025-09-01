@@ -206,31 +206,95 @@ class SecurityTestSuite(BaseModel):
     enabled: bool = Field(default=True, description="Whether test suite is enabled")
 
 
+class ComplianceStatus(BaseModel):
+    """Compliance status for various regulatory frameworks"""
+    gdpr_compliance: Dict[str, Any] = Field(default_factory=dict, description="GDPR compliance status")
+    hipaa_compliance: Dict[str, Any] = Field(default_factory=dict, description="HIPAA compliance status")
+    sox_compliance: Dict[str, Any] = Field(default_factory=dict, description="SOX compliance status")
+    pci_dss_compliance: Dict[str, Any] = Field(default_factory=dict, description="PCI-DSS compliance status")
+    iso_27001_compliance: Dict[str, Any] = Field(default_factory=dict, description="ISO 27001 compliance status")
+    industry_standards: List[str] = Field(default_factory=list, description="Industry-specific compliance standards")
+    audit_requirements: Dict[str, Any] = Field(default_factory=dict, description="Audit and compliance requirements")
+    compliance_score: float = Field(default=0.0, description="Overall compliance score (0-100)")
+    compliance_status: str = Field(default="NON_COMPLIANT", description="Overall compliance status")
+
+
+class BusinessRiskImplications(BaseModel):
+    """Enhanced business risk implications analysis"""
+    financial_impact: Dict[str, Any] = Field(default_factory=dict, description="Financial risk assessment")
+    reputation_risk: Dict[str, Any] = Field(default_factory=dict, description="Reputation and brand risk")
+    operational_risk: Dict[str, Any] = Field(default_factory=dict, description="Operational continuity risk")
+    competitive_risk: Dict[str, Any] = Field(default_factory=dict, description="Competitive advantage risk")
+    legal_risk: Dict[str, Any] = Field(default_factory=dict, description="Legal and regulatory risk")
+    customer_trust_risk: Dict[str, Any] = Field(default_factory=dict, description="Customer trust and retention risk")
+    overall_business_risk_score: float = Field(default=0.0, description="Overall business risk score (0-100)")
+    business_risk_level: str = Field(default="HIGH", description="Overall business risk level")
+
+
+class ExecutiveDashboard(BaseModel):
+    """Executive dashboard with key metrics and visualizations"""
+    security_scorecard: Dict[str, Any] = Field(default_factory=dict, description="Security metrics scorecard")
+    risk_heatmap: Dict[str, Any] = Field(default_factory=dict, description="Risk heatmap data")
+    compliance_matrix: Dict[str, Any] = Field(default_factory=dict, description="Compliance matrix")
+    trend_analysis: Dict[str, Any] = Field(default_factory=dict, description="Security trend analysis")
+    kpi_metrics: Dict[str, Any] = Field(default_factory=dict, description="Key Performance Indicators")
+
+
+class StakeholderSummary(BaseModel):
+    """Stakeholder-specific summaries"""
+    executive_summary: str = Field(default="", description="C-level executive summary")
+    technical_summary: str = Field(default="", description="Technical team summary")
+    compliance_summary: str = Field(default="", description="Compliance team summary")
+    business_summary: str = Field(default="", description="Business stakeholders summary")
+    board_summary: str = Field(default="", description="Board of directors summary")
+
+
 class SecurityAssessmentReport(BaseModel):
-    """Complete security assessment report"""
+    """Enhanced comprehensive security assessment report"""
+    # Basic report information
     report_id: str = Field(..., description="Unique report identifier")
     target_application: str = Field(..., description="Target application name")
-    base_url: str = Field(..., description="Base URL of the API")
-    assessment_start_time: datetime = Field(..., description="When assessment started")
-    assessment_end_time: Optional[datetime] = Field(None, description="When assessment completed")
-    assessment_duration: Optional[float] = Field(None, description="Assessment duration in seconds")
-    total_endpoints_tested: int = Field(..., description="Total endpoints tested")
-    endpoints_with_vulnerabilities: int = Field(..., description="Endpoints with vulnerabilities")
-    total_vulnerabilities: int = Field(..., description="Total vulnerabilities found")
-    critical_vulnerabilities: int = Field(..., description="Total critical vulnerabilities")
-    high_vulnerabilities: int = Field(..., description="Total high severity vulnerabilities")
-    medium_vulnerabilities: int = Field(..., description="Total medium severity vulnerabilities")
-    low_vulnerabilities: int = Field(..., description="Total low severity vulnerabilities")
-    overall_risk_score: float = Field(..., description="Overall application risk score")
-    endpoint_reports: List[EndpointSecurityReport] = Field(default_factory=list, description="Individual endpoint reports")
-    test_suite_used: SecurityTestSuite = Field(..., description="Test suite configuration used")
-    executive_summary: str = Field(..., description="Executive summary of findings")
+    base_url: str = Field(..., description="Base URL of the target application")
+    
+    # Assessment metadata
+    assessment_start_time: datetime = Field(..., description="Assessment start timestamp")
+    assessment_end_time: datetime = Field(..., description="Assessment end timestamp")
+    assessment_duration: float = Field(..., description="Assessment duration in seconds")
+    
+    # Security metrics
+    total_endpoints_tested: int = Field(..., description="Total number of endpoints tested")
+    endpoints_with_vulnerabilities: int = Field(..., description="Number of endpoints with vulnerabilities")
+    total_vulnerabilities: int = Field(..., description="Total number of vulnerabilities found")
+    critical_vulnerabilities: int = Field(..., description="Number of critical vulnerabilities")
+    high_vulnerabilities: int = Field(..., description="Number of high vulnerabilities")
+    medium_vulnerabilities: int = Field(..., description="Number of medium vulnerabilities")
+    low_vulnerabilities: int = Field(..., description="Number of low vulnerabilities")
+    overall_risk_score: float = Field(..., description="Overall security risk score (0-10)")
+    
+    # Enhanced professional report sections
+    executive_summary: str = Field(..., description="Executive summary for business stakeholders")
+    compliance_status: ComplianceStatus = Field(default_factory=ComplianceStatus, description="Compliance status overview")
+    business_risk_implications: BusinessRiskImplications = Field(default_factory=BusinessRiskImplications, description="Enhanced business risk analysis")
+    executive_dashboard: ExecutiveDashboard = Field(default_factory=ExecutiveDashboard, description="Executive dashboard with key metrics")
+    stakeholder_summaries: StakeholderSummary = Field(default_factory=StakeholderSummary, description="Stakeholder-specific summaries")
+    
+    # Technical details
+    endpoint_reports: List[EndpointSecurityReport] = Field(..., description="Detailed endpoint security reports")
+    test_suite_used: SecurityTestSuite = Field(..., description="Security test suite information")
     risk_analysis: str = Field(..., description="Detailed risk analysis")
-    recommendations: List[str] = Field(default_factory=list, description="Overall security recommendations")
-    remediation_priority: List[str] = Field(default_factory=list, description="Remediation priority order")
-    generated_by: str = Field(..., description="Tool that generated this report")
-    generated_at: datetime = Field(default_factory=datetime.now, description="When report was generated")
-    version: str = Field(..., description="Report format version")
+    recommendations: List[str] = Field(..., description="Security recommendations")
+    remediation_priority: List[str] = Field(..., description="Prioritized remediation actions")
+    
+    # Report metadata
+    generated_by: str = Field(..., description="Tool/agent that generated the report")
+    generated_at: datetime = Field(..., description="Report generation timestamp")
+    version: str = Field(..., description="Report version")
+    
+    # Additional professional features
+    executive_dashboard_data: Dict[str, Any] = Field(default_factory=dict, description="Executive dashboard data for visualizations")
+    compliance_matrix_data: Dict[str, Any] = Field(default_factory=dict, description="Compliance matrix data")
+    risk_heatmap_data: Dict[str, Any] = Field(default_factory=dict, description="Risk heatmap data")
+    trend_analysis_data: Dict[str, Any] = Field(default_factory=dict, description="Security trend analysis data")
 
 
 class SecurityTestResult(BaseModel):
