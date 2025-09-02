@@ -17,6 +17,7 @@ class OWASPCategory(str, Enum):
     """OWASP API Top 10 Security Categories"""
     BROKEN_OBJECT_LEVEL_AUTHORIZATION = "Broken Object Level Authorization"
     BROKEN_USER_AUTHENTICATION = "Broken User Authentication"
+    BROKEN_AUTHENTICATION = "Broken Authentication"
     BROKEN_FUNCTION_LEVEL_AUTHORIZATION = "Broken Function Level Authorization"
     MASS_ASSIGNMENT = "Mass Assignment"
     SECURITY_MISCONFIGURATION = "Security Misconfiguration"
@@ -25,6 +26,7 @@ class OWASPCategory(str, Enum):
     INJECTION = "Injection"
     IMPROPER_ASSET_MANAGEMENT = "Improper Asset Management"
     BROKEN_RATE_LIMITING = "Broken Rate Limiting"
+    RATE_LIMITING = "Rate Limiting"
     BROKEN_CRYPTOGRAPHY = "Broken Cryptography"
 
 
@@ -74,6 +76,7 @@ class Impact(str, Enum):
     """CVSS Impact levels"""
     NONE = "None"
     LOW = "Low"
+    MEDIUM = "Medium"
     HIGH = "High"
 
 

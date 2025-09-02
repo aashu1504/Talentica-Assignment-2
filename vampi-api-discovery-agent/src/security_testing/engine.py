@@ -514,6 +514,23 @@ class SecurityTestingEngine:
             advanced_payload_tests = await self._test_advanced_payloads_integrated(endpoint_path, method, parameters)
             tests.extend(advanced_payload_tests[:2])  # Limit to 2 advanced payload tests per endpoint
         
+        # Enhanced Security Testing Implementation (with proper endpoint filtering)
+        # Excessive Data Exposure testing (enhanced) - only for data endpoints
+        if self._should_test_excessive_data_exposure(endpoint_path, method):
+            tests.append(await self._test_excessive_data_exposure_enhanced(endpoint_path, method, parameters))
+        
+        # Rate Limiting and DoS protection testing (enhanced) - only for auth and public endpoints
+        if self._should_test_rate_limiting(endpoint_path, method):
+            tests.append(await self._test_rate_limiting_dos_enhanced(endpoint_path, method, parameters))
+        
+        # Advanced authentication bypass techniques - only for auth endpoints
+        if self._should_test_authentication_bypass(endpoint_path, method):
+            tests.append(await self._test_advanced_authentication_bypass(endpoint_path, method, parameters))
+        
+        # Sophisticated authorization testing scenarios - only for protected endpoints
+        if self._should_test_authorization_scenarios(endpoint_path, method):
+            tests.append(await self._test_sophisticated_authorization_scenarios(endpoint_path, method, parameters))
+        
         # User Enumeration testing (Medium severity)
         if method == 'POST' and 'register' in endpoint_path.lower():
             test_result = await self._test_user_enumeration(endpoint_path, method)
@@ -538,6 +555,36 @@ class SecurityTestingEngine:
         
         # Check if endpoint contains any of the advanced endpoint patterns
         return any(pattern in endpoint_path for pattern in advanced_endpoints)
+    
+    def _should_test_excessive_data_exposure(self, endpoint_path: str, method: str) -> bool:
+        """Determine if excessive data exposure testing should be run for this endpoint"""
+        # Only test endpoints that return data
+        data_endpoints = ['/users', '/books', '/me']
+        return any(pattern in endpoint_path for pattern in data_endpoints) and method in ['GET', 'POST']
+    
+    def _should_test_rate_limiting(self, endpoint_path: str, method: str) -> bool:
+        """Determine if rate limiting testing should be run for this endpoint"""
+        # Only test authentication and public endpoints that should have rate limiting
+        rate_limit_endpoints = ['/login', '/register', '/auth', '/createdb', '/']
+        return any(pattern in endpoint_path for pattern in rate_limit_endpoints)
+    
+    def _should_test_authentication_bypass(self, endpoint_path: str, method: str) -> bool:
+        """Determine if authentication bypass testing should be run for this endpoint"""
+        # Only test endpoints that require authentication or handle auth
+        auth_endpoints = ['/users', '/books', '/admin', '/me', '/login', '/register', '/auth']
+        return any(pattern in endpoint_path for pattern in auth_endpoints)
+    
+    def _should_test_authorization_scenarios(self, endpoint_path: str, method: str) -> bool:
+        """Determine if authorization scenario testing should be run for this endpoint"""
+        # Only test protected endpoints that should have authorization checks
+        protected_endpoints = ['/users', '/books', '/admin', '/me']
+        return any(pattern in endpoint_path for pattern in protected_endpoints) and method in ['GET', 'PUT', 'DELETE', 'POST']
+    
+    def _should_test_injection(self, endpoint_path: str, method: str) -> bool:
+        """Determine if injection testing should be run for this endpoint"""
+        # Only test endpoints that are likely to interact with databases
+        injection_endpoints = ['/users', '/books', '/search', '/createdb']
+        return any(pattern in endpoint_path for pattern in injection_endpoints) and method in ['GET', 'POST']
     
     async def _test_vampi_specific_patterns_integrated(self, endpoint_path: str, method: str, 
                                                      parameters: Dict[str, Any]) -> List[SecurityTest]:
@@ -704,30 +751,41 @@ class SecurityTestingEngine:
         
         return tests
     
-    async def _test_injection_vulnerabilities(self, endpoint_path: str, method: str,
+    async def _test_injection_vulnerabilities(self, endpoint_path: str, method: str, 
                                             parameters: Dict[str, Any]) -> List[SecurityTest]:
         """Test for injection vulnerabilities"""
         tests = []
         
-        # SQL Injection testing
+        # Only run injection tests on endpoints that are likely to have database interactions
+        if not self._should_test_injection(endpoint_path, method):
+            return tests
+        
+        # SQL Injection testing - limit to 3 most common parameters and 2 payloads per parameter
         if method in ['GET', 'POST'] and parameters.get('query_params'):
-            for param in parameters['query_params']:
-                for payload in self.test_suite.injection_payloads:
+            # Limit to most common parameters that are likely to be vulnerable
+            common_params = ['id', 'limit', 'offset', 'page', 'search', 'filter']
+            test_params = [p for p in parameters['query_params'] if p in common_params][:3]
+            
+            for param in test_params:
+                # Limit to 2 most effective payloads per parameter
+                limited_payloads = self.test_suite.injection_payloads[:2]
+                for payload in limited_payloads:
                     test_result = await self._test_sql_injection(
                         endpoint_path, method, param, payload
                     )
                     tests.append(test_result)
         
-        # NoSQL Injection testing
+        # NoSQL Injection testing - limit to 2 parameters and 2 payloads per parameter
         if method in ['GET', 'POST'] and parameters.get('query_params'):
-            for param in parameters['query_params']:
+            # Limit to most common parameters
+            common_params = ['id', 'limit', 'offset', 'page', 'search', 'filter']
+            test_params = [p for p in parameters['query_params'] if p in common_params][:2]
+            
+            for param in test_params:
+                # Limit to 2 most effective NoSQL payloads
                 nosql_payloads = [
                     '{"$gt": ""}',
-                    '{"$ne": null}',
-                    '{"$where": "1==1"}',
-                    '{"$regex": ".*"}',
-                    '{"$exists": true}',
-                    '{"$in": ["admin", "user"]}'
+                    '{"$ne": null}'
                 ]
                 for payload in nosql_payloads:
                     test_result = await self._test_nosql_injection(
@@ -735,9 +793,13 @@ class SecurityTestingEngine:
                     )
                     tests.append(test_result)
         
-        # XSS testing for body parameters
+        # XSS testing for body parameters - limit to 2 most common parameters
         if method in ['POST', 'PUT'] and parameters.get('body_params'):
-            for param in parameters['body_params']:
+            # Limit to most common parameters that might be vulnerable to XSS
+            common_xss_params = ['name', 'description', 'title', 'content', 'message', 'comment']
+            test_params = [p for p in parameters['body_params'] if p in common_xss_params][:2]
+            
+            for param in test_params:
                 xss_payload = "<script>alert('XSS')</script>"
                 test_result = await self._test_xss_injection(
                     endpoint_path, method, param, xss_payload
@@ -5283,3 +5345,876 @@ if __name__ == "__main__":
             return any(indicator in response_text for indicator in success_indicators)
         
         return False
+
+    async def _test_excessive_data_exposure_enhanced(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Enhanced test for excessive data exposure vulnerabilities"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            # Test with different parameter combinations to trigger data exposure
+            test_payloads = [
+                {"limit": 1000, "offset": 0},  # Large limit
+                {"page_size": 1000},  # Large page size
+                {"all": "true"},  # Request all data
+                {"include": "all"},  # Include all fields
+                {"fields": "*"},  # All fields
+                {"expand": "true"},  # Expand all relations
+            ]
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            max_response_size = 0
+            sensitive_data_exposed = []
+            
+            for payload in test_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    response_size = len(response.text)
+                    max_response_size = max(max_response_size, response_size)
+                    
+                    # Check for excessive response size
+                    if response_size > 50000:  # 50KB threshold
+                        vulnerability_found = True
+                        vulnerability_details.append(f"Excessive response size: {response_size} characters with payload {payload}")
+                        risk_score += 3.0
+                    
+                    # Check for sensitive data exposure
+                    sensitive_patterns = [
+                        r'password["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'secret["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'token["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'api_key["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'credit_card["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'ssn["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'phone["\']?\s*:\s*["\'][^"\']+["\']',
+                        r'email["\']?\s*:\s*["\'][^"\']+["\']',
+                    ]
+                    
+                    for pattern in sensitive_patterns:
+                        matches = re.findall(pattern, response.text, re.IGNORECASE)
+                        if matches:
+                            sensitive_data_exposed.extend(matches)
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Sensitive data exposed: {matches}")
+                            risk_score += 4.0
+                    
+                    # Check for large arrays/objects
+                    try:
+                        data = response.json()
+                        if isinstance(data, list) and len(data) > 500:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Large data array: {len(data)} items")
+                            risk_score += 2.0
+                        elif isinstance(data, dict):
+                            # Check for nested large objects
+                            for key, value in data.items():
+                                if isinstance(value, list) and len(value) > 200:
+                                    vulnerability_found = True
+                                    vulnerability_details.append(f"Large nested array in '{key}': {len(value)} items")
+                                    risk_score += 1.5
+                    except:
+                        pass
+                        
+                except Exception as e:
+                    continue
+            
+            # Determine severity
+            if risk_score >= 6.0:
+                severity = VulnerabilitySeverity.HIGH
+            elif risk_score >= 3.0:
+                severity = VulnerabilitySeverity.MEDIUM
+            elif risk_score > 0:
+                severity = VulnerabilitySeverity.LOW
+            else:
+                severity = VulnerabilitySeverity.INFO
+            
+            # Generate CVSS metrics
+            cvss_metrics = self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.UNCHANGED,
+                confidentiality_impact=Impact.HIGH if sensitive_data_exposed else Impact.MEDIUM,
+                integrity_impact=Impact.NONE,
+                availability_impact=Impact.LOW
+            )
+            
+            # Generate recommendations
+            recommendations = [
+                "Implement proper data filtering and pagination",
+                "Use field selection to limit returned data",
+                "Remove sensitive fields from API responses",
+                "Implement response size limits",
+                "Add data access logging and monitoring"
+            ]
+            
+            # Generate proof of concept
+            poc = f"""
+# Excessive Data Exposure Proof of Concept
+# Endpoint: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{url}"
+payload = {{"limit": 1000, "all": "true"}}
+
+response = requests.{method.lower()}(url, json=payload)
+print(f"Response size: {{len(response.text)}} characters")
+print(f"Response: {{response.text[:500]}}...")
+
+# Check for sensitive data
+import re
+sensitive_patterns = [r'password["\']?\s*:\s*["\'][^"\']+["\']', r'secret["\']?\s*:\s*["\'][^"\']+["\']']
+for pattern in sensitive_patterns:
+    matches = re.findall(pattern, response.text, re.IGNORECASE)
+    if matches:
+        print(f"Sensitive data found: {{matches}}")
+"""
+            
+            return SecurityTest(
+                test_name="Enhanced Excessive Data Exposure Test",
+                test_category=OWASPCategory.EXCESSIVE_DATA_EXPOSURE,
+                test_description=f"Enhanced testing for excessive data exposure vulnerabilities including response size analysis, sensitive data detection, and large data structure analysis",
+                test_method=f"HTTP {method} with various payload combinations",
+                payload_used=str(test_payloads),
+                request_details={
+                    "method": method,
+                    "endpoint": endpoint_path,
+                    "payloads": test_payloads,
+                    "max_response_size": max_response_size
+                },
+                response_details={
+                    "status_code": 200,
+                    "response_size": max_response_size,
+                    "sensitive_data_found": len(sensitive_data_exposed) > 0
+                },
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else "No vulnerabilities found",
+                risk_score=min(risk_score, 10.0),
+                severity=severity,
+                cvss_metrics=cvss_metrics,
+                recommendations=recommendations,
+                proof_of_concept=poc,
+                test_timestamp=datetime.now(),
+                execution_time=time.time() - start_time
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error in enhanced excessive data exposure test: {e}")
+            return self._create_error_test("Enhanced Excessive Data Exposure Test", str(e), start_time)
+
+    async def _test_rate_limiting_dos_enhanced(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Enhanced test for rate limiting and DoS protection vulnerabilities"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # Test 1: Rapid burst requests
+            burst_responses = []
+            for i in range(20):  # 20 rapid requests
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json={"test": f"burst_{i}"}, timeout=self.timeout)
+                    burst_responses.append(response)
+                except:
+                    continue
+            
+            # Analyze burst test results
+            successful_burst = sum(1 for r in burst_responses if r.status_code in [200, 201, 202])
+            if successful_burst >= 15:  # 75% success rate indicates weak rate limiting
+                vulnerability_found = True
+                vulnerability_details.append(f"Burst requests not rate limited: {successful_burst}/20 requests succeeded")
+                risk_score += 3.0
+            
+            # Test 2: Sustained requests over time
+            sustained_responses = []
+            for i in range(50):  # 50 requests over time
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json={"test": f"sustained_{i}"}, timeout=self.timeout)
+                    sustained_responses.append(response)
+                    time.sleep(0.2)  # 200ms between requests
+                except:
+                    continue
+            
+            # Analyze sustained test results
+            successful_sustained = sum(1 for r in sustained_responses if r.status_code in [200, 201, 202])
+            if successful_sustained >= 40:  # 80% success rate indicates weak sustained rate limiting
+                vulnerability_found = True
+                vulnerability_details.append(f"Sustained requests not rate limited: {successful_sustained}/50 requests succeeded")
+                risk_score += 2.5
+            
+            # Test 3: Check for rate limiting headers
+            if burst_responses:
+                headers = burst_responses[0].headers
+                rate_limit_headers = ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"]
+                missing_headers = [h for h in rate_limit_headers if h not in headers]
+                if len(missing_headers) >= 3:
+                    vulnerability_found = True
+                    vulnerability_details.append(f"Missing rate limiting headers: {', '.join(missing_headers)}")
+                    risk_score += 2.0
+            
+            # Test 4: Resource exhaustion test (large payloads)
+            large_payloads = [
+                {"data": "x" * 10000},  # 10KB payload
+                {"data": "x" * 50000},  # 50KB payload
+                {"data": "x" * 100000}, # 100KB payload
+            ]
+            
+            for payload in large_payloads:
+                try:
+                    if method == 'POST':
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                        if response.status_code == 200:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Large payload accepted: {len(str(payload))} bytes")
+                            risk_score += 1.0
+                except:
+                    continue
+            
+            # Test 5: Check for DoS protection (timeout handling)
+            try:
+                # Send a request that might cause server processing delay
+                complex_payload = {"query": "SELECT * FROM users WHERE " + " OR ".join([f"id = {i}" for i in range(1000)])}
+                if method == 'POST':
+                    response = self.session.post(url, json=complex_payload, timeout=5)
+                    if response.status_code == 200:
+                        vulnerability_found = True
+                        vulnerability_details.append("Complex query processing not rate limited")
+                        risk_score += 2.0
+            except:
+                pass
+            
+            # Determine severity
+            if risk_score >= 6.0:
+                severity = VulnerabilitySeverity.HIGH
+            elif risk_score >= 3.0:
+                severity = VulnerabilitySeverity.MEDIUM
+            elif risk_score > 0:
+                severity = VulnerabilitySeverity.LOW
+            else:
+                severity = VulnerabilitySeverity.INFO
+            
+            # Generate CVSS metrics
+            cvss_metrics = self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.UNCHANGED,
+                confidentiality_impact=Impact.NONE,
+                integrity_impact=Impact.NONE,
+                availability_impact=Impact.HIGH if risk_score >= 4.0 else Impact.MEDIUM
+            )
+            
+            # Generate recommendations
+            recommendations = [
+                "Implement proper rate limiting (requests per minute/hour)",
+                "Add rate limiting headers (X-RateLimit-*)",
+                "Implement request size limits",
+                "Add DoS protection mechanisms",
+                "Monitor and alert on unusual request patterns",
+                "Implement progressive delays for repeated requests"
+            ]
+            
+            # Generate proof of concept
+            poc = f"""
+# Rate Limiting and DoS Protection Test
+# Endpoint: {endpoint_path}
+# Method: {method}
+
+import requests
+import time
+
+url = "{url}"
+
+# Test burst requests
+print("Testing burst requests...")
+for i in range(20):
+    response = requests.{method.lower()}(url, json={{"test": f"burst_{{i}}"}})
+    print(f"Request {{i+1}}: {{response.status_code}}")
+    time.sleep(0.1)
+
+# Test large payload
+print("\\nTesting large payload...")
+large_payload = {{"data": "x" * 10000}}
+response = requests.{method.lower()}(url, json=large_payload)
+print(f"Large payload response: {{response.status_code}}")
+"""
+            
+            return SecurityTest(
+                test_name="Enhanced Rate Limiting and DoS Protection Test",
+                test_category=OWASPCategory.RATE_LIMITING,
+                test_description=f"Enhanced testing for rate limiting and DoS protection including burst requests, sustained requests, resource exhaustion, and timeout handling",
+                test_method=f"HTTP {method} with various rate limiting test scenarios",
+                payload_used="Burst requests, sustained requests, large payloads",
+                request_details={
+                    "method": method,
+                    "endpoint": endpoint_path,
+                    "burst_requests": 20,
+                    "sustained_requests": 50,
+                    "large_payloads": len(large_payloads)
+                },
+                response_details={
+                    "burst_success_rate": successful_burst / 20 if burst_responses else 0,
+                    "sustained_success_rate": successful_sustained / 50 if sustained_responses else 0,
+                    "rate_limiting_headers_present": len([h for h in ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"] if h in (burst_responses[0].headers if burst_responses else {})])
+                },
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else "No vulnerabilities found",
+                risk_score=min(risk_score, 10.0),
+                severity=severity,
+                cvss_metrics=cvss_metrics,
+                recommendations=recommendations,
+                proof_of_concept=poc,
+                test_timestamp=datetime.now(),
+                execution_time=time.time() - start_time
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error in enhanced rate limiting DoS test: {e}")
+            return self._create_error_test("Enhanced Rate Limiting and DoS Protection Test", str(e), start_time)
+
+    async def _test_advanced_authentication_bypass(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for advanced authentication bypass techniques"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # Test 1: JWT manipulation attacks
+            jwt_bypass_payloads = [
+                {"Authorization": "Bearer "},  # Empty token
+                {"Authorization": "Bearer null"},  # Null token
+                {"Authorization": "Bearer undefined"},  # Undefined token
+                {"Authorization": "Bearer ../../../../etc/passwd"},  # Path traversal
+                {"Authorization": "Bearer <script>alert('xss')</script>"},  # XSS in token
+                {"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VyIjoiYWRtaW4ifQ."},  # None algorithm
+                {"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWRtaW4ifQ.invalid"},  # Invalid signature
+            ]
+            
+            for payload in jwt_bypass_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, headers=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json={"test": "auth_bypass"}, headers=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"JWT bypass successful with payload: {payload}")
+                        risk_score += 3.0
+                except:
+                    continue
+            
+            # Test 2: Session manipulation attacks
+            session_bypass_payloads = [
+                {"Cookie": "sessionid="},  # Empty session
+                {"Cookie": "sessionid=null"},  # Null session
+                {"Cookie": "sessionid=admin"},  # Simple admin session
+                {"Cookie": "sessionid=1"},  # Numeric session
+                {"Cookie": "sessionid=../../../../etc/passwd"},  # Path traversal
+                {"Cookie": "PHPSESSID=admin"},  # PHP session
+                {"Cookie": "JSESSIONID=admin"},  # Java session
+            ]
+            
+            for payload in session_bypass_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, headers=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json={"test": "session_bypass"}, headers=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"Session bypass successful with payload: {payload}")
+                        risk_score += 2.5
+                except:
+                    continue
+            
+            # Test 3: API key manipulation
+            api_key_bypass_payloads = [
+                {"X-API-Key": ""},  # Empty API key
+                {"X-API-Key": "null"},  # Null API key
+                {"X-API-Key": "test"},  # Simple test key
+                {"X-API-Key": "admin"},  # Admin key
+                {"X-API-Key": "123456"},  # Numeric key
+                {"Authorization": "ApiKey "},  # Empty API key in Authorization
+                {"Authorization": "ApiKey test"},  # Simple API key
+            ]
+            
+            for payload in api_key_bypass_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, headers=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json={"test": "apikey_bypass"}, headers=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"API key bypass successful with payload: {payload}")
+                        risk_score += 2.0
+                except:
+                    continue
+            
+            # Test 4: HTTP method manipulation
+            method_bypass_tests = [
+                ("OPTIONS", {}),  # OPTIONS method
+                ("HEAD", {}),  # HEAD method
+                ("TRACE", {}),  # TRACE method
+                ("PATCH", {"test": "patch"}),  # PATCH method
+                ("PUT", {"test": "put"}),  # PUT method
+            ]
+            
+            for bypass_method, bypass_payload in method_bypass_tests:
+                try:
+                    if bypass_method == 'GET':
+                        response = self.session.get(url, timeout=self.timeout)
+                    else:
+                        response = self.session.request(bypass_method, url, json=bypass_payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"HTTP method bypass successful: {bypass_method}")
+                        risk_score += 1.5
+                except:
+                    continue
+            
+            # Test 5: Parameter pollution for authentication bypass
+            param_pollution_payloads = [
+                {"username": "admin", "user": "admin"},  # Duplicate user parameters
+                {"password": "admin", "pass": "admin"},  # Duplicate password parameters
+                {"token": "admin", "auth": "admin"},  # Duplicate auth parameters
+                {"role": "admin", "level": "admin"},  # Duplicate role parameters
+            ]
+            
+            for payload in param_pollution_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"Parameter pollution bypass successful: {payload}")
+                        risk_score += 2.0
+                except:
+                    continue
+            
+            # Determine severity
+            if risk_score >= 8.0:
+                severity = VulnerabilitySeverity.CRITICAL
+            elif risk_score >= 5.0:
+                severity = VulnerabilitySeverity.HIGH
+            elif risk_score >= 3.0:
+                severity = VulnerabilitySeverity.MEDIUM
+            elif risk_score > 0:
+                severity = VulnerabilitySeverity.LOW
+            else:
+                severity = VulnerabilitySeverity.INFO
+            
+            # Generate CVSS metrics
+            cvss_metrics = self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.CHANGED,
+                confidentiality_impact=Impact.HIGH,
+                integrity_impact=Impact.HIGH,
+                availability_impact=Impact.NONE
+            )
+            
+            # Generate recommendations
+            recommendations = [
+                "Implement proper JWT validation with signature verification",
+                "Use secure session management with random session IDs",
+                "Implement proper API key validation and rotation",
+                "Add authentication bypass detection and logging",
+                "Use multi-factor authentication where possible",
+                "Implement rate limiting on authentication endpoints"
+            ]
+            
+            # Generate proof of concept
+            poc = f"""
+# Advanced Authentication Bypass Test
+# Endpoint: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{url}"
+
+# Test JWT bypass
+jwt_payloads = [
+    {{"Authorization": "Bearer "}},
+    {{"Authorization": "Bearer null"}},
+    {{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VyIjoiYWRtaW4ifQ."}}
+]
+
+for payload in jwt_payloads:
+    response = requests.{method.lower()}(url, headers=payload)
+    print(f"JWT bypass attempt: {{response.status_code}}")
+
+# Test session bypass
+session_payloads = [
+    {{"Cookie": "sessionid="}},
+    {{"Cookie": "sessionid=admin"}},
+    {{"Cookie": "PHPSESSID=admin"}}
+]
+
+for payload in session_payloads:
+    response = requests.{method.lower()}(url, headers=payload)
+    print(f"Session bypass attempt: {{response.status_code}}")
+"""
+            
+            return SecurityTest(
+                test_name="Advanced Authentication Bypass Test",
+                test_category=OWASPCategory.BROKEN_AUTHENTICATION,
+                test_description=f"Advanced testing for authentication bypass techniques including JWT manipulation, session hijacking, API key bypass, HTTP method manipulation, and parameter pollution",
+                test_method=f"HTTP {method} with various authentication bypass payloads",
+                payload_used="JWT manipulation, session bypass, API key bypass, method manipulation",
+                request_details={
+                    "method": method,
+                    "endpoint": endpoint_path,
+                    "jwt_tests": len(jwt_bypass_payloads),
+                    "session_tests": len(session_bypass_payloads),
+                    "apikey_tests": len(api_key_bypass_payloads),
+                    "method_tests": len(method_bypass_tests),
+                    "param_pollution_tests": len(param_pollution_payloads)
+                },
+                response_details={
+                    "bypass_attempts": len(vulnerability_details),
+                    "successful_bypasses": len([d for d in vulnerability_details if "successful" in d])
+                },
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else "No vulnerabilities found",
+                risk_score=min(risk_score, 10.0),
+                severity=severity,
+                cvss_metrics=cvss_metrics,
+                recommendations=recommendations,
+                proof_of_concept=poc,
+                test_timestamp=datetime.now(),
+                execution_time=time.time() - start_time
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error in advanced authentication bypass test: {e}")
+            return self._create_error_test("Advanced Authentication Bypass Test", str(e), start_time)
+
+    async def _test_sophisticated_authorization_scenarios(self, endpoint_path: str, method: str, parameters: Dict[str, Any]) -> SecurityTest:
+        """Test for sophisticated authorization testing scenarios"""
+        start_time = time.time()
+        
+        try:
+            url = f"{self.base_url}{endpoint_path}"
+            
+            vulnerability_found = False
+            vulnerability_details = []
+            risk_score = 0.0
+            
+            # Test 1: Privilege escalation through parameter manipulation
+            privilege_escalation_payloads = [
+                {"role": "admin", "level": "999", "permissions": "all"},
+                {"user_type": "administrator", "access_level": "root"},
+                {"is_admin": "true", "admin": "1", "privileged": "yes"},
+                {"group": "administrators", "department": "IT"},
+                {"clearance": "top_secret", "security_level": "maximum"},
+                {"role_id": "1", "user_id": "1", "status": "active"},
+            ]
+            
+            for payload in privilege_escalation_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        # Check response for admin/privileged content
+                        response_text = response.text.lower()
+                        admin_indicators = ["admin", "privilege", "root", "superuser", "administrator", "elevated"]
+                        if any(indicator in response_text for indicator in admin_indicators):
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Privilege escalation successful: {payload}")
+                            risk_score += 4.0
+                except:
+                    continue
+            
+            # Test 2: RBAC (Role-Based Access Control) bypass
+            rbac_bypass_payloads = [
+                {"roles": ["user", "admin"], "permissions": ["read", "write", "delete"]},
+                {"user_roles": "admin,user,moderator", "access": "full"},
+                {"role": "user", "additional_roles": "admin"},
+                {"primary_role": "user", "secondary_role": "admin"},
+                {"role": "guest", "override_role": "admin"},
+                {"default_role": "user", "effective_role": "admin"},
+            ]
+            
+            for payload in rbac_bypass_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        response_text = response.text.lower()
+                        if "admin" in response_text or "privilege" in response_text:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"RBAC bypass successful: {payload}")
+                            risk_score += 3.5
+                except:
+                    continue
+            
+            # Test 3: Object-level authorization bypass
+            object_bypass_payloads = [
+                {"id": "1", "user_id": "1"},  # Access own resources
+                {"id": "0", "user_id": "1"},  # Access with ID 0
+                {"id": "-1", "user_id": "1"},  # Negative ID
+                {"id": "999999", "user_id": "1"},  # Large ID
+                {"id": "admin", "user_id": "1"},  # String ID
+                {"id": "1' OR '1'='1", "user_id": "1"},  # SQL injection in ID
+            ]
+            
+            for payload in object_bypass_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        response_text = response.text.lower()
+                        # Check for successful data access
+                        if len(response_text) > 100 and "error" not in response_text:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Object-level authorization bypass: {payload}")
+                            risk_score += 3.0
+                except:
+                    continue
+            
+            # Test 4: Function-level authorization bypass
+            function_bypass_tests = [
+                ("/admin", "GET", {}),
+                ("/admin/users", "GET", {}),
+                ("/admin/settings", "GET", {}),
+                ("/api/admin", "GET", {}),
+                ("/api/v1/admin", "GET", {}),
+                ("/admin/dashboard", "GET", {}),
+            ]
+            
+            for bypass_path, bypass_method, bypass_payload in function_bypass_tests:
+                try:
+                    bypass_url = f"{self.base_url}{bypass_path}"
+                    if bypass_method == 'GET':
+                        response = self.session.get(bypass_url, timeout=self.timeout)
+                    else:
+                        response = self.session.post(bypass_url, json=bypass_payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        vulnerability_found = True
+                        vulnerability_details.append(f"Function-level authorization bypass: {bypass_path}")
+                        risk_score += 2.5
+                except:
+                    continue
+            
+            # Test 5: Horizontal privilege escalation
+            horizontal_escalation_payloads = [
+                {"user_id": "1", "target_user": "2"},  # Access another user's data
+                {"user_id": "1", "view_user": "2"},  # View another user
+                {"user_id": "1", "edit_user": "2"},  # Edit another user
+                {"user_id": "1", "delete_user": "2"},  # Delete another user
+                {"current_user": "1", "other_user": "2"},  # Access other user
+            ]
+            
+            for payload in horizontal_escalation_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        response_text = response.text.lower()
+                        # Check for data from another user
+                        if "user" in response_text and len(response_text) > 50:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Horizontal privilege escalation: {payload}")
+                            risk_score += 3.0
+                except:
+                    continue
+            
+            # Test 6: Vertical privilege escalation
+            vertical_escalation_payloads = [
+                {"role": "user", "escalate_to": "admin"},
+                {"level": "1", "escalate_to": "10"},
+                {"permissions": "read", "escalate_to": "write,delete"},
+                {"access": "limited", "escalate_to": "full"},
+                {"clearance": "public", "escalate_to": "secret"},
+            ]
+            
+            for payload in vertical_escalation_payloads:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(url, params=payload, timeout=self.timeout)
+                    else:
+                        response = self.session.post(url, json=payload, timeout=self.timeout)
+                    
+                    if response.status_code in [200, 201, 202]:
+                        response_text = response.text.lower()
+                        if "admin" in response_text or "privilege" in response_text:
+                            vulnerability_found = True
+                            vulnerability_details.append(f"Vertical privilege escalation: {payload}")
+                            risk_score += 4.0
+                except:
+                    continue
+            
+            # Determine severity
+            if risk_score >= 10.0:
+                severity = VulnerabilitySeverity.CRITICAL
+            elif risk_score >= 7.0:
+                severity = VulnerabilitySeverity.HIGH
+            elif risk_score >= 4.0:
+                severity = VulnerabilitySeverity.MEDIUM
+            elif risk_score > 0:
+                severity = VulnerabilitySeverity.LOW
+            else:
+                severity = VulnerabilitySeverity.INFO
+            
+            # Generate CVSS metrics
+            cvss_metrics = self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.LOW,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.CHANGED,
+                confidentiality_impact=Impact.HIGH,
+                integrity_impact=Impact.HIGH,
+                availability_impact=Impact.NONE
+            )
+            
+            # Generate recommendations
+            recommendations = [
+                "Implement proper role-based access control (RBAC)",
+                "Add object-level authorization checks",
+                "Implement function-level authorization validation",
+                "Add privilege escalation detection and logging",
+                "Use principle of least privilege",
+                "Implement proper session management and validation",
+                "Add authorization bypass monitoring and alerting"
+            ]
+            
+            # Generate proof of concept
+            poc = f"""
+# Sophisticated Authorization Testing
+# Endpoint: {endpoint_path}
+# Method: {method}
+
+import requests
+
+url = "{url}"
+
+# Test privilege escalation
+privilege_payloads = [
+    {{"role": "admin", "level": "999"}},
+    {{"user_type": "administrator"}},
+    {{"is_admin": "true"}}
+]
+
+for payload in privilege_payloads:
+    response = requests.{method.lower()}(url, json=payload)
+    print(f"Privilege escalation attempt: {{response.status_code}}")
+    if "admin" in response.text.lower():
+        print("Privilege escalation successful!")
+
+# Test RBAC bypass
+rbac_payloads = [
+    {{"roles": ["user", "admin"]}},
+    {{"user_roles": "admin,user"}},
+    {{"role": "user", "additional_roles": "admin"}}
+]
+
+for payload in rbac_payloads:
+    response = requests.{method.lower()}(url, json=payload)
+    print(f"RBAC bypass attempt: {{response.status_code}}")
+"""
+            
+            return SecurityTest(
+                test_name="Sophisticated Authorization Scenarios Test",
+                test_category=OWASPCategory.BROKEN_FUNCTION_LEVEL_AUTHORIZATION,
+                test_description=f"Sophisticated testing for authorization vulnerabilities including privilege escalation, RBAC bypass, object-level authorization, function-level authorization, and horizontal/vertical privilege escalation",
+                test_method=f"HTTP {method} with various authorization bypass scenarios",
+                payload_used="Privilege escalation, RBAC bypass, object-level bypass, function-level bypass",
+                request_details={
+                    "method": method,
+                    "endpoint": endpoint_path,
+                    "privilege_escalation_tests": len(privilege_escalation_payloads),
+                    "rbac_bypass_tests": len(rbac_bypass_payloads),
+                    "object_bypass_tests": len(object_bypass_payloads),
+                    "function_bypass_tests": len(function_bypass_tests),
+                    "horizontal_escalation_tests": len(horizontal_escalation_payloads),
+                    "vertical_escalation_tests": len(vertical_escalation_payloads)
+                },
+                response_details={
+                    "authorization_bypass_attempts": len(vulnerability_details),
+                    "successful_bypasses": len([d for d in vulnerability_details if "successful" in d or "escalation" in d])
+                },
+                vulnerability_found=vulnerability_found,
+                vulnerability_details="; ".join(vulnerability_details) if vulnerability_details else "No vulnerabilities found",
+                risk_score=min(risk_score, 10.0),
+                severity=severity,
+                cvss_metrics=cvss_metrics,
+                recommendations=recommendations,
+                proof_of_concept=poc,
+                test_timestamp=datetime.now(),
+                execution_time=time.time() - start_time
+            )
+            
+        except Exception as e:
+            self.logger.error(f"Error in sophisticated authorization scenarios test: {e}")
+            return self._create_error_test("Sophisticated Authorization Scenarios Test", str(e), start_time)
+
+    def _create_error_test(self, test_name: str, error_message: str, start_time: float) -> SecurityTest:
+        """Create an error test result"""
+        return SecurityTest(
+            test_name=test_name,
+            test_category=OWASPCategory.SECURITY_MISCONFIGURATION,
+            test_description=f"Error during test execution: {error_message}",
+            test_method="Error",
+            payload_used="",
+            request_details={"error": error_message},
+            response_details={"error": error_message},
+            vulnerability_found=False,
+            vulnerability_details=f"Test execution error: {error_message}",
+            risk_score=0.0,
+            severity=VulnerabilitySeverity.INFO,
+            cvss_metrics=None,
+            recommendations=["Fix test execution error"],
+            proof_of_concept="",
+            test_timestamp=datetime.now(),
+            execution_time=time.time() - start_time
+        )
