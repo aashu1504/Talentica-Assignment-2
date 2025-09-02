@@ -11,9 +11,9 @@
     "authentication_types": [],
     "discovery_coverage": 100.0,
     "parameter_coverage": 100.0,
-    "discovery_start_time": "2025-09-02T14:51:22.103341",
-    "discovery_end_time": "2025-09-02T14:51:22.103344",
-    "discovery_duration": 107.93119382858276,
+    "discovery_start_time": "2025-09-02T22:14:28.002280",
+    "discovery_end_time": "2025-09-02T22:14:28.002283",
+    "discovery_duration": 105.26121973991394,
     "total_parameters": 172,
     "unique_parameters": 16
   },
@@ -1609,8 +1609,8 @@
       "id": "DOC007",
       "path": "/users/v1/{user_id}",
       "methods": [
-        "DELETE",
-        "GET"
+        "GET",
+        "DELETE"
       ],
       "description": "Retrieves user by username",
       "parameters": {
@@ -2963,7 +2963,7 @@
       ],
       "implementation_details": "Used by 8 endpoints. Token location: header, Header: Authorization",
       "documentation_url": null,
-      "discovered_at": "2025-09-02T14:54:22.084023",
+      "discovered_at": "2025-09-02T22:16:20.999261",
       "endpoints_using": [
         "DOC002",
         "DOC003",
@@ -3033,11 +3033,11 @@
     "contact_info": null,
     "license_info": null,
     "external_docs": null,
-    "discovered_at": "2025-09-02T14:51:22.099422",
+    "discovered_at": "2025-09-02T22:14:27.987998",
     "discovery_method": "endpoint_scanning"
   },
-  "report_id": "vampi_discovery_20250902_145422",
-  "generated_at": "2025-09-02T14:54:22.090866",
+  "report_id": "vampi_discovery_20250902_221620",
+  "generated_at": "2025-09-02T22:16:20.999415",
   "generator_version": "1.0.0",
   "discovery_config": {},
   "tags": [],
