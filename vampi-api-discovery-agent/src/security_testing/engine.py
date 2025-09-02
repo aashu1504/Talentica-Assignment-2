@@ -805,7 +805,7 @@ class SecurityTestingEngine:
             if vulnerability_found:
                 if risk_score >= 8.0:
                     severity = VulnerabilitySeverity.CRITICAL
-                    cvss_metrics = CVSSMetrics(
+                    cvss_metrics = self._create_cvss_metrics(
                         attack_vector=AttackVector.NETWORK,
                         attack_complexity=AttackComplexity.LOW,
                         privileges_required=PrivilegesRequired.NONE,
@@ -817,7 +817,7 @@ class SecurityTestingEngine:
                     )
                 elif risk_score >= 5.0:
                     severity = VulnerabilitySeverity.HIGH
-                    cvss_metrics = CVSSMetrics(
+                    cvss_metrics = self._create_cvss_metrics(
                         attack_vector=AttackVector.NETWORK,
                         attack_complexity=AttackComplexity.LOW,
                         privileges_required=PrivilegesRequired.NONE,
@@ -829,7 +829,7 @@ class SecurityTestingEngine:
                     )
                 else:
                     severity = VulnerabilitySeverity.MEDIUM
-                    cvss_metrics = CVSSMetrics(
+                    cvss_metrics = self._create_cvss_metrics(
                         attack_vector=AttackVector.NETWORK,
                         attack_complexity=AttackComplexity.LOW,
                         privileges_required=PrivilegesRequired.NONE,
@@ -839,6 +839,9 @@ class SecurityTestingEngine:
                         integrity_impact=Impact.MEDIUM,
                         availability_impact=Impact.NONE
                     )
+                
+                # Update risk score to use CVSS base score
+                risk_score = cvss_metrics.base_score or risk_score
                 
                 recommendations = [
                     "Implement strict role-based access control (RBAC)",
@@ -1136,7 +1139,7 @@ class SecurityTestingEngine:
                     recommendations.append(f"Payload vulnerability level: {payload_analysis.vulnerability_level}")
                 
                 # Create enhanced CVSS metrics with technical findings
-                cvss_metrics = CVSSMetrics(
+                cvss_metrics = self._create_cvss_metrics(
                     attack_vector=AttackVector.NETWORK,
                     attack_complexity=AttackComplexity.LOW,
                     privileges_required=PrivilegesRequired.NONE,
@@ -1241,7 +1244,7 @@ class SecurityTestingEngine:
             vulnerability_found = self._detect_nosql_injection(response)
             
             if vulnerability_found:
-                cvss_metrics = CVSSMetrics(
+                cvss_metrics = self._create_cvss_metrics(
                     attack_vector=AttackVector.NETWORK,
                     attack_complexity=AttackComplexity.LOW,
                     privileges_required=PrivilegesRequired.NONE,
@@ -1253,7 +1256,7 @@ class SecurityTestingEngine:
                 )
                 
                 severity = VulnerabilitySeverity.CRITICAL
-                risk_score = 9.0
+                risk_score = cvss_metrics.base_score or 9.0
                 recommendations = [
                     "Implement input validation and sanitization",
                     "Use parameterized queries or ORM methods",
@@ -1316,7 +1319,7 @@ class SecurityTestingEngine:
             vulnerability_found = payload in response.text
             
             if vulnerability_found:
-                cvss_metrics = CVSSMetrics(
+                cvss_metrics = self._create_cvss_metrics(
                     attack_vector=AttackVector.NETWORK,
                     attack_complexity=AttackComplexity.LOW,
                     privileges_required=PrivilegesRequired.NONE,
@@ -1328,7 +1331,7 @@ class SecurityTestingEngine:
                 )
                 
                 severity = VulnerabilitySeverity.MEDIUM
-                risk_score = 6.0
+                risk_score = cvss_metrics.base_score or 6.0
                 recommendations = [
                     "Implement input validation and sanitization",
                     "Use output encoding for user input",
@@ -3811,6 +3814,27 @@ if __name__ == "__main__":
             return any(pattern in response_text for pattern in nosql_error_patterns)
         return False
     
+    def _create_cvss_metrics(self, attack_vector: AttackVector, attack_complexity: AttackComplexity,
+                           privileges_required: PrivilegesRequired, user_interaction: UserInteraction,
+                           scope: Scope, confidentiality_impact: Impact, integrity_impact: Impact,
+                           availability_impact: Impact) -> CVSSMetrics:
+        """Create and calculate CVSS metrics with proper scoring"""
+        cvss_metrics = CVSSMetrics(
+            attack_vector=attack_vector,
+            attack_complexity=attack_complexity,
+            privileges_required=privileges_required,
+            user_interaction=user_interaction,
+            scope=scope,
+            confidentiality_impact=confidentiality_impact,
+            integrity_impact=integrity_impact,
+            availability_impact=availability_impact
+        )
+        
+        # Calculate CVSS scores immediately
+        cvss_metrics.calculate_scores()
+        
+        return cvss_metrics
+
     def _generate_proof_of_concept(self, vulnerability_type: str, payload: str, 
                                   endpoint_path: str, method: str, param: str = None) -> str:
         """Generate proof-of-concept for vulnerabilities"""
