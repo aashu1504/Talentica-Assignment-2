@@ -29,6 +29,14 @@ from .sql_analyzer import SQLAnalyzer, DatabaseType, analyze_sql_payload, finger
 from .technical_findings_generator import TechnicalFindingsGenerator
 from .remediation_guidance_generator import RemediationGuidanceGenerator
 
+# Advanced vulnerability testing modules
+from .vampi_specific_patterns import VAmPIPatternGenerator, VAmPIBusinessLogicTester, VAmPIAdvancedPayloadGenerator
+from .business_logic_tester import BusinessLogicTester
+from .advanced_payload_tester import AdvancedPayloadTester
+from .sqlite_specific_tester import SQLiteSpecificTester
+from .workflow_tester import WorkflowTester
+from .race_condition_tester import RaceConditionTester
+
 
 class SecurityTestingEngine:
     """Main engine for performing API security testing"""
@@ -60,6 +68,14 @@ class SecurityTestingEngine:
         
         # Initialize remediation guidance generator
         self.remediation_guidance_generator = RemediationGuidanceGenerator()
+        
+        # Initialize advanced vulnerability testing modules
+        self.vampi_pattern_generator = VAmPIPatternGenerator()
+        self.business_logic_tester = BusinessLogicTester(base_url, self.session)
+        self.advanced_payload_tester = AdvancedPayloadTester(base_url, self.session)
+        self.sqlite_specific_tester = SQLiteSpecificTester(base_url, self.session)
+        self.workflow_tester = WorkflowTester(base_url, self.session)
+        self.race_condition_tester = RaceConditionTester(base_url, self.session)
         
         # Default test suite configuration
         self.test_suite = SecurityTestSuite(
@@ -470,6 +486,7 @@ class SecurityTestingEngine:
         """Test security for a specific HTTP method"""
         tests = []
         
+        # Basic OWASP API Security Testing
         # Injection testing
         tests.extend(await self._test_injection_vulnerabilities(endpoint_path, method, parameters))
         
@@ -482,6 +499,21 @@ class SecurityTestingEngine:
         # Security misconfiguration testing
         tests.extend(await self._test_security_misconfigurations(endpoint_path, method, parameters))
         
+        # Advanced VAmPI-Specific Testing (Reduced scope for performance)
+        # Only run advanced tests for endpoints that are likely to have vulnerabilities
+        if self._should_run_advanced_tests(endpoint_path, method):
+            # VAmPI-specific vulnerability patterns (limited to 1-2 per endpoint)
+            vampi_tests = await self._test_vampi_specific_patterns_integrated(endpoint_path, method, parameters)
+            tests.extend(vampi_tests[:2])  # Limit to 2 VAmPI tests per endpoint
+            
+            # Advanced business logic testing (limited scope)
+            business_logic_tests = await self._test_advanced_business_logic_integrated(endpoint_path, method, parameters)
+            tests.extend(business_logic_tests[:3])  # Limit to 3 business logic tests per endpoint
+            
+            # Advanced payload variations for edge cases (limited to 1 per parameter)
+            advanced_payload_tests = await self._test_advanced_payloads_integrated(endpoint_path, method, parameters)
+            tests.extend(advanced_payload_tests[:2])  # Limit to 2 advanced payload tests per endpoint
+        
         # User Enumeration testing (Medium severity)
         if method == 'POST' and 'register' in endpoint_path.lower():
             test_result = await self._test_user_enumeration(endpoint_path, method)
@@ -493,6 +525,182 @@ class SecurityTestingEngine:
         # Improper Assets Management testing (API9:2019)
         test_result = await self._test_improper_assets_management(endpoint_path, method, parameters)
         tests.append(test_result)
+        
+        return tests
+    
+    def _should_run_advanced_tests(self, endpoint_path: str, method: str) -> bool:
+        """Determine if advanced tests should be run for this endpoint"""
+        # Only run advanced tests for endpoints that are likely to have vulnerabilities
+        # Focus on data manipulation endpoints and authentication endpoints
+        advanced_endpoints = [
+            '/users', '/books', '/login', '/register', '/createdb'
+        ]
+        
+        # Check if endpoint contains any of the advanced endpoint patterns
+        return any(pattern in endpoint_path for pattern in advanced_endpoints)
+    
+    async def _test_vampi_specific_patterns_integrated(self, endpoint_path: str, method: str, 
+                                                     parameters: Dict[str, Any]) -> List[SecurityTest]:
+        """Integrate VAmPI-specific patterns testing into main workflow"""
+        tests = []
+        try:
+            # Get VAmPI-specific test results
+            vampi_results = await self.test_vampi_specific_patterns(endpoint_path, method)
+            
+            if vampi_results and "results" in vampi_results:
+                for result in vampi_results["results"]:
+                    # Convert VAmPI pattern result to SecurityTest
+                    test = SecurityTest(
+                        test_name=f"VAmPI Pattern: {result.get('pattern_name', 'Unknown')}",
+                        test_category=OWASPCategory.INJECTION,
+                        test_description=f"VAmPI-specific vulnerability pattern testing: {result.get('pattern_name', 'Unknown')}",
+                        test_method=f"HTTP {method} with VAmPI pattern",
+                        payload_used=result.get('payload', ''),
+                        request_details={
+                            "method": method,
+                            "endpoint": endpoint_path,
+                            "payload": result.get('payload', '')
+                        },
+                        response_details={
+                            "status_code": result.get('status_code', 0),
+                            "response_length": result.get('response_length', 0)
+                        },
+                        vulnerability_found=result.get('vulnerability_found', False),
+                        vulnerability_details=result.get('vulnerability_details'),
+                        cvss_metrics=self._generate_cvss_metrics("VAmPI_PATTERN", result.get('severity', 'Medium')),
+                        severity=self._map_severity(result.get('severity', 'Medium')),
+                        risk_score=self._calculate_risk_score(result.get('severity', 'Medium')),
+                        recommendations=self._generate_vampi_recommendations(result),
+                        proof_of_concept=self._generate_vampi_poc(endpoint_path, method, result),
+                        test_timestamp=datetime.now(),
+                        test_duration=0.0,
+                        technical_impact_analysis=self._generate_technical_impact_analysis("VAmPI_PATTERN", result.get('severity', 'Medium'), endpoint_path),
+                        implementation_timeline=self._generate_implementation_timeline("VAmPI_PATTERN", result.get('severity', 'Medium'), endpoint_path),
+                        best_practice_guidelines=self._generate_best_practice_guidelines("VAmPI_PATTERN", result.get('severity', 'Medium')),
+                        prevention_strategies=self._generate_prevention_strategies("VAmPI_PATTERN", result.get('severity', 'Medium')),
+                        remediation_complexity=self._generate_remediation_complexity("VAmPI_PATTERN", result.get('severity', 'Medium'), endpoint_path),
+                        resource_requirements=self._generate_resource_requirements("VAmPI_PATTERN", result.get('severity', 'Medium'))
+                    )
+                    tests.append(test)
+        except Exception as e:
+            self.logger.error(f"Error in VAmPI-specific patterns integration: {e}")
+        
+        return tests
+    
+    async def _test_advanced_business_logic_integrated(self, endpoint_path: str, method: str, 
+                                                     parameters: Dict[str, Any]) -> List[SecurityTest]:
+        """Integrate advanced business logic testing into main workflow"""
+        tests = []
+        try:
+            # Get advanced business logic test results
+            business_logic_results = await self.test_advanced_business_logic(endpoint_path, method)
+            
+            if business_logic_results and "results" in business_logic_results:
+                # The results are nested by test type
+                # Limit to only the most important business logic test types
+                important_test_types = ["workflow_manipulation", "authentication_bypass", "authorization_escape"]
+                
+                for test_type in important_test_types:
+                    if test_type in business_logic_results["results"]:
+                        test_results = business_logic_results["results"][test_type]
+                        if isinstance(test_results, dict) and "results" in test_results:
+                            # Limit to first 2 results per test type to reduce volume
+                            for result in test_results["results"][:2]:
+                                # Convert business logic result to SecurityTest
+                                test = SecurityTest(
+                                    test_name=f"Business Logic ({test_type}): {result.get('test_name', 'Unknown')}",
+                                    test_category=OWASPCategory.BROKEN_FUNCTION_LEVEL_AUTHORIZATION,
+                                    test_description=f"Advanced business logic vulnerability testing: {result.get('test_name', 'Unknown')}",
+                                    test_method=f"HTTP {method} with business logic test",
+                                    payload_used=str(result.get('payload', '')),
+                                    request_details={
+                                        "method": method,
+                                        "endpoint": endpoint_path,
+                                        "payload": result.get('payload', '')
+                                    },
+                                    response_details={
+                                        "status_code": result.get('status_code', 0),
+                                        "response_length": result.get('response_length', 0)
+                                    },
+                                    vulnerability_found=result.get('vulnerability_found', False),
+                                    vulnerability_details=result.get('vulnerability_details'),
+                                    cvss_metrics=self._generate_cvss_metrics("BUSINESS_LOGIC", result.get('severity', 'Medium')),
+                                    severity=self._map_severity(result.get('severity', 'Medium')),
+                                    risk_score=self._calculate_risk_score(result.get('severity', 'Medium')),
+                                    recommendations=self._generate_business_logic_recommendations(result),
+                                    proof_of_concept=self._generate_business_logic_poc(endpoint_path, method, result),
+                                    test_timestamp=datetime.now(),
+                                    test_duration=0.0,
+                                    technical_impact_analysis=self._generate_technical_impact_analysis("BUSINESS_LOGIC", result.get('severity', 'Medium'), endpoint_path),
+                                    implementation_timeline=self._generate_implementation_timeline("BUSINESS_LOGIC", result.get('severity', 'Medium'), endpoint_path),
+                                    best_practice_guidelines=self._generate_best_practice_guidelines("BUSINESS_LOGIC", result.get('severity', 'Medium')),
+                                    prevention_strategies=self._generate_prevention_strategies("BUSINESS_LOGIC", result.get('severity', 'Medium')),
+                                    remediation_complexity=self._generate_remediation_complexity("BUSINESS_LOGIC", result.get('severity', 'Medium'), endpoint_path),
+                                    resource_requirements=self._generate_resource_requirements("BUSINESS_LOGIC", result.get('severity', 'Medium'))
+                                )
+                                tests.append(test)
+        except Exception as e:
+            self.logger.error(f"Error in advanced business logic integration: {e}")
+        
+        return tests
+    
+    async def _test_advanced_payloads_integrated(self, endpoint_path: str, method: str, 
+                                               parameters: Dict[str, Any]) -> List[SecurityTest]:
+        """Integrate advanced payload testing into main workflow"""
+        tests = []
+        try:
+            # Test advanced payloads for each parameter
+            query_params = parameters.get('query_params', [])
+            body_params = parameters.get('body_params', [])
+            all_params = query_params + body_params
+            
+            for param in all_params:
+                # Get advanced payload test results
+                payload_results = await self.test_advanced_payloads(endpoint_path, method, param)
+                
+                if payload_results and isinstance(payload_results, dict) and "results" in payload_results:
+                    # The results are nested by test type
+                    for test_type, test_results in payload_results["results"].items():
+                        if isinstance(test_results, dict) and "results" in test_results:
+                            # Limit to first 2 results per test type to reduce volume
+                            for payload_result in test_results["results"][:2]:
+                                # Convert advanced payload result to SecurityTest
+                                test = SecurityTest(
+                                    test_name=f"Advanced Payload ({test_type}): {param}",
+                                    test_category=OWASPCategory.INJECTION,
+                                    test_description=f"Advanced payload variation testing for parameter '{param}' using {test_type}",
+                                    test_method=f"HTTP {method} with advanced payload",
+                                    payload_used=payload_result.get('payload', ''),
+                                    request_details={
+                                        "method": method,
+                                        "parameter": param,
+                                        "payload": payload_result.get('payload', '')
+                                    },
+                                    response_details={
+                                        "status_code": payload_result.get('status_code', 0),
+                                        "response_length": payload_result.get('response_length', 0)
+                                    },
+                                    vulnerability_found=payload_result.get('vulnerability_found', False),
+                                    vulnerability_details=payload_result.get('vulnerability_details'),
+                                    cvss_metrics=self._generate_cvss_metrics("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium')),
+                                    severity=self._map_severity(payload_result.get('severity', 'Medium')),
+                                    risk_score=self._calculate_risk_score(payload_result.get('severity', 'Medium')),
+                                    recommendations=self._generate_advanced_payload_recommendations(payload_result),
+                                    proof_of_concept=self._generate_advanced_payload_poc(endpoint_path, method, param, payload_result),
+                                    test_timestamp=datetime.now(),
+                                    test_duration=0.0,
+                                    technical_impact_analysis=self._generate_technical_impact_analysis("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium'), endpoint_path),
+                                    implementation_timeline=self._generate_implementation_timeline("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium'), endpoint_path),
+                                    best_practice_guidelines=self._generate_best_practice_guidelines("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium')),
+                                    prevention_strategies=self._generate_prevention_strategies("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium')),
+                                    remediation_complexity=self._generate_remediation_complexity("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium'), endpoint_path),
+                                    resource_requirements=self._generate_resource_requirements("ADVANCED_PAYLOAD", payload_result.get('severity', 'Medium'))
+                                )
+                                tests.append(test)
+        except Exception as e:
+            self.logger.error(f"Error in advanced payloads integration: {e}")
+            import traceback
+            self.logger.error(f"Traceback: {traceback.format_exc()}")
         
         return tests
     
@@ -4595,4 +4803,483 @@ print("\\n🔍 Check which invalid tokens were accepted!")
             )
         except Exception as e:
             self.logger.error(f"Error generating resource requirements: {e}")
-            return f"Resource requirements for {vulnerability_type} ({severity}) require detailed assessment based on specific implementation approach."
+            return f"Resource requirements for {vulnerability_type} ({severity}) depend on specific implementation approach and team capabilities."
+    
+    # Helper methods for advanced testing integration
+    
+    def _generate_vampi_recommendations(self, result: Dict[str, Any]) -> List[str]:
+        """Generate recommendations for VAmPI-specific vulnerabilities"""
+        recommendations = [
+            "Implement VAmPI-specific input validation",
+            "Apply SQLite-specific security controls",
+            "Review and secure business logic workflows",
+            "Implement proper error handling for VAmPI patterns"
+        ]
+        
+        if result.get('pattern_type') == 'sqlite_injection':
+            recommendations.extend([
+                "Use parameterized queries for SQLite operations",
+                "Implement SQLite-specific input sanitization",
+                "Apply principle of least privilege for database access"
+            ])
+        
+        return recommendations
+    
+    def _generate_business_logic_recommendations(self, result: Dict[str, Any]) -> List[str]:
+        """Generate recommendations for business logic vulnerabilities"""
+        recommendations = [
+            "Review business logic implementation",
+            "Implement proper workflow validation",
+            "Add business rule enforcement",
+            "Implement comprehensive input validation"
+        ]
+        
+        if result.get('test_type') == 'workflow_manipulation':
+            recommendations.extend([
+                "Implement state machine validation",
+                "Add workflow step verification",
+                "Implement proper session management"
+            ])
+        
+        return recommendations
+    
+    def _generate_advanced_payload_recommendations(self, result: Dict[str, Any]) -> List[str]:
+        """Generate recommendations for advanced payload vulnerabilities"""
+        recommendations = [
+            "Implement comprehensive input validation",
+            "Apply multiple layers of input sanitization",
+            "Use encoding-aware validation",
+            "Implement Unicode normalization"
+        ]
+        
+        if 'unicode' in result.get('payload', '').lower():
+            recommendations.extend([
+                "Implement Unicode normalization",
+                "Apply Unicode-aware input validation",
+                "Use proper character encoding handling"
+            ])
+        
+        return recommendations
+    
+    def _generate_vampi_poc(self, endpoint: str, method: str, result: Dict[str, Any]) -> str:
+        """Generate proof of concept for VAmPI-specific vulnerabilities"""
+        payload = result.get('payload', '')
+        pattern_name = result.get('pattern_name', 'Unknown')
+        
+        poc = f"""# VAmPI-Specific Vulnerability Proof of Concept
+# Pattern: {pattern_name}
+# Target: {endpoint}
+# Method: {method}
+
+import requests
+
+url = "{self.base_url}{endpoint}"
+
+# VAmPI-specific payload
+payload = "{payload}"
+
+if "{method}" == "GET":
+    params = {{"param": payload}}
+    response = requests.get(url, params=params)
+else:
+    data = {{"param": payload}}
+    response = requests.post(url, json=data)
+
+print(f"Status: {{response.status_code}}")
+print(f"Response: {{response.text[:200]}}...")
+
+# Check for VAmPI-specific vulnerability indicators
+if response.status_code in [200, 500] and any(indicator in response.text.lower() for indicator in ["sqlite", "database", "error"]):
+    print("✅ VAmPI-specific vulnerability confirmed!")
+
+if __name__ == "__main__":
+    print("🔍 Running VAmPI-specific vulnerability test...")
+    print("\\n📋 Check the response for vulnerability indicators!")
+"""
+        return poc
+    
+    def _generate_business_logic_poc(self, endpoint: str, method: str, result: Dict[str, Any]) -> str:
+        """Generate proof of concept for business logic vulnerabilities"""
+        payload = result.get('payload', '')
+        test_name = result.get('test_name', 'Unknown')
+        
+        poc = f"""# Business Logic Vulnerability Proof of Concept
+# Test: {test_name}
+# Target: {endpoint}
+# Method: {method}
+
+import requests
+
+url = "{self.base_url}{endpoint}"
+
+# Business logic manipulation payload
+payload = {payload}
+
+if "{method}" == "GET":
+    params = payload if isinstance(payload, dict) else {{"param": payload}}
+    response = requests.get(url, params=params)
+else:
+    data = payload if isinstance(payload, dict) else {{"param": payload}}
+    response = requests.post(url, json=data)
+
+print(f"Status: {{response.status_code}}")
+print(f"Response: {{response.text[:200]}}...")
+
+# Check for business logic vulnerability indicators
+if response.status_code == 200 and len(response.text) > 0:
+    print("✅ Business logic vulnerability may be present!")
+    print("📋 Review response for unexpected data or behavior")
+
+if __name__ == "__main__":
+    print("🔍 Running business logic vulnerability test...")
+    print("\\n📋 Check the response for business logic bypass indicators!")
+"""
+        return poc
+    
+    def _generate_advanced_payload_poc(self, endpoint: str, method: str, parameter: str, result: Dict[str, Any]) -> str:
+        """Generate proof of concept for advanced payload vulnerabilities"""
+        payload = result.get('payload', '')
+        
+        poc = f"""# Advanced Payload Vulnerability Proof of Concept
+# Target: {endpoint}
+# Method: {method}
+# Parameter: {parameter}
+
+import requests
+
+url = "{self.base_url}{endpoint}"
+
+# Advanced payload
+payload = "{payload}"
+
+if "{method}" == "GET":
+    params = {{"{parameter}": payload}}
+    response = requests.get(url, params=params)
+else:
+    data = {{"{parameter}": payload}}
+    response = requests.post(url, json=data)
+
+print(f"Status: {{response.status_code}}")
+print(f"Response: {{response.text[:200]}}...")
+
+# Check for advanced payload vulnerability indicators
+if response.status_code in [200, 500] and len(response.text) > 0:
+    print("✅ Advanced payload vulnerability may be present!")
+    print("📋 Review response for unexpected behavior or data leakage")
+
+if __name__ == "__main__":
+    print("🔍 Running advanced payload vulnerability test...")
+    print("\\n📋 Check the response for advanced payload bypass indicators!")
+"""
+        return poc
+    
+    def _generate_cvss_metrics(self, vulnerability_type: str, severity: str) -> CVSSMetrics:
+        """Generate CVSS metrics for advanced vulnerability types"""
+        # Map severity string to CVSS impact levels
+        if severity.lower() == "critical":
+            impact = Impact.HIGH
+        elif severity.lower() == "high":
+            impact = Impact.HIGH
+        elif severity.lower() == "medium":
+            impact = Impact.MEDIUM
+        elif severity.lower() == "low":
+            impact = Impact.LOW
+        else:
+            impact = Impact.NONE
+        
+        # Create CVSS metrics based on vulnerability type
+        if vulnerability_type == "VAmPI_PATTERN":
+            return self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.CHANGED,
+                confidentiality_impact=impact,
+                integrity_impact=impact,
+                availability_impact=impact
+            )
+        elif vulnerability_type == "BUSINESS_LOGIC":
+            return self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.UNCHANGED,
+                confidentiality_impact=impact,
+                integrity_impact=impact,
+                availability_impact=Impact.NONE
+            )
+        elif vulnerability_type == "ADVANCED_PAYLOAD":
+            return self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.UNCHANGED,
+                confidentiality_impact=impact,
+                integrity_impact=impact,
+                availability_impact=Impact.NONE
+            )
+        else:
+            # Default CVSS metrics
+            return self._create_cvss_metrics(
+                attack_vector=AttackVector.NETWORK,
+                attack_complexity=AttackComplexity.LOW,
+                privileges_required=PrivilegesRequired.NONE,
+                user_interaction=UserInteraction.NONE,
+                scope=Scope.UNCHANGED,
+                confidentiality_impact=impact,
+                integrity_impact=impact,
+                availability_impact=impact
+            )
+    
+    def _map_severity(self, severity_str: str) -> VulnerabilitySeverity:
+        """Map severity string to VulnerabilitySeverity enum"""
+        severity_map = {
+            "critical": VulnerabilitySeverity.CRITICAL,
+            "high": VulnerabilitySeverity.HIGH,
+            "medium": VulnerabilitySeverity.MEDIUM,
+            "low": VulnerabilitySeverity.LOW,
+            "info": VulnerabilitySeverity.INFO
+        }
+        return severity_map.get(severity_str.lower(), VulnerabilitySeverity.MEDIUM)
+    
+    def _calculate_risk_score(self, severity_str: str) -> float:
+        """Calculate risk score based on severity"""
+        severity_scores = {
+            "critical": 10.0,
+            "high": 8.0,
+            "medium": 5.0,
+            "low": 3.0,
+            "info": 1.0
+        }
+        return severity_scores.get(severity_str.lower(), 5.0)
+    
+    # Advanced vulnerability testing methods
+    
+    async def test_vampi_specific_patterns(self, endpoint: str, method: str) -> Dict[str, Any]:
+        """Test VAmPI-specific vulnerability patterns"""
+        try:
+            self.logger.info(f"Testing VAmPI-specific patterns for {endpoint}")
+            
+            # Get applicable patterns for the endpoint
+            applicable_patterns = self.vampi_pattern_generator.get_patterns_by_endpoint(endpoint)
+            
+            results = []
+            for pattern in applicable_patterns:
+                result = await self._execute_vampi_pattern_test(endpoint, method, pattern)
+                results.append(result)
+            
+            return {
+                "endpoint": endpoint,
+                "method": method,
+                "test_type": "vampi_specific_patterns",
+                "results": results,
+                "total_tests": len(results),
+                "vulnerabilities_found": sum(1 for r in results if r.get("vulnerability_found", False))
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error testing VAmPI-specific patterns: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def test_advanced_business_logic(self, endpoint: str, method: str) -> Dict[str, Any]:
+        """Test advanced business logic vulnerabilities"""
+        try:
+            self.logger.info(f"Testing advanced business logic for {endpoint}")
+            return await self.business_logic_tester.run_comprehensive_business_logic_tests(endpoint, method)
+        except Exception as e:
+            self.logger.error(f"Error testing advanced business logic: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def test_advanced_payloads(self, endpoint: str, method: str, parameter: str) -> Dict[str, Any]:
+        """Test advanced payload variations"""
+        try:
+            self.logger.info(f"Testing advanced payloads for {endpoint} parameter {parameter}")
+            
+            all_results = {}
+            
+            # Test different payload categories
+            test_functions = [
+                ("unicode_variations", self.advanced_payload_tester.test_unicode_variations),
+                ("encoding_bypass", self.advanced_payload_tester.test_encoding_bypass),
+                ("time_based_injection", self.advanced_payload_tester.test_time_based_injection),
+                ("advanced_xss", self.advanced_payload_tester.test_advanced_xss),
+                ("advanced_nosql", self.advanced_payload_tester.test_advanced_nosql),
+                ("command_injection", self.advanced_payload_tester.test_command_injection),
+                ("edge_case_combinations", self.advanced_payload_tester.test_edge_case_combinations)
+            ]
+            
+            for test_name, test_func in test_functions:
+                try:
+                    result = await test_func(endpoint, method, parameter)
+                    all_results[test_name] = result
+                except Exception as e:
+                    all_results[test_name] = {"error": str(e), "vulnerabilities_found": 0}
+            
+            # Calculate totals
+            total_tests = sum(result.get("total_tests", 0) for result in all_results.values())
+            total_vulnerabilities = sum(result.get("vulnerabilities_found", 0) for result in all_results.values())
+            
+            return {
+                "endpoint": endpoint,
+                "method": method,
+                "parameter": parameter,
+                "test_type": "advanced_payloads",
+                "results": all_results,
+                "total_tests": total_tests,
+                "total_vulnerabilities": total_vulnerabilities,
+                "vulnerability_rate": (total_vulnerabilities / total_tests * 100) if total_tests > 0 else 0
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error testing advanced payloads: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def test_sqlite_specific_vulnerabilities(self, endpoint: str, method: str, parameter: str) -> Dict[str, Any]:
+        """Test SQLite-specific vulnerabilities"""
+        try:
+            self.logger.info(f"Testing SQLite-specific vulnerabilities for {endpoint} parameter {parameter}")
+            return await self.sqlite_specific_tester.run_comprehensive_sqlite_tests(endpoint, method, parameter)
+        except Exception as e:
+            self.logger.error(f"Error testing SQLite-specific vulnerabilities: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def test_workflow_manipulation(self, endpoint: str, method: str) -> Dict[str, Any]:
+        """Test workflow manipulation vulnerabilities"""
+        try:
+            self.logger.info(f"Testing workflow manipulation for {endpoint}")
+            return await self.workflow_tester.run_comprehensive_workflow_tests(endpoint, method)
+        except Exception as e:
+            self.logger.error(f"Error testing workflow manipulation: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def test_race_conditions(self, endpoint: str, method: str) -> Dict[str, Any]:
+        """Test race condition vulnerabilities"""
+        try:
+            self.logger.info(f"Testing race conditions for {endpoint}")
+            return await self.race_condition_tester.run_comprehensive_race_condition_tests(endpoint, method)
+        except Exception as e:
+            self.logger.error(f"Error testing race conditions: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def run_comprehensive_advanced_testing(self, endpoint: str, method: str, parameters: List[str] = None) -> Dict[str, Any]:
+        """Run all advanced vulnerability tests for an endpoint"""
+        try:
+            self.logger.info(f"Running comprehensive advanced testing for {endpoint}")
+            
+            all_results = {}
+            
+            # Test VAmPI-specific patterns
+            vampi_results = await self.test_vampi_specific_patterns(endpoint, method)
+            all_results["vampi_specific_patterns"] = vampi_results
+            
+            # Test advanced business logic
+            business_logic_results = await self.test_advanced_business_logic(endpoint, method)
+            all_results["advanced_business_logic"] = business_logic_results
+            
+            # Test workflow manipulation
+            workflow_results = await self.test_workflow_manipulation(endpoint, method)
+            all_results["workflow_manipulation"] = workflow_results
+            
+            # Test race conditions
+            race_condition_results = await self.test_race_conditions(endpoint, method)
+            all_results["race_conditions"] = race_condition_results
+            
+            # Test advanced payloads for each parameter
+            if parameters:
+                advanced_payload_results = {}
+                for parameter in parameters:
+                    payload_results = await self.test_advanced_payloads(endpoint, method, parameter)
+                    advanced_payload_results[parameter] = payload_results
+                all_results["advanced_payloads"] = advanced_payload_results
+            
+            # Test SQLite-specific vulnerabilities for each parameter
+            if parameters:
+                sqlite_results = {}
+                for parameter in parameters:
+                    sqlite_param_results = await self.test_sqlite_specific_vulnerabilities(endpoint, method, parameter)
+                    sqlite_results[parameter] = sqlite_param_results
+                all_results["sqlite_specific"] = sqlite_results
+            
+            # Calculate overall totals
+            total_tests = sum(
+                result.get("total_tests", 0) 
+                for result in all_results.values() 
+                if isinstance(result, dict) and "total_tests" in result
+            )
+            total_vulnerabilities = sum(
+                result.get("total_vulnerabilities", 0) 
+                for result in all_results.values() 
+                if isinstance(result, dict) and "total_vulnerabilities" in result
+            )
+            
+            return {
+                "endpoint": endpoint,
+                "method": method,
+                "test_type": "comprehensive_advanced_testing",
+                "results": all_results,
+                "total_tests": total_tests,
+                "total_vulnerabilities": total_vulnerabilities,
+                "vulnerability_rate": (total_vulnerabilities / total_tests * 100) if total_tests > 0 else 0
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error running comprehensive advanced testing: {e}")
+            return {"error": str(e), "vulnerabilities_found": 0}
+    
+    async def _execute_vampi_pattern_test(self, endpoint: str, method: str, pattern) -> Dict[str, Any]:
+        """Execute a VAmPI-specific pattern test"""
+        try:
+            url = f"{self.base_url}{endpoint}"
+            
+            # Prepare request based on method
+            if method.upper() == "GET":
+                response = self.session.get(url, params={"test": pattern.payload}, timeout=30)
+            elif method.upper() == "POST":
+                response = self.session.post(url, json={"test": pattern.payload}, timeout=30)
+            else:
+                response = self.session.request(method, url, json={"test": pattern.payload}, timeout=30)
+            
+            # Analyze response for vulnerability indicators
+            vulnerability_found = self._analyze_vampi_pattern_response(response, pattern)
+            
+            return {
+                "pattern_name": pattern.name,
+                "pattern_type": pattern.pattern_type.value,
+                "payload": pattern.payload,
+                "expected_behavior": pattern.expected_behavior,
+                "status_code": response.status_code,
+                "response_length": len(response.text),
+                "vulnerability_found": vulnerability_found,
+                "severity": pattern.severity,
+                "category": pattern.category
+            }
+            
+        except Exception as e:
+            return {
+                "pattern_name": pattern.name,
+                "pattern_type": pattern.pattern_type.value,
+                "payload": pattern.payload,
+                "error": str(e),
+                "vulnerability_found": False,
+                "severity": pattern.severity,
+                "category": pattern.category
+            }
+    
+    def _analyze_vampi_pattern_response(self, response, pattern) -> bool:
+        """Analyze response for VAmPI pattern vulnerability indicators"""
+        if response.status_code == 200:
+            response_text = response.text.lower()
+            
+            # Check for specific vulnerability indicators
+            for indicator in pattern.vulnerability_indicators:
+                if indicator.lower() in response_text:
+                    return True
+            
+            # Check for general success indicators
+            success_indicators = ["success", "completed", "admin", "privilege", "bypassed"]
+            return any(indicator in response_text for indicator in success_indicators)
+        
+        return False
